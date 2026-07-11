@@ -1,0 +1,1737 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+<meta name="theme-color" content="#050405" />
+<meta name="color-scheme" content="dark" />
+<title>Notas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Hanken+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<!-- SENSIA: Socket.io Client Inyectado -->
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<style>
+/* ============================================================
+   SENSIA · Dark Elegance
+   Santuario privado para dos · consentimiento como arquitectura
+   ============================================================ */
+:root{
+  --noir:#050405;
+  --noir-1:#0b080a;
+  --noir-2:#120d10;
+  --card:rgba(28,20,24,.55);
+  --card-2:rgba(38,27,32,.66);
+  --line:rgba(233,183,165,.10);
+  --line-2:rgba(233,183,165,.18);
+
+  --ember-core:#e8704f;
+  --ember:#c24048;
+  --ember-deep:#6e1f35;
+  --wine:#3a1524;
+
+  --rose:#e9b7a5;
+  --champagne:#f0d8c9;
+  --ash:#9a8e90;
+  --ash-dim:#6b6165;
+  --mist:#ddd3cf;
+
+  --ok:#7bae8f;
+  --seal:#7d5a86;
+
+  --grad-ember:linear-gradient(135deg,#e8704f 0%,#c24048 46%,#6e1f35 100%);
+  --grad-glow:radial-gradient(circle at 50% 45%, rgba(232,112,79,.55), rgba(194,64,72,.28) 34%, rgba(110,31,53,.06) 60%, transparent 72%);
+
+  --r-lg:26px; --r-md:18px; --r-sm:12px;
+  --pad:clamp(18px,5.2vw,30px);
+  --font-d:"Cormorant Garamond",Georgia,serif;
+  --font-b:"Hanken Grotesk",system-ui,-apple-system,sans-serif;
+  --font-m:"Space Mono",ui-monospace,monospace;
+  --tap:52px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  margin:0;background:var(--noir);color:var(--mist);
+  font-family:var(--font-b);font-weight:400;font-size:16px;line-height:1.5;
+  overflow:hidden;position:fixed;inset:0;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  overscroll-behavior:none;
+}
+button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:none}
+input,textarea{font-family:inherit;color:var(--mist)}
+::selection{background:rgba(232,112,79,.3)}
+::-webkit-scrollbar{width:0;height:0}
+
+/* ---- ambient grain / vignette ---- */
+.veil{position:fixed;inset:0;pointer-events:none;z-index:60}
+.veil::before{content:"";position:absolute;inset:0;
+  background:radial-gradient(120% 90% at 50% -10%, transparent 40%, rgba(0,0,0,.5) 100%);}
+.veil::after{content:"";position:absolute;inset:0;opacity:.035;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");}
+
+/* ============================================================
+   SCREEN MANAGEMENT
+   ============================================================ */
+.screen{position:fixed;inset:0;display:none;flex-direction:column;z-index:10;
+  animation:fade .55s var(--ease);}
+.screen.on{display:flex}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.pane{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
+  padding:calc(env(safe-area-inset-top,0) + 20px) var(--pad) 120px;}
+
+/* ============================================================
+   EL UMBRAL · lock / signature
+   ============================================================ */
+#umbral{background:var(--noir);align-items:center;justify-content:center;z-index:40}
+.umbral-wrap{width:100%;max-width:420px;padding:0 30px;display:flex;flex-direction:column;
+  align-items:center;text-align:center;gap:6px}
+.breath{position:relative;width:min(64vw,270px);height:min(64vw,270px);margin:2vh 0;
+  touch-action:none;-webkit-user-select:none;user-select:none}
+.breath *{touch-action:none}
+.breath .glow{position:absolute;inset:0;background:var(--grad-glow);border-radius:50%;
+  animation:breathe 6.5s ease-in-out infinite;filter:blur(2px)}
+.breath .ring{position:absolute;inset:22%;border-radius:50%;
+  border:1px solid rgba(233,183,165,.16);
+  box-shadow:0 0 60px rgba(232,112,79,.15) inset;animation:breathe 6.5s ease-in-out infinite}
+.breath svg{position:absolute;inset:0;width:100%;height:100%}
+@keyframes breathe{0%,100%{transform:scale(.9);opacity:.65}50%{transform:scale(1.06);opacity:1}}
+@media (prefers-reduced-motion:reduce){.breath .glow,.breath .ring{animation:none;opacity:.9}}
+
+.wordmark{font-family:var(--font-d);font-weight:300;letter-spacing:.42em;
+  font-size:clamp(30px,9vw,44px);color:var(--champagne);text-indent:.42em;margin-top:6px}
+.tagline{font-family:var(--font-d);font-style:italic;font-weight:300;color:var(--rose);
+  font-size:clamp(16px,4.6vw,20px);opacity:.85;max-width:22ch}
+.umbral-hint{color:var(--ash-dim);font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;
+  margin-top:14px;min-height:16px}
+.umbral-hint b{color:var(--rose);font-weight:600}
+
+.pips{display:flex;gap:9px;margin-top:2px;height:12px}
+.pip{width:8px;height:8px;border-radius:50%;background:rgba(233,183,165,.18);transition:.2s}
+.pip.lit{background:var(--ember-core);box-shadow:0 0 12px var(--ember-core)}
+
+.gate-nodes{position:absolute;inset:0}
+.node{position:absolute;width:16px;height:16px;border-radius:50%;transform:translate(-50%,-50%);
+  background:rgba(233,183,165,.16);transition:.18s}
+.node.hit{background:var(--ember-core);box-shadow:0 0 16px var(--ember-core);transform:translate(-50%,-50%) scale(1.35)}
+
+.principio{margin-top:24px;color:var(--ash-dim);font-size:12px;line-height:1.6;max-width:30ch}
+
+/* small utility button on umbral */
+.ghost-link{background:none;color:var(--ash);font-size:12.5px;letter-spacing:.08em;
+  padding:8px 12px;border-radius:20px;border:1px solid transparent;transition:.2s}
+.ghost-link:active{border-color:var(--line-2);color:var(--rose)}
+
+/* ============================================================
+   TOPBAR + NAV
+   ============================================================ */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:calc(env(safe-area-inset-top,0) + 14px) var(--pad) 6px;}
+.topbar h1{font-family:var(--font-d);font-weight:400;font-size:clamp(24px,6.4vw,30px);
+  letter-spacing:.01em;margin:0;color:var(--champagne);line-height:1.05}
+.topbar .sub{color:var(--ash);font-size:12.5px;letter-spacing:.02em;margin-top:2px}
+.exit-btn{flex:0 0 auto;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;
+  background:var(--card);border:1px solid var(--line-2);color:var(--rose)}
+.exit-btn:active{background:var(--card-2)}
+.exit-btn svg{width:19px;height:19px}
+
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:30;
+  padding:8px 14px calc(env(safe-area-inset-bottom,0) + 10px);
+  background:linear-gradient(to top, var(--noir) 55%, rgba(5,4,5,.86) 80%, transparent);
+  display:none;}
+.nav.on{display:block}
+.nav-inner{display:flex;justify-content:space-between;align-items:center;
+  background:var(--card);border:1px solid var(--line);border-radius:26px;
+  padding:7px 8px;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  box-shadow:0 14px 40px rgba(0,0,0,.5)}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:8px 4px;border-radius:18px;color:var(--ash-dim);transition:.22s;position:relative}
+.nav-btn svg{width:21px;height:21px}
+.nav-btn span{font-size:10px;letter-spacing:.04em}
+.nav-btn.on{color:var(--champagne)}
+.nav-btn.on::before{content:"";position:absolute;top:2px;width:4px;height:4px;border-radius:50%;
+  background:var(--ember-core);box-shadow:0 0 8px var(--ember-core)}
+
+/* ============================================================
+   SHARED UI
+   ============================================================ */
+.eyebrow{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--ember);
+  font-weight:600;margin:0 0 10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);
+  padding:20px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.card + .card{margin-top:14px}
+.card h3{font-family:var(--font-d);font-weight:500;font-size:22px;margin:0 0 4px;color:var(--champagne)}
+.card p.lead{color:var(--ash);font-size:14px;margin:0 0 14px;line-height:1.55}
+.muted{color:var(--ash);font-size:13.5px;line-height:1.55}
+.dim{color:var(--ash-dim);font-size:12.5px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  min-height:var(--tap);padding:0 22px;border-radius:40px;font-weight:600;font-size:15px;
+  letter-spacing:.01em;transition:transform .12s var(--ease),filter .2s;width:100%}
+.btn:active{transform:scale(.975)}
+.btn.primary{background:var(--grad-ember);color:#fff;box-shadow:0 8px 26px rgba(194,64,72,.35)}
+.btn.ghost{background:var(--card-2);color:var(--mist);border:1px solid var(--line-2)}
+.btn.quiet{background:none;color:var(--ash);min-height:44px}
+.btn.danger{background:rgba(120,30,40,.28);color:#e8a08f;border:1px solid rgba(194,64,72,.35)}
+.btn.stop{background:linear-gradient(135deg,#e8704f,#c24048);color:#fff;font-size:16px;
+  box-shadow:0 10px 30px rgba(194,64,72,.4)}
+.btn[disabled]{opacity:.4;pointer-events:none}
+.btn.sm{min-height:42px;font-size:13.5px;padding:0 16px;width:auto}
+.row{display:flex;gap:10px}
+.row .btn{width:auto;flex:1}
+
+input[type=text],input[type=password],textarea{
+  width:100%;background:var(--noir-1);border:1px solid var(--line-2);border-radius:var(--r-sm);
+  padding:14px;font-size:15px;outline:none;transition:.2s}
+input:focus,textarea:focus{border-color:rgba(232,112,79,.5);background:var(--noir-2)}
+textarea{resize:none;min-height:96px;line-height:1.5}
+label.fld{display:block;color:var(--rose);font-size:12px;letter-spacing:.1em;
+  text-transform:uppercase;margin:0 0 7px}
+.fld-gap{margin-top:14px}
+
+.pill{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;
+  font-size:12px;background:var(--card-2);border:1px solid var(--line);color:var(--rose)}
+.chip-row{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:8px 14px;border-radius:20px;font-size:13px;background:var(--card-2);
+  border:1px solid var(--line);color:var(--mist);transition:.18s}
+.chip.on{background:var(--grad-ember);color:#fff;border-color:transparent}
+
+.switch{display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:15px 0;border-bottom:1px solid var(--line)}
+.switch:last-child{border-bottom:none}
+.switch .lbl b{display:block;color:var(--mist);font-weight:500;font-size:15px}
+.switch .lbl small{color:var(--ash-dim);font-size:12.5px}
+.toggle{flex:0 0 auto;width:50px;height:29px;border-radius:20px;background:var(--noir-1);
+  border:1px solid var(--line-2);position:relative;transition:.24s}
+.toggle::after{content:"";position:absolute;top:2.5px;left:3px;width:22px;height:22px;border-radius:50%;
+  background:var(--ash);transition:.24s var(--ease)}
+.toggle.on{background:var(--grad-ember);border-color:transparent}
+.toggle.on::after{left:24px;background:#fff}
+
+.empty{text-align:center;padding:40px 20px;color:var(--ash-dim)}
+.empty .ico{font-size:0;width:46px;height:46px;margin:0 auto 14px;opacity:.5}
+.empty p{font-size:14px;line-height:1.6;max-width:26ch;margin:0 auto}
+
+/* ============================================================
+   DIARIO · swipe deck
+   ============================================================ */
+.deck-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.who-switch{display:inline-flex;background:var(--noir-1);border:1px solid var(--line-2);
+  border-radius:22px;padding:3px;gap:2px}
+.who-switch button{padding:8px 16px;border-radius:18px;font-size:13px;color:var(--ash);transition:.2s}
+.who-switch button.on{background:var(--grad-ember);color:#fff;font-weight:600}
+
+.deck{position:relative;height:min(56vh,460px);margin:6px 0 18px}
+.fcard{position:absolute;inset:0;border-radius:var(--r-lg);padding:26px;
+  display:flex;flex-direction:column;justify-content:space-between;
+  background:linear-gradient(160deg,rgba(46,32,38,.92),rgba(18,13,16,.96));
+  border:1px solid var(--line-2);box-shadow:0 24px 60px rgba(0,0,0,.55);
+  transform-origin:center 130%;will-change:transform;touch-action:none;overflow:hidden}
+.fcard::before{content:"";position:absolute;inset:0;opacity:.5;pointer-events:none;
+  background:radial-gradient(80% 60% at 80% 0%, rgba(232,112,79,.14), transparent 60%)}
+.fcard .lvl{align-self:flex-start;font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  padding:6px 12px;border-radius:20px;font-weight:600}
+.lvl.suave{background:rgba(123,174,143,.14);color:#9fd4b4}
+.lvl.calido{background:rgba(240,216,201,.12);color:var(--champagne)}
+.lvl.intenso{background:rgba(194,64,72,.16);color:#e8927f}
+.fcard .body{font-family:var(--font-d);font-weight:400;font-size:clamp(23px,6.6vw,30px);
+  line-height:1.24;color:var(--mist)}
+.fcard .idx{font-family:var(--font-m);font-size:12px;color:var(--ash-dim);letter-spacing:.05em}
+.fcard .stamp{position:absolute;top:24px;font-family:var(--font-d);font-size:34px;font-weight:600;
+  padding:2px 16px;border-radius:12px;opacity:0;transform:rotate(-9deg);transition:opacity .1s}
+.stamp.si{right:22px;color:var(--ok);border:3px solid var(--ok)}
+.stamp.no{left:22px;color:#e0685a;border:3px solid #e0685a}
+.stamp.tal{left:50%;transform:translateX(-50%) rotate(0);top:auto;bottom:120px;color:var(--rose);border:3px solid var(--rose)}
+
+.deck-actions{display:flex;justify-content:center;gap:18px;margin-top:2px}
+.da{width:60px;height:60px;border-radius:50%;display:grid;place-items:center;
+  background:var(--card);border:1px solid var(--line-2);transition:.16s}
+.da:active{transform:scale(.9)}
+.da svg{width:26px;height:26px}
+.da.no{color:#e0685a}.da.tal{color:var(--rose);width:52px;height:52px}
+.da.si{color:var(--ok)}
+.da.big{width:66px;height:66px}
+
+.match-row{display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
+.match-row:last-child{border-bottom:none}
+.match-row .dot{flex:0 0 auto;width:9px;height:9px;border-radius:50%;margin-top:6px;
+  background:var(--ember-core);box-shadow:0 0 10px var(--ember-core)}
+.match-row .txt{font-family:var(--font-d);font-size:18px;color:var(--mist);line-height:1.3}
+.match-row .lvl-t{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ash-dim)}
+
+/* ============================================================
+   TOQUE · haptic channel
+   ============================================================ */
+.pulse-stage{height:34vh;max-height:300px;display:grid;place-items:center;position:relative;margin:8px 0 4px}
+.pulse-orb{width:150px;height:150px;border-radius:50%;position:relative;display:grid;place-items:center;
+  background:var(--grad-glow);cursor:pointer;touch-action:none}
+.pulse-orb .core{width:70px;height:70px;border-radius:50%;background:var(--grad-ember);
+  box-shadow:0 0 40px rgba(232,112,79,.5);transition:transform .12s}
+.pulse-orb.active .core{transform:scale(1.25)}
+.pulse-orb .halo{position:absolute;inset:0;border-radius:50%;border:1px solid var(--line-2)}
+.pulse-ripple{position:absolute;border:1px solid var(--ember-core);border-radius:50%;
+  animation:ripple 1s ease-out forwards;pointer-events:none}
+@keyframes ripple{from{width:70px;height:70px;opacity:.7}to{width:280px;height:280px;opacity:0}}
+.orb-hint{text-align:center;color:var(--ash-dim);font-size:12.5px;margin-top:4px}
+
+.vocab-item{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
+.vocab-item:last-child{border-bottom:none}
+.vocab-play{flex:0 0 auto;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;
+  background:var(--card-2);border:1px solid var(--line-2);color:var(--rose)}
+.vocab-play:active{background:var(--grad-ember);color:#fff}
+.vocab-item .meta{flex:1}
+.vocab-item .meta b{display:block;font-weight:500;color:var(--mist);font-size:15px}
+.vocab-item .code{font-family:var(--font-m);font-size:11px;color:var(--ash-dim);letter-spacing:.05em}
+.vocab-del{color:var(--ash-dim);padding:8px}
+
+/* ============================================================
+   VIVO · live session
+   ============================================================ */
+.consent-card{text-align:center}
+.consent-card .lock-ico{width:56px;height:56px;margin:0 auto 16px;color:var(--rose)}
+
+.video-frame{position:relative;width:100%;aspect-ratio:3/4;max-height:52vh;border-radius:var(--r-lg);
+  overflow:hidden;background:#000;border:1px solid var(--line-2);margin-bottom:14px}
+.video-frame video{width:100%;height:100%;object-fit:cover;transition:transform .3s var(--ease),filter .3s}
+.video-frame.mirror video{transform:scaleX(-1)}
+.video-frame .blind{position:absolute;inset:0;background:#000;display:grid;place-items:center;
+  opacity:0;pointer-events:none;transition:opacity .5s;z-index:3}
+.video-frame.blind-on .blind{opacity:1;pointer-events:auto}
+.video-frame .blind span{font-family:var(--font-d);font-style:italic;color:var(--rose);font-size:19px}
+.video-frame .nofeed{position:absolute;inset:0;display:grid;place-items:center;color:var(--ash-dim);
+  text-align:center;padding:30px;font-size:13.5px;line-height:1.6}
+.trigger-flash{position:absolute;inset:0;background:var(--grad-glow);opacity:0;pointer-events:none;z-index:2}
+.trigger-flash.go{animation:flash .8s ease-out}
+@keyframes flash{0%{opacity:0}20%{opacity:1}100%{opacity:0}}
+.vf-badge{position:absolute;top:12px;left:12px;z-index:4;font-family:var(--font-m);font-size:10px;
+  letter-spacing:.1em;background:rgba(0,0,0,.55);padding:5px 10px;border-radius:14px;color:var(--rose)}
+.listening-dot{position:absolute;top:12px;right:12px;z-index:4;display:flex;align-items:center;gap:6px;
+  background:rgba(0,0,0,.55);padding:5px 10px;border-radius:14px;font-size:10px;color:#e8927f}
+.listening-dot i{width:7px;height:7px;border-radius:50%;background:#e0685a;animation:pblink 1s infinite}
+@keyframes pblink{50%{opacity:.2}}
+
+.ctrl-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ctrl{background:var(--card);border:1px solid var(--line);border-radius:var(--r-sm);padding:14px;
+  display:flex;flex-direction:column;gap:8px}
+.ctrl.wide{grid-column:1/-1}
+.ctrl label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--rose)}
+.ctrl-btn{min-height:44px;border-radius:12px;background:var(--noir-1);border:1px solid var(--line-2);
+  color:var(--mist);font-size:13.5px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:7px}
+.ctrl-btn:active{background:var(--card-2)}
+.ctrl-btn.on{background:var(--grad-ember);color:#fff;border-color:transparent}
+
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:6px;
+  background:linear-gradient(90deg,var(--ember-deep),var(--ember-core));outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;
+  background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.5);border:2px solid var(--ember-core)}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:#fff;
+  border:2px solid var(--ember-core)}
+.intensity-val{font-family:var(--font-m);font-size:13px;color:var(--ember-core);text-align:right}
+
+/* ============================================================
+   CHISPA · anticipation
+   ============================================================ */
+.spark-item{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:var(--r-sm);
+  background:var(--card-2);border:1px solid var(--line);margin-bottom:10px}
+.spark-item .fl{flex:0 0 auto;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
+  background:var(--grad-glow)}
+.spark-item .fl b{width:12px;height:12px;border-radius:50%;background:var(--grad-ember)}
+.spark-item .c b{display:block;font-size:14.5px;color:var(--mist);line-height:1.4}
+.spark-item .c small{color:var(--ash-dim);font-size:12px}
+.spark-item.sent{opacity:.55}
+
+/* ============================================================
+   BOVEDA · vault
+   ============================================================ */
+.vault-lock{text-align:center;padding-top:10px}
+.vault-key{font-family:var(--font-m);font-size:12px;color:var(--seal);letter-spacing:.1em;
+  padding:8px 14px;border-radius:20px;background:rgba(125,90,134,.12);display:inline-block;margin-top:6px}
+.vault-entry{background:var(--card-2);border:1px solid var(--line);border-radius:var(--r-sm);
+  padding:16px;margin-bottom:10px;position:relative}
+.vault-entry .when{font-family:var(--font-m);font-size:10.5px;color:var(--ash-dim);letter-spacing:.06em}
+.vault-entry .txt{margin-top:8px;font-size:14.5px;color:var(--mist);line-height:1.55;white-space:pre-wrap}
+.vault-entry.locked .txt{filter:blur(7px);user-select:none;color:var(--ash)}
+.vault-entry img{max-width:100%;border-radius:10px;margin-top:10px;display:block}
+.vault-entry .del{position:absolute;top:12px;right:12px;color:var(--ash-dim);padding:6px}
+
+/* ============================================================
+   MODAL / TOAST
+   ============================================================ */
+.sheet{position:fixed;inset:0;z-index:80;display:none;align-items:flex-end;justify-content:center;
+  background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}
+.sheet.on{display:flex;animation:fade .3s}
+.sheet-inner{width:100%;max-width:520px;background:var(--noir-2);border:1px solid var(--line-2);
+  border-radius:26px 26px 0 0;padding:24px var(--pad) calc(env(safe-area-inset-bottom,0) + 24px);
+  animation:rise .34s var(--ease)}
+@keyframes rise{from{transform:translateY(30px);opacity:.7}to{transform:none;opacity:1}}
+.sheet h3{font-family:var(--font-d);font-size:24px;margin:0 0 4px;color:var(--champagne)}
+.sheet .grab{width:38px;height:4px;border-radius:4px;background:var(--line-2);margin:0 auto 18px}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%) translateY(-20px);z-index:90;
+  top:calc(env(safe-area-inset-top,0) + 16px);background:var(--noir-2);border:1px solid var(--line-2);
+  padding:12px 20px;border-radius:24px;font-size:13.5px;color:var(--mist);opacity:0;pointer-events:none;
+  transition:.3s var(--ease);box-shadow:0 10px 30px rgba(0,0,0,.5);max-width:88vw;text-align:center}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast b{color:var(--rose)}
+
+/* quick-exit neutral screen */
+#neutral{position:fixed;inset:0;z-index:100;background:#101216;display:none;flex-direction:column;
+  padding:calc(env(safe-area-inset-top,0) + 18px) 18px}
+#neutral.on{display:flex}
+#neutral .nt{color:#e8e8ea;font-family:var(--font-b)}
+#neutral .nt-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+#neutral .nt-head b{font-size:18px;font-weight:600}
+#neutral .nt-head .re{font-size:12px;color:#8a8f98;border:1px solid #2a2e36;padding:8px 14px;border-radius:16px}
+#neutral textarea{flex:1;background:#181b20;border:1px solid #23272f;color:#d6d9de;border-radius:12px;padding:14px}
+
+.foot-note{text-align:center;color:var(--ash-dim);font-size:11.5px;line-height:1.6;
+  padding:24px 10px 4px;max-width:34ch;margin:0 auto}
+.foot-note b{color:var(--rose)}
+</style>
+</head>
+<body>
+<div class="veil"></div>
+
+<!-- ============================================================
+     EL UMBRAL
+     ============================================================ -->
+<section id="umbral" class="screen on">
+  <div class="umbral-wrap">
+    <div class="breath" id="breath">
+      <div class="glow"></div>
+      <div class="ring"></div>
+      <div class="gate-nodes" id="gateNodes"></div>
+      <svg id="gateSvg" viewBox="0 0 100 100" preserveAspectRatio="none"><path id="gatePath" fill="none" stroke="rgba(232,112,79,.7)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="wordmark">SENSIA</div>
+    <div class="tagline" id="tagline">un santuario para dos</div>
+    <div class="pips" id="pips" style="display:none"></div>
+    <div class="umbral-hint" id="umbralHint">Traza tu gesto sobre la brasa</div>
+    <button class="ghost-link" id="forgotBtn" style="margin-top:14px;display:none">Olvidé mi gesto</button>
+    <div class="principio" id="principioUmbral"></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     DIARIO DE LAS FANTASÍAS
+     ============================================================ -->
+<section id="diario" class="screen">
+  <header class="topbar">
+    <div>
+      <h1>El Diario</h1>
+      <div class="sub">de las fantasías</div>
+    </div>
+    <button class="exit-btn" data-exit aria-label="Salida rápida"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+  </header>
+  <div class="pane">
+    <div class="deck-head">
+      <div class="who-switch" id="whoSwitch" style="display:none;">
+        <button data-who="A" class="on">Tú</button>
+        <button data-who="B">Tu pareja</button>
+      </div>
+      <button class="pill" id="matchesBtn" style="margin-left:auto;">✦ <span id="matchCount">0</span></button>
+    </div>
+    <p class="dim" id="whoNote" style="margin:0 0 8px">Deslizás en privado. Nadie ve lo que elegís, salvo que ambos digan sí.</p>
+
+    <div class="deck" id="deck"></div>
+    <div class="deck-actions">
+      <button class="da no" id="btnNo" aria-label="Descartar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      <button class="da tal" id="btnTal" aria-label="Tal vez"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18" opacity=".0"/><circle cx="12" cy="12" r="8"/><path d="M9.5 9.5a2.5 2.5 0 013.9 2c0 1.7-2.4 1.9-2.4 3.5M12 18h.01"/></svg></button>
+      <button class="da si big" id="btnSi" aria-label="Aceptar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TOQUE FANTASMA
+     ============================================================ -->
+<section id="toque" class="screen">
+  <header class="topbar">
+    <div><h1>El Toque</h1><div class="sub">un pulso hasta sus manos</div></div>
+    <button class="exit-btn" data-exit aria-label="Salida rápida"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+  </header>
+  <div class="pane">
+    <div class="pulse-stage" id="pulseStage">
+      <div class="pulse-orb" id="pulseOrb">
+        <div class="halo"></div>
+        <div class="core"></div>
+      </div>
+    </div>
+    <p class="orb-hint">Mantené presionada la brasa. El ritmo que hagas viaja tal cual.<br>Un canal privado entre ustedes dos.</p>
+
+    <div class="card" style="margin-top:22px">
+      <p class="eyebrow">Su vocabulario</p>
+      <h3 style="margin-bottom:12px">Pulsos con nombre</h3>
+      <div id="vocabList"></div>
+      <button class="btn ghost sm" id="addVocab" style="width:100%;margin-top:14px">+ Crear un pulso nuevo</button>
+    </div>
+    <p class="foot-note">Los patrones que definen aquí son <b>solo suyos</b>. Un lenguaje que nadie más entiende.</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     SESIÓN EN VIVO
+     ============================================================ -->
+<section id="vivo" class="screen">
+  <header class="topbar">
+    <div><h1>En Vivo</h1><div class="sub">presencia, a la distancia</div></div>
+    <button class="exit-btn" data-exit aria-label="Salida rápida"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+  </header>
+  <div class="pane">
+    <!-- consent gate -->
+    <div id="vivoConsent">
+      <div class="card consent-card">
+        <svg class="lock-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 018 0v3"/><circle cx="12" cy="15.5" r="1.3" fill="currentColor"/></svg>
+        <h3>Una sesión empieza cuando ambos lo eligen</h3>
+        <p class="lead">Nada se activa hasta que los dos toquen "Listo". Y cualquiera de los dos corta, en cualquier momento, sin explicar por qué.</p>
+        
+        <!-- SENSIA: Room Code Auth Inyectado -->
+        <label class="fld" style="text-align:left; margin-top:20px;">Código de encuentro</label>
+        <input type="text" id="roomCode" placeholder="Una palabra compartida..." style="margin-bottom:14px; text-align:center; font-family:var(--font-m); letter-spacing: 0.1em; text-transform:uppercase;" autocomplete="off">
+        <button class="btn primary" id="startSession">Conectar el Santuario</button>
+        <p class="dim" id="vivoStatus" style="margin-top:14px; display:none; color:var(--rose)">Conectando...</p>
+
+        <p class="dim" style="margin-top:14px">En un enlace de dos dispositivos, cada quien confirma en el suyo. Aquí puedes probar ambos lados.</p>
+      </div>
+    </div>
+
+    <!-- live surface -->
+    <div id="vivoLive" style="display:none">
+      <div class="video-frame mirror" id="videoFrame">
+        <video id="liveVideo" autoplay playsinline muted></video>
+        <div class="trigger-flash" id="triggerFlash"></div>
+        <div class="nofeed" id="noFeed">La cámara está apagada.<br>Se enciende solo cuando tú lo decides — y solo se ve entre ustedes.</div>
+        <div class="blind"><span id="blindWord">guíate por su voz…</span></div>
+        <div class="vf-badge" id="camBadge" style="display:none">● EN VIVO · LOCAL</div>
+        <div class="listening-dot" id="listenDot" style="display:none"><i></i>escuchando</div>
+      </div>
+
+      <div class="ctrl-grid">
+        <div class="ctrl wide">
+          <button class="ctrl-btn" id="camToggle"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg> Encender cámara</button>
+        </div>
+        <div class="ctrl">
+          <label>Dirección · cámara</label>
+          <button class="ctrl-btn" id="flipCam">Girar cámara</button>
+        </div>
+        <div class="ctrl">
+          <label>Venda</label>
+          <button class="ctrl-btn" id="blindToggle">Oscurecer</button>
+        </div>
+        <div class="ctrl wide">
+          <label>Encuadre · zoom</label>
+          <input type="range" id="zoomRange" min="100" max="220" value="100">
+        </div>
+        <div class="ctrl wide">
+          <label>Luz de la escena</label>
+          <input type="range" id="lightRange" min="40" max="150" value="100">
+        </div>
+        <div class="ctrl wide">
+          <label style="display:flex;justify-content:space-between"><span>Intensidad · dispositivo</span><span class="intensity-val" id="intVal">reposo</span></label>
+          <input type="range" id="intRange" min="0" max="100" value="0">
+          <button class="ctrl-btn" id="deviceConnect" style="margin-top:4px">Conectar dispositivo</button>
+        </div>
+        <div class="ctrl wide">
+          <label>Gatillo verbal</label>
+          <input type="text" id="triggerWord" placeholder="una palabra clave suya…" style="margin-bottom:8px">
+          <button class="ctrl-btn" id="triggerToggle">Empezar a escuchar</button>
+        </div>
+      </div>
+
+      <button class="btn stop" id="stopSession" style="margin-top:18px">Detener la sesión</button>
+      <p class="dim" style="text-align:center;margin-top:10px">Todo ocurre entre ustedes. Nada se graba salvo lo que elijan guardar en la Bóveda.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CHISPA
+     ============================================================ -->
+<section id="chispa" class="screen">
+  <header class="topbar">
+    <div><h1>La Chispa</h1><div class="sub">tensión que se cocina lento</div></div>
+    <button class="exit-btn" data-exit aria-label="Salida rápida"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+  </header>
+  <div class="pane">
+    <div class="card">
+      <p class="eyebrow">Enviar una chispa</p>
+      <h3>Deja algo prendido para más tarde</h3>
+      <p class="lead">Una insinuación que le llega, y queda flotando hasta que se vean. Sin ubicación, sin sorpresas para nadie más — solo entre ustedes.</p>
+      <div class="chip-row" id="sparkPresets"></div>
+      <textarea id="sparkText" placeholder="o escribí la tuya…" class="fld-gap"></textarea>
+      <div class="row fld-gap">
+        <button class="chip on" data-when="tonight">Esta noche</button>
+        <button class="chip" data-when="1h">En 1 hora</button>
+        <button class="chip" data-when="tomorrow">Mañana</button>
+      </div>
+      <button class="btn primary fld-gap" id="sendSpark" style="margin-top:16px">Enviar la chispa</button>
+    </div>
+
+    <div style="margin-top:22px">
+      <p class="eyebrow">Flotando</p>
+      <div id="sparkList"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     LA BÓVEDA
+     ============================================================ -->
+<section id="boveda" class="screen">
+  <header class="topbar">
+    <div><h1>La Bóveda</h1><div class="sub">bajo llave, solo suya</div></div>
+    <button class="exit-btn" data-exit aria-label="Salida rápida"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+  </header>
+  <div class="pane">
+    <!-- vault locked -->
+    <div id="vaultLocked" class="card vault-lock">
+      <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="var(--seal)" stroke-width="1.3" style="margin:0 auto 14px;display:block"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M7.5 10V7a4.5 4.5 0 019 0v3"/><circle cx="12" cy="15" r="1.6" fill="var(--seal)"/></svg>
+      <h3 id="vaultTitle" style="text-align:center">Cifrado de extremo a extremo</h3>
+      <p class="lead" id="vaultDesc" style="text-align:center">Lo que guarden aquí se cifra con AES-GCM y una clave que nace de su frase. Ni siquiera sale de este dispositivo sin ella.</p>
+      <label class="fld" id="vaultPassLbl">Frase de la bóveda</label>
+      <input type="password" id="vaultPass" placeholder="una frase que solo ustedes sepan" autocomplete="off">
+      <button class="btn primary fld-gap" id="vaultUnlock" style="margin-top:14px">Abrir la bóveda</button>
+      <p class="dim" style="margin-top:12px">Si la olvidan, nadie —ni nosotros— puede recuperarla. Esa es la idea.</p>
+    </div>
+
+    <!-- vault open -->
+    <div id="vaultOpen" style="display:none">
+      <div class="card" style="text-align:center;padding:16px">
+        <span class="pill" style="color:var(--ok);border-color:rgba(123,174,143,.4)">Bóveda abierta</span>
+        <div class="vault-key" id="vaultFingerprint">···</div>
+      </div>
+      <div class="card">
+        <textarea id="vaultInput" placeholder="un recuerdo, una promesa, una foto de esta noche…"></textarea>
+        <div class="row fld-gap">
+          <button class="btn ghost sm" id="vaultAttach" style="flex:0 0 auto">📎 Foto</button>
+          <button class="btn primary sm" id="vaultSave" style="flex:1">Guardar cifrado</button>
+        </div>
+        <input type="file" id="vaultFile" accept="image/*" style="display:none">
+        <div id="attachPreview" style="margin-top:10px"></div>
+      </div>
+      <div id="vaultEntries" style="margin-top:16px"></div>
+      <button class="btn quiet fld-gap" id="vaultLock" style="margin-top:8px">Cerrar y borrar la llave de memoria</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     AJUSTES
+     ============================================================ -->
+<section id="ajustes" class="screen">
+  <header class="topbar">
+    <div><h1>El Santuario</h1><div class="sub">ajustes y umbral</div></div>
+    <button class="exit-btn" data-exit aria-label="Salida rápida"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+  </header>
+  <div class="pane">
+    <div class="card">
+      <p class="eyebrow">Privacidad de tu dispositivo</p>
+      <div class="switch">
+        <div class="lbl"><b>Apariencia discreta</b><small>Se muestra como "Notas" al abrir y cambiar de app</small></div>
+        <div class="toggle on" data-toggle="discreet"></div>
+      </div>
+      <div class="switch">
+        <div class="lbl"><b>Ocultar al cambiar de app</b><small>La pantalla se vela cuando dejas Sensia en segundo plano</small></div>
+        <div class="toggle on" data-toggle="veilBg"></div>
+      </div>
+      <div class="switch">
+        <div class="lbl"><b>Vibración háptica</b><small>Los pulsos y toques usan el motor del teléfono</small></div>
+        <div class="toggle on" data-toggle="haptics"></div>
+      </div>
+      <div class="switch">
+        <div class="lbl"><b>Re-pedir el gesto al volver</b><small>Bloquea el umbral tras 60s inactivo</small></div>
+        <div class="toggle on" data-toggle="autolock"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="eyebrow">Salida rápida</p>
+      <p class="muted">El botón <b>✕</b> arriba a la derecha, o dar vuelta el teléfono boca abajo, sale al instante a una pantalla neutra. Para volver, se ingresa de nuevo por el umbral.</p>
+      <div class="switch" style="margin-top:6px">
+        <div class="lbl"><b>Salir al voltear el teléfono</b><small>Boca abajo = salida inmediata</small></div>
+        <div class="toggle on" data-toggle="flipExit"></div>
+      </div>
+      <button class="btn ghost sm" id="testExit" style="width:100%;margin-top:14px">Probar salida rápida</button>
+    </div>
+
+    <div class="card">
+      <p class="eyebrow">El gesto del umbral</p>
+      <p class="muted">Tu patrón de entrada. Cámbialo cuando quieras.</p>
+      <button class="btn ghost sm" id="resetGesture" style="width:100%;margin-top:12px">Definir un gesto nuevo</button>
+    </div>
+
+    <div class="card" style="border-color:rgba(232,112,79,.2)">
+      <p class="eyebrow">El principio Sensia</p>
+      <p class="muted" id="principioAjustes"></p>
+    </div>
+
+    <div class="card">
+      <p class="eyebrow">Zona delicada</p>
+      <button class="btn danger sm" id="wipeAll" style="width:100%">Borrar todo de este dispositivo</button>
+      <p class="dim" style="margin-top:10px">Elimina fantasías, vocabulario, bóveda y ajustes. No se puede deshacer.</p>
+    </div>
+
+    <p class="foot-note">Sensia · un espacio que existe solo entre dos.<br>Versión P2P Integrada — enlace cifrado de extremo a extremo activo.</p>
+  </div>
+</section>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <button class="nav-btn on" data-go="diario"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l2.2 5.5L20 9l-4.5 3.8L17 19l-5-3.2L7 19l1.5-6.2L4 9l5.8-.5z"/></svg><span>Diario</span></button>
+    <button class="nav-btn" data-go="toque"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="8" opacity=".5"/></svg><span>Toque</span></button>
+    <button class="nav-btn" data-go="vivo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2.5"/></svg><span>En vivo</span></button>
+    <button class="nav-btn" data-go="chispa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2s4 4 4 8a4 4 0 01-8 0c0-2 1.5-3.5 1.5-3.5S9 9 10 10c0-3 2-8 2-8z"/></svg><span>Chispa</span></button>
+    <button class="nav-btn" data-go="boveda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 018 0v3"/></svg><span>Bóveda</span></button>
+    <button class="nav-btn" data-go="ajustes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 00-.1-1.3l2-1.5-2-3.4-2.3.9a7 7 0 00-2.2-1.3L14 2h-4l-.3 2.4a7 7 0 00-2.2 1.3l-2.3-.9-2 3.4 2 1.5A7 7 0 005 12a7 7 0 00.1 1.3l-2 1.5 2 3.4 2.3-.9a7 7 0 002.2 1.3L10 22h4l.3-2.4a7 7 0 002.2-1.3l2.3.9 2-3.4-2-1.5A7 7 0 0019 12z"/></svg><span>Santuario</span></button>
+  </div>
+</nav>
+
+<!-- neutral quick-exit screen -->
+<div id="neutral">
+  <div class="nt-head nt">
+    <b>Notas</b>
+    <button class="re" id="neutralRe">Volver</button>
+  </div>
+  <textarea class="nt" placeholder="Escribe una nota…" spellcheck="false"></textarea>
+</div>
+
+<!-- sheet + toast -->
+<div class="sheet" id="sheet"><div class="sheet-inner" id="sheetInner"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* ============================================================
+   SENSIA · engine
+   Todo es local. El consentimiento es arquitectura, no copy.
+   ============================================================ */
+
+/* ---------- persistence (guarded: IndexedDB → memory) ---------- */
+const Store = (() => {
+  let db = null, mem = {}, ready = false;
+  const DBN = "sensia_v1", KEY = "state";
+  function open(){
+    return new Promise(res => {
+      try{
+        if(!("indexedDB" in window)) return res(false);
+        const r = indexedDB.open(DBN, 1);
+        r.onupgradeneeded = e => e.target.result.createObjectStore("kv");
+        r.onsuccess = e => { db = e.target.result; res(true); };
+        r.onerror = () => res(false);
+      }catch(_){ res(false); }
+    });
+  }
+  async function init(){ ready = await open(); }
+  function get(){
+    return new Promise(res => {
+      if(!db) return res(mem[KEY] || null);
+      try{
+        const tx = db.transaction("kv","readonly").objectStore("kv").get(KEY);
+        tx.onsuccess = () => res(tx.result || null);
+        tx.onerror = () => res(mem[KEY] || null);
+      }catch(_){ res(mem[KEY] || null); }
+    });
+  }
+  function set(v){
+    mem[KEY] = v;
+    try{
+      if(db) db.transaction("kv","readwrite").objectStore("kv").put(v, KEY);
+    }catch(_){}
+  }
+  function wipe(){
+    mem = {};
+    try{ if(db) db.transaction("kv","readwrite").objectStore("kv").delete(KEY); }catch(_){}
+  }
+  return { init, get, set, wipe };
+})();
+
+/* ---------- state ---------- */
+const State = {
+  gesture: null,                 // saved unlock pattern (array of node idx)
+  choices: { A:{}, B:{} },       // fantasy swipes per side {cardId: 'si'|'no'|'tal'}
+  vocab: [],                     // [{id,name,pattern:[...]}]
+  sparks: [],                    // [{id,text,when,ts,sent}]
+  vault: null,                   // {salt, entries:[{iv,ct}], created} — ciphertext only
+  settings: { discreet:true, veilBg:true, haptics:true, autolock:true, flipExit:true }
+};
+let session = null; // ephemeral runtime (never persisted)
+
+async function persist(){ Store.set(JSON.parse(JSON.stringify(State))); }
+async function hydrate(){
+  await Store.init();
+  const s = await Store.get();
+  if(s){ Object.assign(State, s); State.settings = Object.assign({discreet:true,veilBg:true,haptics:true,autolock:true,flipExit:true}, s.settings||{}); }
+  seedDefaults();
+}
+function seedDefaults(){
+  if(!State.vocab.length){
+    State.vocab = [
+      { id:"v1", name:"pensándote", pattern:[60,80] },
+      { id:"v2", name:"ven aquí", pattern:[40,60,40,60,40] },
+      { id:"v3", name:"te deseo", pattern:[300] },
+      { id:"v4", name:"buenas noches", pattern:[120,120,320] }
+    ];
+  }
+}
+
+/* ---------- helpers ---------- */
+const $  = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const uid = () => Math.random().toString(36).slice(2,9);
+function buzz(p){ if(State.settings.haptics && navigator.vibrate){ try{ navigator.vibrate(p); }catch(_){} } }
+let toastT;
+function toast(msg){
+  const t = $("#toast"); t.innerHTML = msg; t.classList.add("on");
+  clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove("on"), 2600);
+}
+const b64 = {
+  enc: buf => btoa(String.fromCharCode(...new Uint8Array(buf))),
+  dec: str => Uint8Array.from(atob(str), c => c.charCodeAt(0))
+};
+
+/* ============================================================
+   PRINCIPIO copy
+   ============================================================ */
+const PRINCIPIO = "Todo lo que ocurre aquí ocurre entre ustedes dos, con el consentimiento de ambos. Sensia nunca convierte a alguien que no aceptó —quien esté cerca, en la calle, en una reunión— en parte de esto sin saberlo, ni captura a escondidas donde otros esperan privacidad. Ese es el piso. No se negocia.";
+$("#principioUmbral").textContent = "Entre ustedes dos. Con consentimiento. Sin terceros.";
+$("#principioAjustes").textContent = PRINCIPIO;
+
+/* ============================================================
+   EL UMBRAL · gesture gate
+   ============================================================ */
+const Gate = (() => {
+  const nodesEl = $("#gateNodes"), pathEl = $("#gatePath");
+  // 3x3 grid positions in % of the breath box
+  const P = [[28,28],[50,28],[72,28],[28,50],[50,50],[72,50],[28,72],[50,72],[72,72]];
+  let drawing = false, seq = [], mode = "enter"; // enter | set-1 | set-2
+  let firstSet = null, resetTimer = null;
+
+  function build(){
+    nodesEl.innerHTML = "";
+    P.forEach((p,i)=>{
+      const n = document.createElement("div");
+      n.className = "node"; n.dataset.i = i;
+      n.style.left = p[0]+"%"; n.style.top = p[1]+"%";
+      nodesEl.appendChild(n);
+    });
+  }
+  function nodeAt(x,y){
+    const box = nodesEl.getBoundingClientRect();
+    if(!box.width) return -1;
+    let best=-1, bestD=Infinity;
+    const R = box.width*0.17;
+    for(let i=0;i<P.length;i++){
+      const cx = box.left + box.width*P[i][0]/100;
+      const cy = box.top + box.height*P[i][1]/100;
+      const d = Math.hypot(x-cx, y-cy);
+      if(d < R && d < bestD){ bestD = d; best = i; }
+    }
+    return best;
+  }
+  function draw(){
+    if(!seq.length){ pathEl.setAttribute("d",""); return; }
+    const d = seq.map((i,k)=> (k? "L":"M") + P[i][0] + " " + P[i][1]).join(" ");
+    pathEl.setAttribute("d", d);
+  }
+  function lightNodes(){
+    $$("#gateNodes .node").forEach(n => n.classList.toggle("hit", seq.includes(+n.dataset.i)));
+  }
+  function start(x,y){
+    if(!isUmbral()) return;
+    clearTimeout(resetTimer);
+    drawing = true; seq = []; add(nodeAt(x,y));
+  }
+  function move(x,y){
+    if(!drawing) return;
+    const i = nodeAt(x,y);
+    if(i>=0 && !seq.includes(i)) add(i);
+  }
+  function add(i){
+    if(i<0) return;
+    seq.push(i); buzz(14); lightNodes(); draw();
+  }
+  function end(){
+    if(!drawing) return; drawing = false;
+    if(seq.length < 4){ flash("Traza al menos 4 puntos"); reset(); return; }
+    if(mode === "enter"){
+      if(State.gesture && arrEq(seq, State.gesture)){ enter(); }
+      else if(!State.gesture){ /* no gesture yet → treat as set */ beginSet(seq); }
+      else { flash("Ese no es tu gesto"); buzz([40,60,40]); reset(); }
+    } else if(mode === "set-1"){
+      firstSet = seq.slice(); mode = "set-2";
+      $("#umbralHint").innerHTML = "Confírmalo <b>una vez más</b>";
+      reset();
+    } else if(mode === "set-2"){
+      if(arrEq(seq, firstSet)){
+        State.gesture = firstSet.slice(); persist();
+        flash("Gesto guardado"); buzz([20,40,20]);
+        setTimeout(enter, 500);
+      } else {
+        flash("No coincidió · empecemos de nuevo");
+        mode = "set-1"; firstSet = null;
+        $("#umbralHint").textContent = "Traza un gesto nuevo";
+      }
+      reset();
+    }
+  }
+  function reset(){ clearTimeout(resetTimer); resetTimer = setTimeout(()=>{ seq=[]; lightNodes(); draw(); }, 220); }
+  function flash(m){ const h=$("#umbralHint"); h.textContent = m; }
+  function beginSet(pre){
+    firstSet = pre.slice(); mode = "set-2";
+    $("#umbralHint").innerHTML = "Confírmalo <b>una vez más</b>"; reset();
+  }
+  function requestSet(){
+    mode = "set-1"; firstSet = null; State.gesture = null;
+    $("#tagline").textContent = "crea tu gesto de entrada";
+    $("#umbralHint").textContent = "Traza un patrón (mínimo 4 puntos)";
+    show();
+  }
+  function bindPointer(){
+    const el = $("#breath");
+    el.addEventListener("pointerdown", e=>{
+      e.preventDefault();
+      try{ el.setPointerCapture(e.pointerId); }catch(_){}
+      start(e.clientX,e.clientY);
+    });
+    el.addEventListener("pointermove", e=>{ if(drawing){ e.preventDefault(); move(e.clientX,e.clientY);} }, {passive:false});
+    window.addEventListener("pointermove", e=>{ if(drawing){ move(e.clientX,e.clientY);} }, {passive:false});
+    el.addEventListener("pointerup", end);
+    window.addEventListener("pointerup", end);
+    el.addEventListener("pointercancel", ()=>{ if(drawing){ drawing=false; reset(); } });
+  }
+  function firstRun(){
+    if(!State.gesture){
+      mode = "set-1";
+      $("#tagline").textContent = "crea tu gesto de entrada";
+      $("#umbralHint").textContent = "Traza un patrón (mínimo 4 puntos) y confírmalo";
+    } else {
+      mode = "enter";
+      $("#tagline").textContent = "un santuario para dos";
+      $("#umbralHint").textContent = "Traza tu gesto sobre la brasa";
+    }
+    $("#forgotBtn").style.display = State.gesture ? "block" : "none";
+  }
+  return { build, bindPointer, firstRun, requestSet,
+           setMode:m=>mode=m, isEnter:()=>mode==="enter" };
+})();
+function arrEq(a,b){ return a.length===b.length && a.every((v,i)=>v===b[i]); }
+function isUmbral(){ return $("#umbral").classList.contains("on"); }
+
+function show(){ /* ensure the umbral screen is visible */
+  $("#nav").classList.remove("on");
+  $$(".screen").forEach(s=>s.classList.remove("on"));
+  $("#umbral").classList.add("on");
+}
+function enter(){
+  $("#umbral").classList.remove("on");
+  $("#nav").classList.add("on");
+  go("diario");
+  buzz(30);
+  resetIdle();
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+function go(id){
+  $$(".screen").forEach(s=>s.classList.remove("on"));
+  $("#"+id).classList.add("on");
+  $$(".nav-btn").forEach(b=>b.classList.toggle("on", b.dataset.go===id));
+  $("#"+id).querySelector(".pane") && ($("#"+id).querySelector(".pane").scrollTop = 0);
+  if(id==="chispa") renderSparks();
+  if(id==="boveda") refreshVaultUI();
+}
+$$(".nav-btn").forEach(b=> b.addEventListener("click", ()=>go(b.dataset.go)));
+
+/* ============================================================
+   QUICK EXIT
+   ============================================================ */
+function quickExit(){
+  if(session) endSession(true);
+  $("#neutral").classList.add("on");
+  document.title = "Notas";
+}
+function reenter(){
+  $("#neutral").classList.remove("on");
+  lockToUmbral();
+}
+function lockToUmbral(){
+  $("#nav").classList.remove("on");
+  $$(".screen").forEach(s=>s.classList.remove("on"));
+  $("#umbral").classList.add("on");
+  Gate.firstRun();
+}
+$$("[data-exit]").forEach(b=> b.addEventListener("click", quickExit));
+$("#neutralRe").addEventListener("click", reenter);
+$("#testExit").addEventListener("click", ()=>{ toast("Así se ve la salida rápida"); quickExit(); });
+
+/* flip-to-exit + shake */
+window.addEventListener("deviceorientation", e=>{
+  if(!State.settings.flipExit || isUmbral() || $("#neutral").classList.contains("on")) return;
+  if(e.beta!=null && Math.abs(e.beta) > 150) quickExit(); // roughly face-down
+}, true);
+
+/* veil on background */
+document.addEventListener("visibilitychange", ()=>{
+  if(document.hidden && State.settings.veilBg && !isUmbral()){
+    if(session) endSession(true);
+  }
+});
+
+/* idle autolock */
+let idleT;
+function resetIdle(){
+  clearTimeout(idleT);
+  if(!State.settings.autolock) return;
+  idleT = setTimeout(()=>{ if(!isUmbral() && !$("#neutral").classList.contains("on")) lockToUmbral(); }, 60000);
+}
+["pointerdown","keydown"].forEach(ev=>window.addEventListener(ev, resetIdle, {passive:true}));
+
+/* ============================================================
+   DIARIO · swipe deck
+   ============================================================ */
+const CARDS = [
+  { id:"c01", lvl:"suave",   t:"Escribirnos, todo el día, como si fuéramos amantes clandestinos" },
+  { id:"c02", lvl:"suave",   t:"Una cita virtual: mismo vino, misma canción, cada uno en su ciudad" },
+  { id:"c03", lvl:"suave",   t:"Que me describas, con lujo de detalle, qué harías si estuviera ahí" },
+  { id:"c04", lvl:"suave",   t:"Dormirnos con la videollamada abierta, sin decir nada" },
+  { id:"c05", lvl:"suave",   t:"Un mensaje de voz tuyo, en la oscuridad, solo para mí" },
+  { id:"c06", lvl:"calido",  t:"Que tú lleves el mando de la noche, y yo solo obedezca" },
+  { id:"c07", lvl:"calido",  t:"Enseñarte, en vivo, cómo me gusta que me toquen" },
+  { id:"c08", lvl:"calido",  t:"Un juego de prendas: cada verdad esquivada, una menos" },
+  { id:"c09", lvl:"calido",  t:"Que me dejes al borde y decidas tú cuándo" },
+  { id:"c10", lvl:"calido",  t:"Vendarme los ojos y guiarme solo con tu voz" },
+  { id:"c11", lvl:"calido",  t:"Contarnos esa fantasía que nunca dijimos en voz alta" },
+  { id:"c12", lvl:"calido",  t:"Una foto tuya que solo yo pueda ver, y que se guarde bajo llave" },
+  { id:"c13", lvl:"intenso", t:"Ceder el control total del encuadre: tú diriges, yo me dejo mirar" },
+  { id:"c14", lvl:"intenso", t:"Un rol fijo por toda la sesión: uno manda, el otro se entrega" },
+  { id:"c15", lvl:"intenso", t:"Una palabra clave que, al decirla, cambia todo entre nosotros" },
+  { id:"c16", lvl:"intenso", t:"Que marques el ritmo desde lejos, y yo lo sienta sin poder tocarte" },
+  { id:"c17", lvl:"intenso", t:"Provocarnos hasta que uno de los dos pida, en serio, más" },
+  { id:"c18", lvl:"intenso", t:"Escribir juntos el guión de un reencuentro, escena por escena" }
+];
+const LVL_NAME = { suave:"Suave", calido:"Cálido", intenso:"Intenso" };
+let currentWho = "A";
+let deckOrder = [];
+
+function deckRemaining(){
+  return deckOrder.filter(id => !State.choices[currentWho][id]);
+}
+function buildDeckOrder(){ deckOrder = CARDS.map(c=>c.id); }
+function renderDeck(){
+  const deck = $("#deck"); deck.innerHTML = "";
+  const rem = deckRemaining();
+  if(!rem.length){
+    deck.innerHTML = `<div class="empty" style="position:absolute;inset:0;display:grid;place-content:center">
+      <p>Terminaste tu mazo.<br><br>Toca <b style="color:var(--rose)">✦</b> arriba para ver en qué coincidieron —y solo en eso.</p>
+      <button class="btn ghost sm" id="redeck" style="margin:18px auto 0">Revisar de nuevo</button></div>`;
+    $("#redeck").addEventListener("click", ()=>{ State.choices[currentWho]={}; persist(); renderDeck(); updateMatchCount(); });
+    setActionsEnabled(false);
+    return;
+  }
+  setActionsEnabled(true);
+  // render up to 3 stacked
+  const show = rem.slice(0,3).reverse();
+  show.forEach((id,k)=>{
+    const c = CARDS.find(x=>x.id===id);
+    const depth = show.length-1-k; // 0 = top
+    const el = document.createElement("div");
+    el.className = "fcard"; el.dataset.id = id;
+    el.style.transform = `translateY(${depth*10}px) scale(${1-depth*0.04})`;
+    el.style.zIndex = 10-depth;
+    el.style.opacity = depth>1 ? .0 : 1;
+    el.innerHTML = `
+      <div class="stamp si">SÍ</div><div class="stamp no">NO</div><div class="stamp tal">TAL VEZ</div>
+      <div class="lvl ${c.lvl}">${LVL_NAME[c.lvl]}</div>
+      <div class="body">${c.t}</div>
+      <div class="idx">${rem.length} por explorar</div>`;
+    deck.appendChild(el);
+    if(depth===0) bindSwipe(el, id);
+  });
+}
+function setActionsEnabled(on){
+  ["#btnNo","#btnTal","#btnSi"].forEach(s=>$(s).style.opacity = on?1:.35);
+  ["#btnNo","#btnTal","#btnSi"].forEach(s=>$(s).style.pointerEvents = on?"auto":"none");
+}
+function bindSwipe(el, id){
+  let sx=0, sy=0, dx=0, dy=0, active=false;
+  const siS=el.querySelector(".stamp.si"), noS=el.querySelector(".stamp.no"), talS=el.querySelector(".stamp.tal");
+  el.addEventListener("pointerdown", e=>{ active=true; sx=e.clientX; sy=e.clientY; el.setPointerCapture(e.pointerId); el.style.transition="none"; });
+  el.addEventListener("pointermove", e=>{
+    if(!active) return;
+    dx=e.clientX-sx; dy=e.clientY-sy;
+    const rot = dx*0.05;
+    el.style.transform = `translate(${dx}px,${dy}px) rotate(${rot}deg)`;
+    siS.style.opacity = dx>0 ? Math.min(dx/90,1):0;
+    noS.style.opacity = dx<0 ? Math.min(-dx/90,1):0;
+    talS.style.opacity = (dy<-40 && Math.abs(dx)<80) ? Math.min(-dy/90,1):0;
+  });
+  el.addEventListener("pointerup", ()=>{
+    if(!active) return; active=false;
+    el.style.transition="transform .35s "+"cubic-bezier(.22,.61,.36,1)";
+    if(dy < -110 && Math.abs(dx) < 90) commitSwipe(el,id,"tal");
+    else if(dx > 100) commitSwipe(el,id,"si");
+    else if(dx < -100) commitSwipe(el,id,"no");
+    else { el.style.transform=""; siS.style.opacity=noS.style.opacity=talS.style.opacity=0; }
+  });
+}
+function commitSwipe(el, id, verdict){
+  const dir = verdict==="si"?1:verdict==="no"?-1:0;
+  const fly = dir!==0 ? `translate(${dir*140}%,${(Math.random()*30-15)}%) rotate(${dir*22}deg)` : `translateY(-140%)`;
+  el.style.transform = fly; el.style.opacity = 0;
+  buzz(verdict==="si"?[20,30,20]:12);
+  State.choices[currentWho][id] = verdict; persist();
+  setTimeout(()=>{ renderDeck(); updateMatchCount(); }, 260);
+  if(verdict==="si" && State.choices.A[id]==="si" && State.choices.B[id]==="si"){
+    setTimeout(()=>toast("✦ <b>Coincidieron</b> en algo"), 340);
+  }
+  // SENSIA: Sincronización WebRTC del DataChannel
+  if (session && session.dc && session.dc.readyState === "open") {
+    session.dc.send(JSON.stringify({ type: 'swipe', id, verdict }));
+  }
+}
+$("#btnSi").addEventListener("click", ()=>topAction("si"));
+$("#btnNo").addEventListener("click", ()=>topAction("no"));
+$("#btnTal").addEventListener("click", ()=>topAction("tal"));
+function topAction(v){
+  const top = $("#deck").querySelector(".fcard:last-child");
+  if(top){ top.style.transition="transform .35s cubic-bezier(.22,.61,.36,1)"; commitSwipe(top, top.dataset.id, v); }
+}
+$$("#whoSwitch button").forEach(b=> b.addEventListener("click", ()=>{
+  $$("#whoSwitch button").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on"); currentWho = b.dataset.who;
+  $("#whoNote").textContent = currentWho==="A"
+    ? "Deslizás en privado. Nadie ve lo que elegís, salvo que ambos digan sí."
+    : "Turno de tu pareja. Tus elecciones quedaron cifradas y a salvo.";
+  renderDeck(); updateMatchCount();
+}));
+function computeMatches(){
+  return CARDS.filter(c => State.choices.A[c.id]==="si" && State.choices.B[c.id]==="si");
+}
+function updateMatchCount(){ $("#matchCount").textContent = computeMatches().length; }
+$("#matchesBtn").addEventListener("click", ()=>{
+  const m = computeMatches();
+  const body = m.length
+    ? m.map(c=>`<div class="match-row"><div class="dot"></div><div><div class="txt">${c.t}</div><div class="lvl-t">${LVL_NAME[c.lvl]}</div></div></div>`).join("")
+    : `<div class="empty"><p>Todavía no hay coincidencias reveladas.<br><br>Solo aparece aquí lo que <b>ambos</b> aceptaron. El resto queda cifrado para siempre.</p></div>`;
+  openSheet(`<h3>En lo que coinciden</h3><p class="dim" style="margin:0 0 16px">Solo se muestra lo mutuo. Lo demás nunca se expone.</p>${body}`);
+});
+
+/* ============================================================
+   TOQUE · haptic channel
+   ============================================================ */
+function renderVocab(){
+  const list = $("#vocabList"); list.innerHTML = "";
+  State.vocab.forEach(v=>{
+    const el = document.createElement("div");
+    el.className = "vocab-item";
+    el.innerHTML = `
+      <button class="vocab-play" data-play="${v.id}"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+      <div class="meta"><b>${v.name}</b><span class="code">${v.pattern.join(" · ")} ms</span></div>
+      <button class="vocab-del" data-del="${v.id}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 7h12M9 7V5h6v2M8 7l1 12h6l1-12"/></svg></button>`;
+    list.appendChild(el);
+  });
+  $$("[data-play]").forEach(b=> b.addEventListener("click", ()=>{
+    const v = State.vocab.find(x=>x.id===b.dataset.play);
+    buzz(v.pattern); ripple(); toast(`Enviado: <b>${v.name}</b>`);
+    // SENSIA: Emitir pulso guardado vía WebRTC
+    if (session && session.dc && session.dc.readyState === "open") {
+      session.dc.send(JSON.stringify({ type: 'vocab_play', pattern: v.pattern }));
+    }
+  }));
+  $$("[data-del]").forEach(b=> b.addEventListener("click", ()=>{
+    State.vocab = State.vocab.filter(x=>x.id!==b.dataset.del); persist(); renderVocab();
+  }));
+}
+function ripple(){
+  const stage = $("#pulseStage");
+  const r = document.createElement("div"); r.className="pulse-ripple";
+  stage.appendChild(r); setTimeout(()=>r.remove(), 1000);
+}
+/* press-and-hold orb → capture rhythm and vibrate live */
+(() => {
+  const orb = $("#pulseOrb"); let holdT;
+  orb.addEventListener("pointerdown", e=>{
+    e.preventDefault(); orb.classList.add("active");
+    buzz(40); ripple();
+    holdT = setInterval(()=>{ buzz(30); ripple(); }, 220);
+    // SENSIA: Enviar señal continua vía WebRTC
+    if (session && session.dc && session.dc.readyState === "open") {
+      session.dc.send(JSON.stringify({ type: 'pulse_start' }));
+    }
+  });
+  const up = ()=>{ 
+    if(!orb.classList.contains("active")) return;
+    orb.classList.remove("active"); clearInterval(holdT); 
+    // SENSIA: Detener señal continua vía WebRTC
+    if (session && session.dc && session.dc.readyState === "open") {
+      session.dc.send(JSON.stringify({ type: 'pulse_stop' }));
+    }
+  };
+  orb.addEventListener("pointerup", up);
+  orb.addEventListener("pointerleave", up);
+  orb.addEventListener("pointercancel", up);
+})();
+$("#addVocab").addEventListener("click", openVocabCreator);
+function openVocabCreator(){
+  let taps = [], lastT = 0;
+  openSheet(`
+    <h3>Crear un pulso</h3>
+    <p class="dim" style="margin:0 0 16px">Ponle nombre y tócale el ritmo. Ese pulso será solo suyo.</p>
+    <label class="fld">Nombre</label>
+    <input type="text" id="ncName" placeholder="ej. pienso en ti" maxlength="24">
+    <label class="fld fld-gap">Toca el ritmo</label>
+    <button class="ctrl-btn" id="ncTap" style="min-height:88px;font-family:var(--font-d);font-size:20px">toca aquí…</button>
+    <div class="code" id="ncPreview" style="text-align:center;margin-top:10px;color:var(--ash-dim)"></div>
+    <div class="row" style="margin-top:18px">
+      <button class="btn ghost sm" id="ncCancel" style="flex:1">Cancelar</button>
+      <button class="btn primary sm" id="ncSave" style="flex:1">Guardar</button>
+    </div>`);
+  const tapBtn = $("#ncTap");
+  tapBtn.addEventListener("pointerdown", ()=>{
+    const now = Date.now();
+    if(lastT){ taps.push(now-lastT); }
+    lastT = now; buzz(30);
+    tapBtn.textContent = "otra vez… (o guarda)";
+    $("#ncPreview").textContent = taps.length? taps.join(" · ")+" ms" : "un toque";
+  });
+  $("#ncCancel").addEventListener("click", closeSheet);
+  $("#ncSave").addEventListener("click", ()=>{
+    const name = $("#ncName").value.trim() || "pulso";
+    const pattern = taps.length? taps.map(t=>Math.min(t,600)) : [120];
+    State.vocab.push({ id:uid(), name, pattern }); persist(); renderVocab(); closeSheet();
+    toast(`Pulso <b>${name}</b> creado`);
+  });
+}
+
+/* ============================================================
+   MOTOR E2EE Y SEÑALIZACIÓN (WebRTC + Socket.io)
+   ============================================================ */
+// Se conecta SOLO al servidor que sirvió esta página. No hay que tocar nada:
+// funciona igual en local y en producción (Render, etc.).
+const SIGNALING_URL = location.origin;
+/* ─────────────────────────────────────────────────────────────
+   SERVIDORES ICE
+   Así como está AHORA, funciona entre dos teléfonos en la MISMA red
+   WiFi. Para que funcione entre redes distintas (datos móviles, casas
+   diferentes) necesitás TURN — ver PASO 2 del archivo LEEME.md.
+
+   ► PARA AGREGAR TURN: entrá a metered.ca, generá una credencial gratis,
+     tocá "Instructions", copiá el bloque de líneas que empiezan con
+     "turn:" / "turns:" y pegalas ABAJO de la línea del STUN de Google.
+   ───────────────────────────────────────────────────────────── */
+const ICE_SERVERS = {
+  iceServers: [
+    { urls: "stun:stun.l.google.com:19302" }
+
+    // ↓↓↓ PEGÁ AQUÍ LAS LÍNEAS "turn:" DE METERED (PASO 2) ↓↓↓
+    // , { urls: "turn:....metered.ca:80",  username: "...", credential: "..." }
+    // , { urls: "turns:....metered.ca:443", username: "...", credential: "..." }
+    // ↑↑↑ (no olvides la coma al inicio de cada línea) ↑↑↑
+  ],
+  iceCandidatePoolSize: 10
+};
+
+/* La palabra de encuentro se hashea en el cliente ANTES de viajar al servidor.
+   El servidor solo recibe un nombre de sala opaco (SHA-256, 32 hex): nunca
+   conoce la frase que la pareja comparte. Ambos peers derivan el mismo hash. */
+async function roomHash(word){
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(word));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("").slice(0, 32);
+}
+
+function camIcon(){ return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>`; }
+
+function endSession(silent){
+  if (session && session.pc) session.pc.close();
+  if (session && session.socket) session.socket.disconnect();
+  if (session && session.cam) session.cam.getTracks().forEach(t=>t.stop());
+  if (session && session.recog) try{ session.recog.stop(); }catch(_){}
+  
+  session = null;
+  
+  $("#startSession").style.display = "inline-flex";
+  $("#vivoStatus").style.display = "none";
+  $("#vivoConsent").style.display = "block";
+  $("#vivoLive").style.display = "none";
+  $("#liveVideo").srcObject = null;
+  $("#camBadge").style.display = "none";
+  $("#noFeed").style.display = "grid";
+  $("#camToggle").classList.remove("on"); 
+  $("#camToggle").innerHTML = camIcon()+" Encender cámara";
+  $("#videoFrame").classList.remove("blind-on");
+  $("#listenDot").style.display="none";
+  $("#triggerToggle").classList.remove("on"); 
+  $("#triggerToggle").textContent="Empezar a escuchar";
+  $("#intRange").value=0; updateIntensity();
+  
+  if(!silent) toast("Sesión terminada");
+}
+
+$("#startSession").addEventListener("click", async () => {
+  const code = $("#roomCode").value.trim().toLowerCase();
+  if (!code) { toast("Ingresa un código de encuentro"); return; }
+
+  // Zero-knowledge: la frase nunca sale del dispositivo en claro.
+  const roomKey = await roomHash(code);
+  
+  $("#startSession").style.display = "none";
+  $("#vivoStatus").style.display = "block";
+  $("#vivoStatus").textContent = "Buscando pareja...";
+
+  session = { socket: null, pc: null, dc: null, cam: null, facing: "user", room: null, polite: false, listening: false, recog: null };
+
+  // 1. Iniciar Socket.io
+  session.socket = io(SIGNALING_URL);
+  
+  session.socket.on('connect', () => {
+    session.socket.emit('join-room', roomKey);
+  });
+
+  session.socket.on('room-full', () => {
+    toast("El santuario ya está ocupado");
+    endSession(true);
+  });
+
+  session.socket.on('joined', (room) => {
+    session.room = room;
+    $("#vivoStatus").textContent = "Esperando a tu pareja...";
+  });
+
+  // 2. Si el otro ya estaba, nosotros iniciamos WebRTC
+  session.socket.on('peer-joined', () => {
+    $("#vivoStatus").textContent = "Pareja conectada. Abriendo túnel...";
+    initWebRTC(true); // Somos el initiator
+  });
+
+  // 3. Recepción de señales WebRTC
+  session.socket.on('signal', async ({ sdp, candidate }) => {
+    if (!session.pc) initWebRTC(false); // Si llega una oferta y no tenemos PC, lo creamos
+    
+    try {
+      if (sdp) {
+        const offerCollision = sdp.type === "offer" && (session.pc.signalingState !== "stable");
+        if (session.polite && offerCollision) return; 
+        
+        await session.pc.setRemoteDescription(new RTCSessionDescription(sdp));
+        if (sdp.type === "offer") {
+          await session.pc.setLocalDescription();
+          session.socket.emit('signal', { room: session.room, data: { sdp: session.pc.localDescription } });
+        }
+      } else if (candidate) {
+        await session.pc.addIceCandidate(new RTCIceCandidate(candidate));
+      }
+    } catch (err) { console.error("Error E2EE:", err); }
+  });
+  
+  session.socket.on('peer-disconnected', () => {
+     toast("Tu pareja se ha desconectado");
+     endSession(true);
+  });
+});
+
+function initWebRTC(isInitiator) {
+  session.polite = !isInitiator;
+  session.pc = new RTCPeerConnection(ICE_SERVERS);
+  
+  session.pc.onicecandidate = ({ candidate }) => {
+    if (candidate) session.socket.emit('signal', { room: session.room, data: { candidate } });
+  };
+
+  session.pc.ontrack = ({ streams }) => {
+    const vid = $("#liveVideo");
+    if (vid.srcObject !== streams[0]) {
+      vid.srcObject = streams[0];
+      $("#noFeed").style.display = "none";
+      $("#videoFrame").classList.remove("mirror"); 
+      $("#camBadge").style.display = "block";
+      $("#camBadge").textContent = "● CONECTADO";
+      buzz(30);
+    }
+  };
+
+  session.pc.onnegotiationneeded = async () => {
+    try {
+      await session.pc.setLocalDescription();
+      session.socket.emit('signal', { room: session.room, data: { sdp: session.pc.localDescription } });
+    } catch (err) { console.error(err); }
+  };
+
+  if (isInitiator) {
+    session.dc = session.pc.createDataChannel('sensia-sync');
+    setupDataChannel(session.dc);
+  } else {
+    session.pc.ondatachannel = (event) => {
+      session.dc = event.channel;
+      setupDataChannel(session.dc);
+    };
+  }
+}
+
+function setupDataChannel(dc) {
+  dc.onopen = () => {
+    $("#vivoConsent").style.display = "none";
+    $("#vivoLive").style.display = "block";
+    toast("Conexión cifrada establecida");
+    buzz([20, 40, 20]);
+  };
+
+  dc.onmessage = (event) => {
+    const msg = JSON.parse(event.data);
+    
+    if (msg.type === 'swipe') {
+      State.choices.B[msg.id] = msg.verdict; 
+      persist();
+      updateMatchCount();
+      if(msg.verdict === 'si' && State.choices.A[msg.id] === 'si') {
+        toast("✦ <b>Coincidieron</b> en algo");
+      }
+    } 
+    else if (msg.type === 'pulse_start') {
+      $("#pulseOrb").classList.add("active");
+      if(State.settings.haptics && navigator.vibrate) navigator.vibrate(9999);
+    } else if (msg.type === 'pulse_stop') {
+      $("#pulseOrb").classList.remove("active");
+      if(State.settings.haptics && navigator.vibrate) navigator.vibrate(0);
+    } 
+    else if (msg.type === 'vocab_play') {
+      buzz(msg.pattern);
+      ripple();
+      toast(`Recibiste un pulso`);
+    }
+  };
+}
+
+$("#stopSession").addEventListener("click", () => endSession(false));
+
+$("#camToggle").addEventListener("click", async () => {
+  if(!session || !session.pc) return;
+  
+  if (session.cam) {
+    session.cam.getTracks().forEach(t => {
+      t.stop();
+      const sender = session.pc.getSenders().find(s => s.track === t);
+      if(sender) session.pc.removeTrack(sender);
+    });
+    session.cam = null;
+    $("#camToggle").classList.remove("on"); 
+    $("#camToggle").innerHTML = camIcon() + " Encender cámara";
+    return;
+  }
+  
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: session.facing }, audio: true });
+    session.cam = stream;
+    stream.getTracks().forEach(track => session.pc.addTrack(track, stream));
+    $("#camToggle").classList.add("on"); 
+    $("#camToggle").innerHTML = camIcon() + " Apagar cámara";
+    buzz(20);
+  } catch (err) {
+    toast("No se pudo abrir la cámara");
+  }
+});
+
+$("#flipCam").addEventListener("click", async ()=>{
+  if(!session || !session.cam) { toast("Enciende la cámara primero"); return; }
+  session.facing = session.facing==="user" ? "environment" : "user";
+  try{
+    session.cam.getTracks().forEach(t=>t.stop());
+    const stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode: session.facing }, audio:false });
+    session.cam = stream; $("#liveVideo").srcObject = stream;
+    $("#videoFrame").classList.toggle("mirror", session.facing==="user");
+    buzz(14);
+  }catch(_){ toast("Solo hay una cámara disponible"); }
+});
+$("#blindToggle").addEventListener("click", ()=>{
+  const f = $("#videoFrame"); f.classList.toggle("blind-on");
+  $("#blindToggle").classList.toggle("on", f.classList.contains("blind-on"));
+  buzz(24);
+});
+$("#zoomRange").addEventListener("input", e=>{
+  const v = e.target.value/100;
+  const vid = $("#liveVideo");
+  const mir = $("#videoFrame").classList.contains("mirror") ? " scaleX(-1)":"";
+  vid.style.transform = `scale(${v})${mir}`;
+});
+$("#lightRange").addEventListener("input", e=>{
+  $("#liveVideo").style.filter = `brightness(${e.target.value/100})`;
+});
+const INT_WORDS = ["reposo","suave","tibio","creciente","intenso","al límite"];
+$("#intRange").addEventListener("input", updateIntensity);
+function updateIntensity(){
+  const v = +$("#intRange").value;
+  const word = v===0 ? "reposo" : INT_WORDS[Math.min(INT_WORDS.length-1, Math.ceil(v/20))];
+  $("#intVal").textContent = word;
+  if(v>0 && v%20===0) buzz(Math.round(v/2));
+}
+$("#deviceConnect").addEventListener("click", async ()=>{
+  if(!("bluetooth" in navigator)){ toast("Este dispositivo no expone Bluetooth web"); return; }
+  try{
+    toast("Buscando dispositivo…");
+    const dev = await navigator.bluetooth.requestDevice({ acceptAllDevices:true });
+    session.device = dev; $("#deviceConnect").textContent = "Conectado: "+(dev.name||"dispositivo");
+    $("#deviceConnect").classList.add("on"); buzz([20,40,20]);
+  }catch(_){ }
+});
+$("#triggerToggle").addEventListener("click", ()=>{
+  if(!session) return;
+  const word = ($("#triggerWord").value||"").trim().toLowerCase();
+  if(session.listening){ stopTrigger(); return; }
+  if(!word){ toast("Escribe una palabra clave primero"); return; }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){ toast("Reconocimiento de voz no disponible aquí"); return; }
+  try{
+    const r = new SR(); r.lang="es-ES"; r.continuous=true; r.interimResults=true;
+    session.trigWord = word; session.recog = r; session.listening=true;
+    r.onresult = ev=>{
+      const txt = [...ev.results].map(x=>x[0].transcript).join(" ").toLowerCase();
+      if(txt.includes(session.trigWord)){ fireTrigger(); }
+    };
+    r.onerror = ()=>{};
+    r.onend = ()=>{ if(session && session.listening){ try{r.start();}catch(_){} } };
+    r.start();
+    $("#triggerToggle").classList.add("on"); $("#triggerToggle").textContent="Escuchando… (tocar para parar)";
+    $("#listenDot").style.display="flex";
+  }catch(_){ toast("No se pudo iniciar la escucha"); }
+});
+function stopTrigger(){
+  if(session){ session.listening=false; try{session.recog.stop();}catch(_){} session.recog=null; }
+  $("#triggerToggle").classList.remove("on"); $("#triggerToggle").textContent="Empezar a escuchar";
+  $("#listenDot").style.display="none";
+}
+let trigCd=false;
+function fireTrigger(){
+  if(trigCd) return; trigCd=true; setTimeout(()=>trigCd=false, 3000);
+  const fl = $("#triggerFlash"); fl.classList.remove("go"); void fl.offsetWidth; fl.classList.add("go");
+  buzz([60,40,120,40,200]); toast("✦ palabra clave detectada");
+}
+
+/* ============================================================
+   CHISPA · anticipation
+   ============================================================ */
+const SPARK_PRESETS = [
+  "Estoy pensando en lo de la última vez…",
+  "Esta noche no te voy a dejar dormir temprano",
+  "Tengo una idea nueva para cuando nos veamos",
+  "No te imaginas lo que traigo puesto",
+  "Cuenta las horas — yo las estoy contando"
+];
+function renderSparkPresets(){
+  const c = $("#sparkPresets"); c.innerHTML="";
+  SPARK_PRESETS.forEach(t=>{
+    const b=document.createElement("button"); b.className="chip"; b.textContent = t.length>28? t.slice(0,26)+"…":t;
+    b.title=t; b.addEventListener("click", ()=>{ $("#sparkText").value=t; });
+    c.appendChild(b);
+  });
+}
+let sparkWhen="tonight";
+$$("#chispa [data-when]").forEach(b=> b.addEventListener("click", ()=>{
+  $$("#chispa [data-when]").forEach(x=>x.classList.remove("on")); b.classList.add("on"); sparkWhen=b.dataset.when;
+}));
+$("#sendSpark").addEventListener("click", ()=>{
+  const text = $("#sparkText").value.trim();
+  if(!text){ toast("Escribe algo primero"); return; }
+  State.sparks.unshift({ id:uid(), text, when:sparkWhen, ts:Date.now(), sent:false }); persist();
+  $("#sparkText").value=""; renderSparks(); buzz([20,40]); toast("Chispa enviada · quedará flotando");
+});
+function whenLabel(w){ return w==="tonight"?"esta noche":w==="1h"?"en 1 hora":"mañana"; }
+function renderSparks(){
+  renderSparkPresets();
+  const list=$("#sparkList"); list.innerHTML="";
+  if(!State.sparks.length){ list.innerHTML=`<div class="empty"><p>Nada flotando aún.<br>Envía una chispa y se queda encendida hasta que se vean.</p></div>`; return; }
+  State.sparks.forEach(s=>{
+    const el=document.createElement("div"); el.className="spark-item"+(s.sent?" sent":"");
+    el.innerHTML=`<div class="fl"><b></b></div>
+      <div class="c"><b>${s.text}</b><small>para ${whenLabel(s.when)} · toca para retirar</small></div>`;
+    el.addEventListener("click", ()=>{ State.sparks=State.sparks.filter(x=>x.id!==s.id); persist(); renderSparks(); });
+    list.appendChild(el);
+  });
+}
+
+/* ============================================================
+   BÓVEDA · AES-GCM vault (real crypto)
+   ============================================================ */
+let vaultKey=null; // CryptoKey held only while open
+async function deriveKey(pass, saltB64){
+  const enc = new TextEncoder();
+  const salt = saltB64 ? b64.dec(saltB64) : crypto.getRandomValues(new Uint8Array(16));
+  const base = await crypto.subtle.importKey("raw", enc.encode(pass), "PBKDF2", false, ["deriveKey"]);
+  const key = await crypto.subtle.deriveKey(
+    { name:"PBKDF2", salt, iterations:150000, hash:"SHA-256" },
+    base, { name:"AES-GCM", length:256 }, false, ["encrypt","decrypt"]
+  );
+  return { key, salt: b64.enc(salt) };
+}
+async function encryptEntry(obj){
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const data = new TextEncoder().encode(JSON.stringify(obj));
+  const ct = await crypto.subtle.encrypt({name:"AES-GCM", iv}, vaultKey, data);
+  return { iv:b64.enc(iv), ct:b64.enc(ct) };
+}
+async function decryptEntry(e){
+  const pt = await crypto.subtle.decrypt({name:"AES-GCM", iv:b64.dec(e.iv)}, vaultKey, b64.dec(e.ct));
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+function vaultFP(){
+  if(!State.vault) return "···";
+  return State.vault.salt.slice(0,10).toUpperCase()+"·"+String(State.vault.entries.length).padStart(2,"0");
+}
+function refreshVaultUI(){
+  if(vaultKey){ $("#vaultLocked").style.display="none"; $("#vaultOpen").style.display="block"; }
+  else { $("#vaultLocked").style.display="block"; $("#vaultOpen").style.display="none";
+    $("#vaultTitle").textContent = State.vault ? "Bóveda cifrada" : "Cifrado de extremo a extremo";
+    $("#vaultDesc").textContent = State.vault
+      ? "Ingresa su frase para abrir lo que guardaron. Sin ella, ni nosotros podemos leerlo."
+      : "Lo que guarden aquí se cifra con AES-GCM y una clave que nace de su frase. Ni siquiera sale de este dispositivo sin ella.";
+    $("#vaultPass").value="";
+  }
+}
+$("#vaultUnlock").addEventListener("click", async ()=>{
+  const pass = $("#vaultPass").value;
+  if(pass.length < 4){ toast("Usa al menos 4 caracteres"); return; }
+  try{
+    if(!State.vault){
+      const { salt } = await deriveKey(pass);
+      const d = await deriveKey(pass, salt);
+      vaultKey = d.key; State.vault = { salt, entries:[], created:Date.now() }; await persist();
+      toast("Bóveda creada");
+    } else {
+      const d = await deriveKey(pass, State.vault.salt);
+      vaultKey = d.key;
+      // verify by trying to decrypt first entry (if any)
+      if(State.vault.entries.length){
+        try{ await decryptEntry(State.vault.entries[0]); }
+        catch(_){ vaultKey=null; toast("Frase incorrecta"); buzz([40,60,40]); return; }
+      }
+      toast("Bóveda abierta");
+    }
+    $("#vaultFingerprint").textContent = vaultFP();
+    buzz([20,40,20]); refreshVaultUI(); renderVaultEntries();
+  }catch(err){ toast("No se pudo abrir la bóveda aquí"); }
+});
+$("#vaultLock").addEventListener("click", ()=>{ vaultKey=null; refreshVaultUI(); toast("Bóveda cerrada · llave borrada"); });
+
+let pendingAttach=null;
+$("#vaultAttach").addEventListener("click", ()=>$("#vaultFile").click());
+$("#vaultFile").addEventListener("change", e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=()=>{ pendingAttach=rd.result; $("#attachPreview").innerHTML=`<img src="${rd.result}" style="max-height:120px;border-radius:10px"><div class="dim" style="margin-top:6px">Se cifrará al guardar</div>`; };
+  rd.readAsDataURL(f);
+});
+$("#vaultSave").addEventListener("click", async ()=>{
+  if(!vaultKey) return;
+  const text=$("#vaultInput").value.trim();
+  if(!text && !pendingAttach){ toast("Escribe algo o adjunta una foto"); return; }
+  const entry = await encryptEntry({ text, img:pendingAttach, ts:Date.now() });
+  State.vault.entries.unshift(entry); await persist();
+  $("#vaultInput").value=""; pendingAttach=null; $("#attachPreview").innerHTML="";
+  $("#vaultFingerprint").textContent = vaultFP();
+  buzz(20); renderVaultEntries(); toast("Guardado y cifrado");
+});
+async function renderVaultEntries(){
+  const c=$("#vaultEntries"); c.innerHTML="";
+  if(!State.vault || !State.vault.entries.length){
+    c.innerHTML=`<div class="empty"><p>La bóveda está vacía.<br>Lo que guarden aquí queda cifrado con su frase.</p></div>`; return;
+  }
+  for(const e of State.vault.entries){
+    let data;
+    try{ data = await decryptEntry(e); }catch(_){ continue; }
+    const el=document.createElement("div"); el.className="vault-entry";
+    const when = new Date(data.ts).toLocaleString("es",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});
+    el.innerHTML=`<span class="del" data-del="${e.iv}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 7h12M9 7V5h6v2M8 7l1 12h6l1-12"/></svg></span>
+      <div class="when">${when}</div>
+      ${data.text?`<div class="txt">${escapeHtml(data.text)}</div>`:""}
+      ${data.img?`<img src="${data.img}">`:""}`;
+    c.appendChild(el);
+  }
+  $$("#vaultEntries [data-del]").forEach(b=> b.addEventListener("click", async ()=>{
+    State.vault.entries = State.vault.entries.filter(x=>x.iv!==b.dataset.del); await persist();
+    $("#vaultFingerprint").textContent = vaultFP();
+    renderVaultEntries();
+  }));
+}
+function escapeHtml(s){ return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+/* ============================================================
+   SHEET / MODAL
+   ============================================================ */
+function openSheet(html){
+  $("#sheetInner").innerHTML = `<div class="grab"></div>`+html;
+  $("#sheet").classList.add("on");
+}
+function closeSheet(){ $("#sheet").classList.remove("on"); }
+$("#sheet").addEventListener("click", e=>{ if(e.target.id==="sheet") closeSheet(); });
+
+/* ============================================================
+   AJUSTES · toggles
+   ============================================================ */
+function syncToggles(){
+  $$("[data-toggle]").forEach(t=> t.classList.toggle("on", !!State.settings[t.dataset.toggle]));
+}
+$$("[data-toggle]").forEach(t=> t.addEventListener("click", ()=>{
+  const k=t.dataset.toggle; State.settings[k]=!State.settings[k];
+  t.classList.toggle("on", State.settings[k]); persist(); buzz(16);
+  if(k==="discreet") document.title = State.settings.discreet ? "Notas" : "Sensia";
+}));
+$("#resetGesture").addEventListener("click", ()=>{
+  go("diario"); // move away visually
+  $("#nav").classList.remove("on");
+  $$(".screen").forEach(s=>s.classList.remove("on"));
+  $("#umbral").classList.add("on");
+  Gate.requestSet();
+});
+$("#wipeAll").addEventListener("click", ()=>{
+  openSheet(`<h3>¿Borrar todo?</h3><p class="muted" style="margin:0 0 18px">Se eliminan fantasías, vocabulario, chispas, bóveda y ajustes de este dispositivo. No se puede deshacer.</p>
+    <div class="row"><button class="btn ghost sm" id="wCancel" style="flex:1">Cancelar</button>
+    <button class="btn danger sm" id="wYes" style="flex:1">Sí, borrar todo</button></div>`);
+  $("#wCancel").addEventListener("click", closeSheet);
+  $("#wYes").addEventListener("click", ()=>{
+    Store.wipe(); vaultKey=null;
+    Object.assign(State,{ gesture:null, choices:{A:{},B:{}}, vocab:[], sparks:[], vault:null,
+      settings:{discreet:true,veilBg:true,haptics:true,autolock:true,flipExit:true} });
+    seedDefaults(); closeSheet(); toast("Todo borrado");
+    renderVocab(); buildDeckOrder(); renderDeck(); updateMatchCount(); syncToggles();
+    lockToUmbral();
+  });
+});
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+(async function boot(){
+  Gate.build();
+  Gate.bindPointer();
+  await hydrate();
+  Gate.firstRun();
+  buildDeckOrder();
+  renderDeck();
+  updateMatchCount();
+  renderVocab();
+  syncToggles();
+  document.title = State.settings.discreet ? "Notas" : "Sensia";
+
+  $("#forgotBtn").addEventListener("click", ()=>{
+    openSheet(`<h3>Gesto olvidado</h3><p class="muted" style="margin:0 0 16px">Por diseño, no guardamos ninguna copia recuperable de tu gesto. Puedes definir uno nuevo — pero para proteger lo cifrado, esto borra el acceso guardado.</p>
+      <div class="row"><button class="btn ghost sm" id="fCancel" style="flex:1">Cancelar</button>
+      <button class="btn primary sm" id="fNew" style="flex:1">Definir gesto nuevo</button></div>`);
+    $("#fCancel").addEventListener("click", closeSheet);
+    $("#fNew").addEventListener("click", ()=>{ closeSheet(); Gate.requestSet(); });
+  });
+})();
+
+/* iOS: request motion permission lazily on first tap (for flip-to-exit) */
+document.addEventListener("pointerdown", function askMotion(){
+  if(typeof DeviceOrientationEvent!=="undefined" && DeviceOrientationEvent.requestPermission){
+    DeviceOrientationEvent.requestPermission().catch(()=>{});
+  }
+  document.removeEventListener("pointerdown", askMotion);
+}, { once:true });
+</script>
+</body>
+</html>

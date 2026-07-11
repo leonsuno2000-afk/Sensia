@@ -1,0 +1,17 @@
+{
+  "name": "sensia-signaling",
+  "version": "1.0.0",
+  "description": "Servidor de señalización zero-knowledge para Sensia (WebRTC + Socket.io). Sirve la app y conecta dos peers; nunca ve datos de la app.",
+  "main": "server.js",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "socket.io": "^4.7.2"
+  }
+}
