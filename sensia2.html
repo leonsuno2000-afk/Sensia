@@ -2846,7 +2846,7 @@ const Net = {
   key:null, mediaKeySend:null, mediaKeyRecv:null, sas:'', sasWords:'',
   sealed:false, connected:false, bad:0, offset:0, rtt:0,
   outQ:[], rawQ:[], candQ:[], chain:Promise.resolve(), inChain:Promise.resolve(),
-  pingT:null, sealT:null, e2eeActive:false, deriving:false,
+  pingT:null, sealT:null, e2eeActive:false, deriving:false, helloSent:false,
 
   /* ---------- ciclo de vida ---------- */
   reset(){
@@ -2860,7 +2860,7 @@ const Net = {
     this.sealed = false; this.connected = false; this.bad = 0;
     this.outQ = []; this.rawQ = []; this.candQ = [];
     this.chain = Promise.resolve(); this.inChain = Promise.resolve();
-    this.e2eeActive = false; this.deriving = false;
+    this.e2eeActive = false; this.deriving = false; this.helloSent = false;
   },
 
   createPC(){
@@ -2914,7 +2914,7 @@ const Net = {
   setupDC(dc){
     this.dc = dc;
     dc.binaryType = 'arraybuffer';
-    dc.onopen = () => { this.derive(); Live.badge(); };
+    dc.onopen = () => { this.derive().then(() => this.handshake()); Live.badge(); };
     dc.onclose = () => { this.connected = false; Live.badge(); };
     dc.onmessage = e => {
       if (!this.key){ if (this.rawQ.length < 500) this.rawQ.push(e.data); return; }
@@ -2946,7 +2946,16 @@ const Net = {
       this.mediaKeyRecv = this.initiator ? keyB : keyA;
     }catch(_){ this.deriving = false; return; }
     this.deriving = false;
+    this.handshake();   // saluda ahora si el canal ya está abierto; si no, esperará a dc.onopen
+  },
 
+  // El saludo (hello), los pings y el reloj del sello solo arrancan cuando el canal
+  // de datos está ABIERTO. Antes se mandaban desde derive(), que corre temprano
+  // —antes de que ICE termine— y el hello se descartaba: el sello vencía en el vacío.
+  // Es idempotente (helloSent), así que da igual desde dónde se llame.
+  handshake(){
+    if (!this.key || !this.dc || this.dc.readyState !== 'open' || this.helloSent) return;
+    this.helloSent = true;
     this.send({ t:'hello', v:4, e2ee: !!(CFG.e2ee && CAN_E2EE) });
     this.flush();
     const q = this.rawQ.slice(); this.rawQ = [];
@@ -2957,7 +2966,7 @@ const Net = {
     this.send({ t:'ping', a:Date.now() });
 
     clearTimeout(this.sealT);
-    this.sealT = setTimeout(() => { if (!this.sealed) this.alarm('El otro lado no respondió al sello.'); }, 12000);
+    this.sealT = setTimeout(() => { if (!this.sealed) this.alarm('El otro lado no respondió al sello.'); }, 25000);
   },
 
   onSealed(peer){
