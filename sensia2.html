@@ -3093,12 +3093,13 @@ const Net = {
     return 'S4O:' + await zip(this.pc.localDescription.sdp);
   },
   async makeAnswer(offerCode){
-    if (offerCode.indexOf('S4O:') !== 0) throw new Error('Ese no es un código de invitación');
+    const code = String(offerCode).replace(/\s+/g,'');
+    if (!/^s4o:/i.test(code)) throw new Error('Ese no es un código de invitación');
     this.reset();
     this.mode = 'manual'; this.code = ''; this.initiator = false;
     this.createPC();
     this.pc.ondatachannel = e => this.setupDC(e.channel);
-    const sdp = await unzip(offerCode.slice(4));
+    const sdp = await unzip(code.slice(4));
     await this.pc.setRemoteDescription({ type:'offer', sdp:sdp });
     this.bindTransceivers(true);
     await this.pc.setLocalDescription(await this.pc.createAnswer());
@@ -3107,8 +3108,9 @@ const Net = {
     return 'S4A:' + await zip(this.pc.localDescription.sdp);
   },
   async takeAnswer(answerCode){
-    if (answerCode.indexOf('S4A:') !== 0) throw new Error('Ese no es un código de respuesta');
-    const sdp = await unzip(answerCode.slice(4));
+    const code = String(answerCode).replace(/\s+/g,'');
+    if (!/^s4a:/i.test(code)) throw new Error('Ese no es un código de respuesta');
+    const sdp = await unzip(code.slice(4));
     await this.pc.setRemoteDescription({ type:'answer', sdp:sdp });
     this.derive();
   }
