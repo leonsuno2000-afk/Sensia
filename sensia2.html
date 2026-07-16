@@ -3339,7 +3339,7 @@ const Live = {
     this.resizeMarea();
     this.keepAwake(true);
     this.startListening();
-    this.stats(CFG.stats);
+    this.stats(true);
     State.stats.sessions++;
     persist();
     setConn('online', Net.e2eeActive ? 'Túnel abierto · Cifrado Ω' : 'Túnel abierto · E2EE', true);
@@ -3353,8 +3353,6 @@ const Live = {
   },
   remoteFeed(){
     $('#noFeed').style.display = 'none';
-    $('#camBadge').style.display = 'block';
-    $('#camBadge').textContent = '● EN VIVO';
     buzz(26);
   },
   veil(on){
@@ -3795,24 +3793,41 @@ const Live = {
   /* --- estadísticas de red --- */
   stats(on){
     clearInterval(this.statT);
-    $('#vfStat').classList.toggle('on', !!on);
-    if (!on) return;
+    const pill = $('#vfStat');
+    pill.classList.toggle('on', !!on);
+    if (!on){ pill.style.color = ''; return; }
+    this._lastF = 0; this._lastB = 0;
     this.statT = setInterval(async () => {
       if (!Net.pc) return;
       try{
         const st = await Net.pc.getStats();
-        let kbps = 0, rtt = Net.rtt;
+        let frames = 0, bytes = 0, pair = null; const cand = {};
         st.forEach(r => {
-          if (r.type === 'inbound-rtp' && r.kind === 'video' && r.bytesReceived){
-            const d = r.bytesReceived - (this._lastB || 0);
-            this._lastB = r.bytesReceived;
-            kbps = Math.max(0, Math.round(d * 8 / 1000 / 2));
+          if (r.type === 'inbound-rtp' && r.kind === 'video'){
+            if (typeof r.framesDecoded === 'number') frames = r.framesDecoded;
+            if (typeof r.bytesReceived === 'number') bytes = r.bytesReceived;
           }
-          if (r.type === 'candidate-pair' && r.currentRoundTripTime) rtt = Math.round(r.currentRoundTripTime * 1000);
+          if (r.type === 'candidate-pair' && r.nominated && r.state === 'succeeded') pair = r;
+          if (r.type === 'local-candidate' || r.type === 'remote-candidate') cand[r.id] = r.candidateType;
         });
-        $('#vfStat').textContent = rtt + 'ms · ' + kbps + 'kb/s';
+        const kbps = Math.max(0, Math.round((bytes - this._lastB) * 8 / 1000 / 1.5));
+        const moved = frames > this._lastF;
+        this._lastF = frames; this._lastB = bytes;
+        let conn = 'buscando…';
+        if (pair){
+          const a = cand[pair.localCandidateId], b = cand[pair.remoteCandidateId];
+          conn = (a === 'relay' || b === 'relay') ? 'relevo' : 'directa';
+        }
+        const badge = $('#camBadge'); badge.style.display = 'block';
+        pill.textContent = conn + ' · ' + kbps + 'kb/s';
+        if (moved){
+          badge.textContent = '● EN VIVO'; badge.style.color = '#8BE59A'; pill.style.color = '#8BE59A';
+          $('#noFeed').style.display = 'none';
+        } else {
+          badge.textContent = '◌ sin imagen de tu pareja'; badge.style.color = '#E0A15A'; pill.style.color = '#E0A15A';
+        }
       }catch(_){}
-    }, 2000);
+    }, 1500);
   }
 };
 
