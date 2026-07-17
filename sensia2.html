@@ -712,6 +712,64 @@ body.reduce #tour .tour-ring::after{animation:none}
   #tour .tour-body{font-size:13.5px;line-height:1.55}
   #tour .tour-card{padding:18px 18px 15px}
 }
+/* ══════════════════════ EL DIRECTOR ══════════════════════ */
+.mo-entry{position:relative;margin-bottom:12px;border-radius:var(--r-md);padding:14px 16px;overflow:hidden;
+  background:linear-gradient(135deg,rgba(232,112,79,.15),rgba(154,127,166,.13));
+  border:1px solid rgba(232,112,79,.3);display:flex;align-items:center;gap:12px}
+.mo-entry::before{content:"";position:absolute;inset:0;background:var(--grad-glow);opacity:.16;pointer-events:none}
+.mo-entry .mo-e-ico{position:relative;z-index:1;font-size:26px;filter:drop-shadow(0 0 8px var(--ember-glow))}
+.mo-entry .mo-e-tx{flex:1;min-width:0;position:relative;z-index:1}
+.mo-entry .mo-e-tx b{display:block;font-family:var(--font-d);font-size:23px;color:var(--champagne);line-height:1.02}
+.mo-entry .mo-e-tx small{color:var(--ash);font-size:12px}
+.mo-entry .mo-e-btn{position:relative;z-index:1;flex:0 0 auto;border-radius:14px;padding:11px 17px;
+  background:var(--grad-ember);color:#fff;font-size:13px;font-weight:600;white-space:nowrap;box-shadow:0 6px 20px var(--ember-glow)}
+.mo-entry.busy .mo-e-btn{background:var(--noir-1);color:var(--ash);box-shadow:none;border:1px solid var(--line-2)}
+
+.mo-stage{position:absolute;inset:0;z-index:10;display:none;pointer-events:none}
+.mo-stage.on{display:block}
+.mo-veil{position:absolute;inset:0;z-index:1;opacity:0;transition:opacity 1.1s var(--ease);
+  background:radial-gradient(circle at 50% 62%,transparent 28%,rgba(5,4,5,.62) 100%),rgba(5,4,5,.5)}
+.mo-heatglow{position:absolute;inset:0;z-index:2;pointer-events:none;background:var(--grad-glow);
+  opacity:calc(var(--mo-heat,0)/100*.42);transition:opacity 1.4s var(--ease);mix-blend-mode:screen}
+.mo-pulse{position:absolute;inset:0;z-index:3;background:var(--grad-glow);opacity:0;pointer-events:none;mix-blend-mode:screen}
+.mo-pulse.go{animation:moPulse 1.7s var(--ease)}
+@keyframes moPulse{0%{opacity:0;transform:scale(.92)}22%{opacity:.9}100%{opacity:0;transform:scale(1.16)}}
+.mo-prog{position:absolute;top:12px;left:0;right:0;z-index:6;display:flex;gap:7px;justify-content:center}
+.mo-dot{width:15px;height:3px;border-radius:3px;background:rgba(240,216,201,.16);transition:.45s var(--ease)}
+.mo-dot.done{background:rgba(240,216,201,.5)}
+.mo-dot.now{width:24px;background:var(--ember-core);box-shadow:0 0 10px var(--ember-glow)}
+.mo-whisper{position:absolute;left:24px;right:24px;bottom:100px;z-index:6;text-align:center;
+  font-family:var(--font-d);font-style:italic;font-size:clamp(24px,7vw,34px);line-height:1.16;color:var(--champagne);
+  text-shadow:0 2px 22px rgba(0,0,0,.9),0 0 44px rgba(0,0,0,.6);opacity:0;transition:opacity .6s var(--ease);letter-spacing:.2px}
+.mo-cap{position:absolute;left:26px;right:26px;bottom:74px;z-index:6;text-align:center;
+  font-family:var(--font-m);font-size:11.5px;letter-spacing:.05em;color:var(--rose);opacity:0;transition:opacity .5s;
+  text-shadow:0 1px 10px rgba(0,0,0,.9)}
+.mo-tap{position:absolute;left:0;right:0;bottom:150px;z-index:8;display:none;justify-content:center;pointer-events:none}
+.mo-tap-btn{pointer-events:auto;border-radius:22px;padding:12px 22px;background:rgba(0,0,0,.55);
+  border:1px solid var(--ember-core);color:var(--champagne);font-size:13.5px;font-weight:500;backdrop-filter:blur(8px);
+  box-shadow:0 4px 24px rgba(0,0,0,.5);display:flex;align-items:center;gap:8px;transition:.2s}
+.mo-tap-btn::before{content:"○";color:var(--ember-core)}
+.mo-tap-btn.waiting{opacity:.72;border-color:var(--seal)}
+.mo-tap-btn.waiting::before{content:"◌";color:var(--seal)}
+.mo-pedal{position:absolute;left:8px;right:8px;bottom:12px;z-index:8;display:none;gap:6px;
+  align-items:center;justify-content:center;pointer-events:none;flex-wrap:wrap}
+.mo-pedal.on{display:flex}
+.mo-pedal button{pointer-events:auto;flex:0 0 auto;border-radius:15px;padding:9px 12px;background:rgba(0,0,0,.5);
+  border:1px solid var(--line-2);color:var(--mist);font-size:12px;backdrop-filter:blur(8px);white-space:nowrap;transition:.15s}
+.mo-pedal button:active{background:rgba(0,0,0,.78)}
+.mo-pedal .mo-end{border-color:rgba(224,104,90,.4);color:var(--rose)}
+.mo-pedal .mo-voice.on{background:var(--grad-ember);color:#fff;border-color:transparent}
+.marea.mo-arm{border-color:var(--ember-core);box-shadow:0 0 26px var(--ember-glow);transition:.4s}
+
+.mo-chooser h3,.mo-sheet h3{font-family:var(--font-d);font-size:27px;color:var(--champagne);margin:2px 0 4px}
+.mo-nights{display:flex;flex-direction:column;gap:9px;margin:12px 0}
+.mo-night{text-align:left;border-radius:var(--r-sm);padding:13px 15px;background:var(--card-2);
+  border:1px solid var(--line-2);transition:.18s;display:flex;flex-direction:column;gap:2px}
+.mo-night:active{background:var(--card-3);border-color:var(--ember-core)}
+.mo-night b{font-family:var(--font-d);font-size:20px;color:var(--champagne)}
+.mo-night span{font-size:12.5px;color:var(--mist)}
+.mo-night small{font-family:var(--font-m);font-size:10px;letter-spacing:.05em;color:var(--ash-dim)}
+.mo-heat-note{font-family:var(--font-m);font-size:11px;color:var(--ash-dim);margin:6px 0}
 </style>
 </head>
 <body data-theme="brasa">
@@ -972,6 +1030,12 @@ body.reduce #tour .tour-ring::after{animation:none}
         <div class="tx"><b id="sealTitle">Verificando el sello…</b><small id="sealWords">Comparen esto en voz alta antes de encender nada.</small></div>
       </div>
 
+      <div class="mo-entry" id="maestroEntry">
+        <div class="mo-e-ico">✧</div>
+        <div class="mo-e-tx"><b>El Director</b><small>una noche guiada, de principio a fin</small></div>
+        <button class="mo-e-btn" id="moEntryBtn">Empezar</button>
+      </div>
+
       <div class="video-surface mirror" id="videoFrame">
         <video class="remote-video" id="remoteVideo" autoplay playsinline></video>
         <video class="local-video" id="localVideo" autoplay playsinline muted></video>
@@ -992,6 +1056,25 @@ body.reduce #tour .tour-ring::after{animation:none}
           </div>
           <textarea id="scriptEditor" placeholder="Escriban juntos lo que va a pasar. Después, que pase."></textarea>
           <div class="script-status" id="scriptStatus">sincronizado</div>
+        </div>
+
+        <div class="mo-stage" id="moStage">
+          <div class="mo-veil" id="moVeil"></div>
+          <div class="mo-heatglow" id="moHeatGlow"></div>
+          <div class="mo-pulse" id="moPulse"></div>
+          <div class="mo-prog" id="moProg">
+            <span class="mo-dot"></span><span class="mo-dot"></span><span class="mo-dot"></span><span class="mo-dot"></span><span class="mo-dot"></span>
+          </div>
+          <div class="mo-whisper" id="moWhisper"></div>
+          <div class="mo-cap" id="moCap"></div>
+          <div class="mo-tap" id="moTap"><button class="mo-tap-btn" id="moTapBtn"><span class="mo-tap-label">Tóquenlo cuando estén — los dos</span></button></div>
+          <div class="mo-pedal" id="moPedal">
+            <button id="moSlow">más lento</button>
+            <button id="moStay">quédate</button>
+            <button id="moGo">seguir →</button>
+            <button class="mo-voice" id="moVoice">voz</button>
+            <button class="mo-end" id="moEnd">terminar</button>
+          </div>
         </div>
       </div>
 
@@ -3308,6 +3391,7 @@ function handle(m){
     case 'capOk':      Live.capDo(true); break;
     case 'capNo':      toast('Prefiere no guardar este momento'); break;
     case 'after':      Rescoldo.remote(m); break;
+    case 'mo':         Maestro.recv(m); break;
     case 'bye':        Live.softStop(); break;
   }
 }
@@ -3374,6 +3458,7 @@ const Live = {
     if (Net.tcA && Net.tcA.sender) try{ Net.tcA.sender.replaceTrack(null); }catch(_){}
     $('#localVideo').srcObject = null;
     $('#remoteVideo').srcObject = null;
+    Maestro.stop();
     Haptics.stopAll();
     this.stopListening();
     this.marea = { mine:0, theirs:0 };
@@ -3830,6 +3915,311 @@ const Live = {
     }, 1500);
   }
 };
+
+/* ══════════════════════════════════════════════════════════════════
+   EL DIRECTOR — la noche guiada
+   Un anfitrión invisible que encadena un arco con ritmo, cuea a los dos
+   teléfonos al mismo instante (reloj epoch compartido) y SOLO avanza
+   cuando los dos hacen el gesto juntos: el consentimiento es la
+   coreografía, no un formulario. La guía llega como susurro + háptica
+   sobre una pantalla que son, sobre todo, ellos. Y el arco respira:
+   se construye con retiradas, no solo sumando. Termina como debe —
+   juntos, con calma, nunca en un botón de cerrar.
+   Modelo: quien propone y es aceptado es el "director"; el otro lado
+   es "eco" y refleja cada beat. El director lee las dos señales
+   (marea propia + la de su pareja, que ya llega por la red) y decide.
+   ══════════════════════════════════════════════════════════════════ */
+const Maestro = (() => {
+  let role = null;               // 'conductor' | 'follower' | null
+  let nightId = null, beats = [], idx = -1, running = false;
+  let beatT0 = 0, gateTimer = null, holdSince = 0;
+  let paused = false, slowMul = 1;
+  let readyMe = false, readyPeer = false;
+  let voiceOn = false, voice = null, breathByMe = false, whisperT = null;
+
+  const R = a => a[(Math.random()*a.length)|0];
+  const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=(Math.random()*(i+1))|0; const t=a[i]; a[i]=a[j]; a[j]=t; } return a; };
+  const jitter = (base, spread) => Math.round(base + (Math.random()*2-1)*spread);
+  const b = o => Object.assign({ say:'', cap:'', fx:null, hush:.18, mv:'preludio', gate:'time', minMs:3000, maxMs:16000, wait:false }, o);
+
+  /* ---------- susurro en voz (opcional, se degrada a texto+háptica) ---------- */
+  function pickVoice(){
+    if (!('speechSynthesis' in window)) return;
+    const vs = speechSynthesis.getVoices(); if (!vs.length) return;
+    const pref = ['es-us','es-mx','es-419','es-co','es-pe','es-es','es'];
+    for (const p of pref){ const v = vs.find(v => (v.lang||'').toLowerCase().replace('_','-').startsWith(p.trim())); if (v){ voice = v; return; } }
+    voice = vs.find(v => (v.lang||'').toLowerCase().startsWith('es')) || null;
+  }
+  if ('speechSynthesis' in window){ pickVoice(); try{ speechSynthesis.onvoiceschanged = pickVoice; }catch(_){} }
+  function whisper(text){
+    if (!voiceOn || !text || !('speechSynthesis' in window)) return;
+    try{ speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      if (voice) u.voice = voice;
+      u.lang = voice ? voice.lang : 'es-419'; u.rate = .82; u.pitch = .9; u.volume = 1;
+      speechSynthesis.speak(u);
+    }catch(_){}
+  }
+
+  /* ---------- render (idéntico en los dos lados) ---------- */
+  const MV = ['preludio','tema','desarrollo','climax','coda'];
+  function setWhisper(text){
+    const w = $('#moWhisper'); clearTimeout(whisperT); w.style.opacity = '0';
+    whisperT = setTimeout(() => { w.textContent = text || ''; w.style.opacity = text ? '1' : '0'; }, 200);
+  }
+  function render(p){
+    const st = $('#moStage'); st.classList.add('on');
+    st.style.setProperty('--mo-heat', String(p.heat || 0));
+    $('#moVeil').style.opacity = String(clamp(p.hush != null ? p.hush : .16, 0, .72));
+    setWhisper(p.say); whisper(p.say);
+    const c = $('#moCap'); c.textContent = p.cap || ''; c.style.opacity = p.cap ? '1' : '0';
+    const i = MV.indexOf(p.mv);
+    $$('#moProg .mo-dot').forEach((d,k) => { d.classList.toggle('done', k < i); d.classList.toggle('now', k === i); });
+    const tap = $('#moTap');
+    if (p.wait){ tap.style.display = 'flex'; const btn = $('#moTapBtn'); btn.classList.remove('waiting'); btn.querySelector('.mo-tap-label').textContent = 'Tóquenlo cuando estén — los dos'; }
+    else tap.style.display = 'none';
+  }
+
+  /* ---------- efectos sincronizados al milisegundo ---------- */
+  function fireFx(fx, at, bt){
+    if (!fx) return;
+    const localAt = at ? (role === 'conductor' ? at : at - Net.offset) : 0;
+    const delay = localAt ? localAt - Date.now() : 0;
+    const run = () => {
+      if (fx === 'pulse'){ const el = $('#moPulse'); el.classList.remove('go'); void el.offsetWidth; el.classList.add('go'); buzz([50,70,50]); }
+      else if (fx === 'flash'){ const fl = $('#triggerFlash'); fl.classList.remove('go'); void fl.offsetWidth; fl.classList.add('go'); buzz([60,40,120]); }
+      else if (fx === 'breathe'){ if (role === 'conductor' && !Breath.on){ breathByMe = true; Breath.toggle(); } }
+      else if (fx === 'release'){ if (role === 'conductor' && Breath.on && breathByMe){ Breath.toggle(); breathByMe = false; } }
+      else if (fx === 'arm-marea'){ const m = $('#marea'); if (m){ m.classList.add('mo-arm'); setTimeout(() => m.classList.remove('mo-arm'), 2600); } buzz([20,120,20]); }
+    };
+    if (delay > 12) setTimeout(run, Math.min(delay, 4000)); else run();
+  }
+
+  /* ---------- director: avanzar el arco ---------- */
+  function present(bt){
+    beatT0 = Date.now(); holdSince = 0;
+    const sync = (bt.fx === 'pulse' || bt.fx === 'flash' || bt.fx === 'breathe');
+    const at = sync ? Date.now() + Math.max(240, (Net.rtt || 120) + 90) : 0;
+    const payload = { say:bt.say, cap:bt.cap, fx:bt.fx, hush:bt.hush, mv:bt.mv, wait:!!bt.wait, at:at, heat:currentHeat() };
+    render(payload); fireFx(bt.fx, at, bt);
+    Net.send({ t:'mo', k:'beat', b:payload });
+  }
+  function advance(){
+    if (role !== 'conductor') return;
+    idx++; readyMe = false; readyPeer = false; holdSince = 0;
+    if (idx >= beats.length){ finish(); return; }
+    present(beats[idx]);
+  }
+  function poll(){
+    if (role !== 'conductor' || !running || paused) return;
+    const bt = beats[idx]; if (!bt) return;
+    const el = Date.now() - beatT0;
+    const minMs = (bt.minMs || 1500) * slowMul, maxMs = (bt.maxMs || 16000) * slowMul;
+    if (el < minMs) return;
+    let met = false;
+    switch (bt.gate){
+      case 'tap': met = readyMe && readyPeer; break;
+      case 'marea': {
+        const lvl = bt.lvl || 60;
+        const both = Live.marea.mine >= lvl && Live.marea.theirs >= lvl;
+        if (both){ if (!holdSince) holdSince = Date.now(); } else holdSince = 0;
+        met = holdSince > 0 && (Date.now() - holdSince) >= (bt.hold || 2200);
+        break;
+      }
+      case 'reso': met = ($('#resonance') && $('#resonance').classList.contains('on')) || ($('#marea') && $('#marea').classList.contains('resonando')); break;
+      default: met = true;   // time / none
+    }
+    if (met || el >= maxMs) advance();
+  }
+
+  /* ---------- pedal suave (no es la palabra segura) ---------- */
+  function applySoft(d){
+    if (d === 'slow') slowMul = Math.min(2.6, slowMul + .5);
+    else if (d === 'stay') paused = !paused;
+    else if (d === 'skip'){ paused = false; advance(); }
+    else if (d === 'coda') toCoda();
+  }
+  function soft(d){
+    if (!running) return;
+    if (role === 'conductor') applySoft(d); else Net.send({ t:'mo', k:'soft', d:d });
+    if (d === 'slow') toast('Más despacio…'); else if (d === 'stay') toast(paused || role !== 'conductor' ? 'Quédense ahí.' : 'Seguimos.');
+    buzz(14);
+  }
+  function tapReady(){
+    if (!running) return;
+    if (role === 'conductor') readyMe = true; else Net.send({ t:'mo', k:'ready' });
+    const btn = $('#moTapBtn'); btn.classList.add('waiting'); btn.querySelector('.mo-tap-label').textContent = 'Ya estás — falta el otro lado…'; buzz(18);
+  }
+  function endNight(){ if (running) soft('coda'); }
+  function toCoda(){
+    if (role !== 'conductor') return;
+    beats = beats.slice(0, idx + 1).concat(buildCoda(currentHeat()));
+    advance();
+  }
+
+  /* ---------- ciclo de vida ---------- */
+  function openStage(){
+    $('#moStage').classList.add('on'); $('#moPedal').classList.add('on');
+    $('#chatOverlay').classList.remove('on'); $('#chatInput').classList.remove('on'); $('#scriptOverlay').classList.remove('on');
+    if (Live.blind){ Live.blind = false; $('#videoFrame').classList.remove('blind-on'); const bt = $('#blindToggle'); if (bt){ bt.classList.remove('on'); bt.textContent = 'Oscurecer'; } }
+  }
+  function closeStage(){
+    running = false; role = null; nightId = null; idx = -1; beats = []; paused = false; slowMul = 1;
+    readyMe = readyPeer = false; holdSince = 0;
+    clearInterval(gateTimer); gateTimer = null;
+    try{ speechSynthesis.cancel(); }catch(_){}
+    if (Breath.on && breathByMe){ Breath.toggle(); } breathByMe = false;
+    $('#moStage').classList.remove('on'); $('#moVeil').style.opacity = '0';
+    $('#moPedal').classList.remove('on'); $('#moTap').style.display = 'none';
+    const e = $('#maestroEntry'); if (e) e.classList.remove('busy'); const eb = $('#moEntryBtn'); if (eb) eb.textContent = 'Empezar';
+  }
+  function fadeOut(){
+    $('#moPedal').classList.remove('on'); $('#moTap').style.display = 'none';
+    setWhisper(''); $('#moCap').style.opacity = '0'; $('#moVeil').style.opacity = '.1';
+    setTimeout(closeStage, 2600);
+  }
+  function finish(){
+    running = false; clearInterval(gateTimer); gateTimer = null;
+    if (role === 'conductor') Net.send({ t:'mo', k:'end' });
+    fadeOut();
+  }
+
+  /* ---------- propuesta / aceptación (empezar juntos) ---------- */
+  function currentHeat(){ return NIGHTS[nightId] ? NIGHTS[nightId].heat : 70; }
+  function heatLabel(h){ return h < 65 ? 'suave · presencia sobre fuego' : h < 85 ? 'sube de a poco' : 'lento, y hasta el final'; }
+  function chooser(){
+    if (!Net.sealed){ toast('Abran el túnel y verifiquen el sello primero.'); return; }
+    if (running) return;
+    let html = '<div class="mo-chooser"><p class="eyebrow">El Director</p><h3>Una noche guiada</h3>' +
+      '<p class="lead">Elijan un arco. Yo los llevo — el resto es de ustedes.</p><div class="mo-nights">';
+    for (const id in NIGHTS){ const n = NIGHTS[id];
+      html += '<button class="mo-night" data-night="' + id + '"><b>' + esc(n.name) + '</b><span>' + esc(n.sub) + '</span><small>' + heatLabel(n.heat) + '</small></button>';
+    }
+    html += '</div><p class="dim" style="margin-top:6px">Nada avanza sin los dos. Cuando quieran: <b>más lento</b>, <b>quédate</b>, o la palabra segura.</p></div>';
+    openSheet(html);
+    $$('.mo-night').forEach(el => el.addEventListener('click', () => proposeNight(el.dataset.night)));
+  }
+  function proposeNight(id){
+    if (!Net.sealed || running || !NIGHTS[id]) return;
+    role = 'conductor'; nightId = id;
+    Net.send({ t:'mo', k:'offer', night:id }); closeSheet();
+    const e = $('#maestroEntry'); if (e) e.classList.add('busy'); const eb = $('#moEntryBtn'); if (eb) eb.textContent = 'Esperando que acepte…';
+    setTimeout(() => { if (role === 'conductor' && !running){ role = null; nightId = null; if (e) e.classList.remove('busy'); if (eb) eb.textContent = 'Empezar'; toast('No llegó respuesta. Prueben de nuevo.'); } }, 45000);
+  }
+  function startConductor(){
+    beats = buildNight(nightId); running = true; idx = -1; paused = false; slowMul = 1; readyMe = readyPeer = false; holdSince = 0;
+    const e = $('#maestroEntry'); if (e) e.classList.remove('busy');
+    openStage(); clearInterval(gateTimer); gateTimer = setInterval(poll, 130); advance();
+  }
+  function onOffer(id){
+    if (running || role){ Net.send({ t:'mo', k:'no' }); return; }
+    const n = NIGHTS[id]; if (!n) return;
+    openSheet('<div class="mo-sheet"><p class="eyebrow">Los invita a una noche guiada</p><h3>' + esc(n.name) + '</h3>' +
+      '<p class="lead">' + esc(n.sub) + '</p><p class="mo-heat-note">' + heatLabel(n.heat) + '</p>' +
+      '<div class="row"><button class="btn ghost sm" id="moDecline" style="flex:1">Ahora no</button>' +
+      '<button class="btn primary sm" id="moAccept" style="flex:1">Entrar juntos</button></div>' +
+      '<p class="dim" style="margin-top:10px">Nada avanza sin los dos. En cualquier momento: <b>más lento</b>, <b>quédate</b>, o la palabra segura.</p></div>');
+    $('#moDecline').addEventListener('click', () => { Net.send({ t:'mo', k:'no' }); closeSheet(); });
+    $('#moAccept').addEventListener('click', () => { closeSheet(); acceptOffer(id); });
+  }
+  function acceptOffer(id){
+    role = 'follower'; nightId = id; running = true; readyMe = readyPeer = false;
+    openStage(); Net.send({ t:'mo', k:'accept' });
+  }
+
+  function recv(m){
+    switch (m.k){
+      case 'offer':  onOffer(m.night); break;
+      case 'accept': if (role === 'conductor' && nightId) startConductor(); break;
+      case 'no':     if (role === 'conductor' && !running){ role = null; nightId = null; const e = $('#maestroEntry'); if (e) e.classList.remove('busy'); const eb = $('#moEntryBtn'); if (eb) eb.textContent = 'Empezar'; toast('Prefiere seguir como están'); } break;
+      case 'beat':   beatT0 = Date.now(); render(m.b); fireFx(m.b.fx, m.b.at, m.b); break;
+      case 'ready':  readyPeer = true; break;
+      case 'soft':   if (role === 'conductor') applySoft(m.d); break;
+      case 'end':    if (role !== 'conductor') fadeOut(); break;
+    }
+  }
+  function stop(){ if (running || role || $('#moStage').classList.contains('on')) closeStage(); }
+
+  function wire(){
+    const on = (id, fn) => { const el = $('#' + id); if (el) el.addEventListener('click', fn); };
+    on('moEntryBtn', chooser); on('moTapBtn', tapReady);
+    on('moSlow', () => soft('slow')); on('moStay', () => soft('stay')); on('moGo', () => soft('skip'));
+    on('moEnd', endNight);
+    on('moVoice', () => { voiceOn = !voiceOn; $('#moVoice').classList.toggle('on', voiceOn); try{ speechSynthesis.cancel(); }catch(_){} if (voiceOn){ const t = $('#moWhisper').textContent; if (t) whisper(t); toast('Susurro en voz: encendido'); } else toast('Susurro en voz: apagado'); });
+  }
+
+  /* ══════════ las noches: pools + constructores (nunca dos iguales) ══════════ */
+  const OPEN = ['Bajen la voz. Apaguen el resto del mundo.', 'Suelten el día. Acá no hace falta.', 'Respiren hondo una vez. Lleguen.'];
+  const Q_TENDER = ['¿Qué extrañaste de mí esta semana? Una sola cosa.', '¿Qué fue lo primero que pensaste hoy al despertar?', 'Decime algo que todavía no te animaste a decirme.', '¿Qué parte de mí te gustaría tener cerca ahora mismo?'];
+  const Q_PLAY = ['Confesá: ¿en qué momento de hoy pensaste en algo que no debías?', 'Una verdad y una mentira. A ver si adivino.', '¿Qué te da vergüenza que yo sepa… y que igual querés que sepa?', 'Terminá la frase: "lo que me muero por hacerte es…"'];
+  const Q_REPAIR = ['¿Qué necesitás de mí en este momento? Decilo sin filtro.', '¿Qué te dolió? Te escucho, sin defenderme.', 'Decime una cosa buena que sigue intacta entre los dos.', '¿Qué extrañaste de nosotros cuando estábamos lejos hoy?'];
+  const RET = ['Quédense ahí. No suban todavía.', 'Esperen. Lo bueno es la espera.', 'Todavía no. Sostengan lo que hay.', 'Quietos un momento. Déjenlo crecer.'];
+  const NEAR = ['Ahora sí. Un poco más cerca.', 'Dejen que suba. Solo si los dos quieren.', 'Otro paso. Juntos.', 'Más cerca. Sin apuro.'];
+  const PEAK = ['Todo lo que construyeron, ahora.', 'Suéltenlo. Al mismo tiempo.', 'No se contengan más.'];
+  const C1 = ['Quédense. No se vayan todavía.', 'No suelten todavía. Respiren.'];
+  const CM = ['bajen despacio, de la mano', 'vuelvan de a poco, sin apuro'];
+  const CE = ['Eso que pasó fue de ustedes. Nadie más lo tiene.', 'Lo que pasó acá se queda entre los dos.'];
+  const CL = ['Cuando quieran, cierren. Están bien.', 'Están bien. Cierren cuando estén listos.'];
+
+  function buildPreludio(){
+    return [
+      b({ say:R(OPEN), fx:'hush', hush:.5, gate:'time', minMs:jitter(3800,600), maxMs:6000, mv:'preludio' }),
+      b({ say:'Pongan el dedo sobre la cámara de atrás. Los dos.', cap:'que sus dos corazones se encuentren', hush:.34, gate:'reso', minMs:4000, maxMs:jitter(22000,3000), mv:'preludio' }),
+      b({ say:'Ahí están. Dos ciudades, un solo pulso.', fx:'pulse', hush:.24, gate:'time', minMs:jitter(4200,500), maxMs:6500, mv:'preludio' }),
+      b({ say:'Ahora respiren conmigo.', cap:'dejen que el teléfono marque el compás', fx:'breathe', hush:.32, gate:'time', minMs:jitter(17000,2000), maxMs:24000, mv:'preludio' }),
+      b({ say:'', fx:'release', hush:.14, gate:'time', minMs:2600, maxMs:3200, mv:'preludio' })
+    ];
+  }
+  function buildTema(mood){
+    const Q = mood === 'play' ? Q_PLAY : mood === 'repair' ? Q_REPAIR : Q_TENDER;
+    const qs = shuffle(Q), arr = [];
+    arr.push(b({ say:qs[0], cap:'díganlo en voz alta, sin apuro', gate:'tap', wait:true, minMs:2500, maxMs:60000, mv:'tema' }));
+    if (mood === 'repair' || mood === 'tender') arr.push(b({ say:qs[1], cap:'y ahora al revés', gate:'tap', wait:true, minMs:2500, maxMs:60000, mv:'tema' }));
+    arr.push(b({ say:'Mírense. Solo eso, un momento.', hush:.1, gate:'time', minMs:jitter(6500,800), maxMs:9000, mv:'tema' }));
+    return arr;
+  }
+  function buildDesarrollo(mood, heat, retreats){
+    const arr = [ b({ say:'Cuando quieran acercarse, suban la marea. Despacio. Los dos.', cap:'nada avanza hasta que los dos lo sostienen', fx:'arm-marea', gate:'marea', lvl:Math.min(35, heat), hold:2000, minMs:3000, maxMs:50000, mv:'desarrollo' }) ];
+    const steps = [Math.round(heat*.45), Math.round(heat*.65), Math.round(heat*.82)];
+    let ri = 0;
+    steps.forEach((lvl, i) => {
+      if (ri < retreats && i > 0){ arr.push(b({ say:R(RET), fx:'hush', hush:.34, gate:'time', minMs:jitter(5200,700), maxMs:7000, mv:'desarrollo' })); ri++; }
+      arr.push(b({ say:R(NEAR), cap: i === steps.length-1 ? 'sosténganlo' : '', gate:'marea', lvl:Math.min(lvl, heat-2), hold:jitter(2300,300), minMs:2600, maxMs:50000, mv:'desarrollo' }));
+    });
+    return arr;
+  }
+  function buildClimax(mood, heat){
+    if (mood === 'repair') return [
+      b({ say:'Acérquense todo lo que quieran. Sin meta. Solo cerca.', gate:'marea', lvl:Math.min(58, heat), hold:2500, minMs:3000, maxMs:60000, mv:'climax' }),
+      b({ say:'Ahí. Quédense ahí un rato.', fx:'pulse', hush:.1, gate:'time', minMs:6000, maxMs:9000, mv:'climax' })
+    ];
+    return [
+      b({ say:R(PEAK), cap:'suéltenlo, juntos', fx:'pulse', hush:0, gate:'marea', lvl:heat, hold:2600, minMs:3000, maxMs:75000, mv:'climax' }),
+      b({ say:'', fx:'pulse', hush:0, gate:'time', minMs:jitter(4500,600), maxMs:7000, mv:'climax' })
+    ];
+  }
+  function buildCoda(){
+    return [
+      b({ say:R(C1), fx:'release', hush:.2, gate:'time', minMs:jitter(6000,700), maxMs:8000, mv:'coda' }),
+      b({ say:'Respiren. Bajen despacio.', cap:R(CM), fx:'breathe', hush:.3, gate:'time', minMs:jitter(14000,1500), maxMs:19000, mv:'coda' }),
+      b({ say:R(CE), fx:'release', hush:.16, gate:'time', minMs:jitter(6000,600), maxMs:8000, mv:'coda' }),
+      b({ say:R(CL), cap:'la noche terminó como debía: juntos', gate:'tap', wait:true, minMs:3000, maxMs:120000, mv:'coda' })
+    ];
+  }
+  function buildNight(id){
+    const n = NIGHTS[id];
+    return [].concat(buildPreludio(), buildTema(n.mood), buildDesarrollo(n.mood, n.heat, n.retreats), buildClimax(n.mood, n.heat), buildCoda());
+  }
+  const NIGHTS = {
+    reencuentro: { name:'Reencuentro', sub:'para volver a encontrarse', mood:'tender', heat:74, retreats:1 },
+    lento:       { name:'A Fuego Lento', sub:'sin apuro, hasta que no aguanten', mood:'tender', heat:92, retreats:3 },
+    jugueton:    { name:'Juego', sub:'ligero, con risa y un poco de fuego', mood:'play', heat:82, retreats:1 },
+    reparacion:  { name:'Después de la Tormenta', sub:'para reconectar cuando algo se enfrió', mood:'repair', heat:58, retreats:0 }
+  };
+
+  wire();
+  return { recv, stop, open: chooser, get running(){ return running; } };
+})();
 
 /* Enlaces de En Vivo */
 $$('#vivo [data-signal]').forEach(b => b.addEventListener('click', () => {
