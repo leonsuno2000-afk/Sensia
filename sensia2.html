@@ -3881,33 +3881,42 @@ const Live = {
     const pill = $('#vfStat');
     pill.classList.toggle('on', !!on);
     if (!on){ pill.style.color = ''; return; }
-    this._lastF = 0; this._lastB = 0;
+    this._lastF = 0; this._lastB = 0; this._lastS = 0;
     this.statT = setInterval(async () => {
       if (!Net.pc) return;
       try{
         const st = await Net.pc.getStats();
-        let frames = 0, bytes = 0, pair = null; const cand = {};
+        let frames = 0, bytes = 0, sent = 0, pair = null; const cand = {};
         st.forEach(r => {
           if (r.type === 'inbound-rtp' && r.kind === 'video'){
             if (typeof r.framesDecoded === 'number') frames = r.framesDecoded;
             if (typeof r.bytesReceived === 'number') bytes = r.bytesReceived;
           }
+          if (r.type === 'outbound-rtp' && r.kind === 'video'){
+            if (typeof r.bytesSent === 'number') sent = r.bytesSent;
+          }
           if (r.type === 'candidate-pair' && r.nominated && r.state === 'succeeded') pair = r;
           if (r.type === 'local-candidate' || r.type === 'remote-candidate') cand[r.id] = r.candidateType;
         });
-        const kbps = Math.max(0, Math.round((bytes - this._lastB) * 8 / 1000 / 1.5));
+        const dn = Math.max(0, Math.round((bytes - this._lastB) * 8 / 1000 / 1.5));
+        const up = Math.max(0, Math.round((sent - this._lastS) * 8 / 1000 / 1.5));
         const moved = frames > this._lastF;
-        this._lastF = frames; this._lastB = bytes;
+        const tx = !!(Net.tcV && Net.tcV.sender && Net.tcV.sender.track && Net.tcV.sender.track.readyState === 'live');
+        this._lastF = frames; this._lastB = bytes; this._lastS = sent;
         let conn = 'buscando…';
         if (pair){
           const a = cand[pair.localCandidateId], b = cand[pair.remoteCandidateId];
           conn = (a === 'relay' || b === 'relay') ? 'relevo' : 'directa';
         }
         const badge = $('#camBadge'); badge.style.display = 'block';
-        pill.textContent = conn + ' · ' + kbps + 'kb/s';
+        pill.textContent = conn + ' · ↑' + up + ' ↓' + dn + ' kb/s';
         if (moved){
           badge.textContent = '● EN VIVO'; badge.style.color = '#8BE59A'; pill.style.color = '#8BE59A';
           $('#noFeed').style.display = 'none';
+        } else if (!tx){
+          badge.textContent = '◌ enciende tu cámara'; badge.style.color = '#E0A15A'; pill.style.color = '#E0A15A';
+        } else if (up > 0){
+          badge.textContent = '◌ tú envías · falta su cámara'; badge.style.color = '#E0A15A'; pill.style.color = '#E0A15A';
         } else {
           badge.textContent = '◌ sin imagen de tu pareja'; badge.style.color = '#E0A15A'; pill.style.color = '#E0A15A';
         }
