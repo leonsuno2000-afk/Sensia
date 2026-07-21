@@ -2955,7 +2955,7 @@ const Lienzo = (() => {
 const Heart = (() => {
   let on = false, stream = null, track = null, raf = 0;
   let vals = [], last = 0, peaks = [], bpm = 0, t0 = 0, sendT = null;
-  let theirs = 0, resT = 0, tapTimes = [], hasTorch = false;
+  let theirs = 0, resT = 0, tapTimes = [], hasTorch = false, ppgGreen = false;
 
   function ui(msg){ $('#heartStatus').textContent = msg; }
   function beatMine(){
@@ -2986,6 +2986,39 @@ const Heart = (() => {
     if (!ok) resT = 0;
     el.classList.toggle('on', !!(ok && resT && Date.now() - resT > 3000));
   }
+  /* Espera a que la cámara entregue el primer cuadro de verdad. */
+  function firstFrame(v, ms){
+    return new Promise(res => {
+      const t0 = Date.now();
+      (function tick(){
+        if (v.videoWidth > 0) return res(true);
+        if (Date.now() - t0 > ms) return res(false);
+        requestAnimationFrame(tick);
+      })();
+    });
+  }
+  /* Enciende la linterna y COMPRUEBA que quedó encendida, en vez de suponerlo
+     por la plataforma. Reintenta: en Samsung el primer intento suele fallar y
+     el segundo, medio segundo después, funciona. */
+  async function enableTorch(tr){
+    for (let i = 0; i < 4; i++){
+      if (!tr || tr.readyState !== 'live') return false;
+      let caps = {};
+      try{ caps = (tr.getCapabilities && tr.getCapabilities()) || {}; }catch(_){}
+      if ('torch' in caps && !caps.torch) return false;   // el teléfono dice que no tiene
+      if (('torch' in caps) || i > 0){
+        try{
+          await tr.applyConstraints({ advanced:[{ torch:true }] });
+          let st = {};
+          try{ st = (tr.getSettings && tr.getSettings()) || {}; }catch(_){}
+          if (st.torch === true) return true;              // confirmado por el navegador
+          if (!('torch' in st) && !IS_IOS) return true;    // no lo reporta, pero no lanzó
+        }catch(_){}
+      }
+      await sleep(300);
+    }
+    return false;
+  }
   async function start(){
     if (Live.cam){ toast('Apaga la cámara de la sesión primero'); return; }
     /* Antes esto decía "no se pudo abrir la cámara trasera" y ahí moría: la causa
@@ -3003,29 +3036,30 @@ const Heart = (() => {
       });
     }catch(e){ toast(mediaErr(e, 'la cámara trasera')); return; }
     track = stream.getVideoTracks()[0];
-    // La linterna (torch) no existe en Safari iOS: la promesa se resuelve pero no enciende nada.
-    // Detectamos el flash de verdad y, si no hay, lo decimos claro en vez de fallar en silencio.
-    hasTorch = false;
-    try{
-      const caps = (track.getCapabilities && track.getCapabilities()) || {};
-      const torchCap = ('torch' in caps) ? !!caps.torch : !IS_IOS;
-      if (torchCap){
-        await track.applyConstraints({ advanced:[{ torch:true }] });
-        hasTorch = !IS_IOS;
-      }
-    }catch(_){ hasTorch = false; }
+    /* El video PRIMERO. En Android las capacidades del track (torch incluido) se
+       pueblan recién cuando la cámara empieza a entregar cuadros: pedir el flash
+       apenas vuelve getUserMedia falla en teléfonos que sí tienen linterna, y
+       ese era exactamente el "este teléfono no encendió el flash" del S23. */
     const v = $('#ppgVideo');
     v.srcObject = stream;
     try{ await v.play(); }catch(_){}
-    on = true; vals = []; peaks = []; last = 0; t0 = performance.now();
+
+    on = true; vals = []; peaks = []; last = 0; t0 = performance.now(); ppgGreen = false;
     $('#heartBtn').textContent = 'Detener';
+    ui('Encendiendo el flash…');
+    loop();
+    sendT = setInterval(() => { if (bpm > 40) Net.send({ t:'heart', bpm:Math.round(bpm) }); }, 2200);
+
+    await firstFrame(v, 1600);
+    hasTorch = await enableTorch(track);
+    if (!on) return;                       // lo detuvo mientras encendíamos
+    /* Encender la linterna cambia el brillo de golpe: lo medido antes es basura. */
+    vals = []; peaks = []; last = 0; t0 = performance.now();
     ui(hasTorch
       ? 'Apoya la yema sobre la cámara y el flash. Quieto…'
       : (IS_IOS
           ? 'El iPhone no puede encender la linterna. Ponte bajo una luz fuerte y apoya la yema tapando la cámara. Quieto…'
           : 'Este teléfono no encendió el flash. Busca una luz fuerte y apoya la yema tapando la cámara. Quieto…'));
-    loop();
-    sendT = setInterval(() => { if (bpm > 40) Net.send({ t:'heart', bpm:Math.round(bpm) }); }, 2200);
   }
   function stop(){
     on = false;
@@ -3047,20 +3081,39 @@ const Heart = (() => {
       const ctx = c.getContext('2d', { willReadFrequently:true });
       ctx.drawImage(v, 0, 0, 40, 40);
       const d = ctx.getImageData(13, 13, 14, 14).data;
-      let r = 0, n = 0;
-      for (let i=0;i<d.length;i+=4){ r += d[i]; n++; }
-      sample(r/n, performance.now());
+      let r = 0, g = 0, n = 0;
+      for (let i=0;i<d.length;i+=4){ r += d[i]; g += d[i+1]; n++; }
+      r /= n; g /= n;
+      /* Con la yema pegada al flash el canal rojo se satura en 255 y la onda del
+         pulso se aplana justo cuando la señal debería ser mejor. El verde sigue
+         teniendo variación ahí. Se elige uno y, si cambia, se empieza de cero:
+         mezclar canales inventa picos que no existen. */
+      const g0 = r > 245;
+      if (g0 !== ppgGreen){ ppgGreen = g0; vals = []; peaks = []; last = 0; }
+      sample(ppgGreen ? g : r, performance.now());
     }
     raf = requestAnimationFrame(loop);
   }
   function sample(val, t){
-    vals.push({ v:val, t:t });
+    /* Media móvil corta. El sensor mete ruido de un cuadro que la detección de
+       picos leía como latido: de ahí lecturas erráticas o ninguna. Se guarda el
+       valor crudo y el suavizado; los picos se buscan sobre el suavizado. */
+    const e = { v:val, t:t, s:val };
+    vals.push(e);
+    const K = 5, n0 = vals.length;
+    if (n0 >= K){
+      let acc = 0;
+      for (let i = n0-K; i < n0; i++) acc += vals[i].v;
+      e.s = acc / K;
+    } else if (n0 > 1){
+      e.s = vals[n0-2].s * 0.65 + val * 0.35;
+    }
     if (vals.length > 320) vals.shift();
     if (vals.length < 40) return;
 
     const win = vals.slice(-45);
-    const mean = win.reduce((a,x) => a + x.v, 0) / win.length;
-    const recent = vals.slice(-120).map(x => x.v);
+    const mean = win.reduce((a,x) => a + x.s, 0) / win.length;
+    const recent = vals.slice(-120).map(x => x.s);
     const mx = Math.max.apply(null, recent), mn = Math.min.apply(null, recent);
     const amp = mx - mn;
 
@@ -3069,7 +3122,7 @@ const Heart = (() => {
     const n = vals.length;
     const a = vals[n-3], b = vals[n-2], cc = vals[n-1];
     if (!a || !b) return;
-    const isPeak = b.v > a.v && b.v >= cc.v && (b.v - mean) > amp * 0.24;
+    const isPeak = b.s > a.s && b.s >= cc.s && (b.s - mean) > amp * 0.24;
     const dt = b.t - last;
     if (isPeak && dt > 330 && dt < 2200){
       if (last) peaks.push(dt);
