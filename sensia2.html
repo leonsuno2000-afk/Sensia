@@ -10,13 +10,29 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Notas</title>
+<!-- Identidad neutra: en la pantalla de inicio, en la lista de apps abiertas y en
+     cualquier captura, esto es una libreta de notas. La discreción no es un ajuste
+     que se activa después: es lo primero que ve el sistema operativo. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%232b2e33'/%3E%3Crect x='128' y='104' width='256' height='304' rx='24' fill='%23e9e5dd'/%3E%3Cg fill='%239aa0a6'%3E%3Crect x='168' y='168' width='176' height='18' rx='9'/%3E%3Crect x='168' y='222' width='176' height='18' rx='9'/%3E%3Crect x='168' y='276' width='120' height='18' rx='9'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%232b2e33'/%3E%3Crect x='128' y='104' width='256' height='304' rx='24' fill='%23e9e5dd'/%3E%3Cg fill='%239aa0a6'%3E%3Crect x='168' y='168' width='176' height='18' rx='9'/%3E%3Crect x='168' y='222' width='176' height='18' rx='9'/%3E%3Crect x='168' y='276' width='120' height='18' rx='9'/%3E%3C/g%3E%3C/svg%3E">
+<meta name="apple-mobile-web-app-title" content="Notas">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" id="manifestLink">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Hanken+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<script src="https://cdn.socket.io/4.7.2/socket.io.min.js" onerror="window.__noSocket=true"></script>
+<!-- Hay redes y operadores que bloquean cdn.socket.io. Antes eso mataba el modo
+     "con servidor" en silencio y sin explicación. Ahora se intenta un segundo
+     origen antes de rendirse, y recién entonces se marca __noSocket. -->
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js" onerror="window.__socketCdnFail=1"></script>
+<script>
+if (window.__socketCdnFail && typeof io === 'undefined'){
+  document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js" onerror="window.__noSocket=true"><\/script>');
+}
+</script>
 <style>
 /* ═══════════════════════════════════════════════════════════════
-   SENSIA Ω∞  ·  v4 "La Marea"
+   SENSIA Ω∞  ·  v5 "La Puerta"
    Un santuario para dos. Consentimiento como física, no como aviso.
    ═══════════════════════════════════════════════════════════════ */
 
@@ -484,6 +500,12 @@ label.fld{display:block;color:var(--rose);font-size:11px;letter-spacing:.1em;
 .marea-nums .eff{color:var(--champagne)}
 .marea-law{font-size:11.5px;color:var(--ash-dim);line-height:1.6;margin-top:10px;border-left:2px solid var(--line-2);padding-left:10px}
 .marea-law b{color:var(--rose)}
+.marea-offer{display:none;width:100%;margin-top:10px;padding:10px 12px;border-radius:12px;
+  background:rgba(232,112,79,.1);border:1px solid rgba(232,112,79,.34);color:var(--champagne);
+  font-size:12px;text-align:center;transition:.15s;animation:mareaOfferIn .28s ease}
+.marea-offer b{color:var(--ember-core)}
+.marea-offer:active{background:rgba(232,112,79,.2)}
+@keyframes mareaOfferIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:6px;
   background:linear-gradient(90deg,var(--ember-deep),var(--ember-core));outline:none;margin:8px 0}
@@ -612,6 +634,92 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
 #iosGate .ig-steps{color:var(--ash-dim);font-size:12px;line-height:1.7;margin:12px 0 0}
 #iosGate .ig-steps b{color:var(--rose)}
 
+/* ══════════════════════ AVISO DE ORIGEN INSEGURO ══════════════════════
+   Vivía sólo en el Umbral y dentro de En Vivo. Pero la cámara, el micrófono
+   y el cifrado se caen en TODAS las salas: hacía falta un aviso que viaje
+   con la persona y diga qué hacer, no sólo que algo falló. */
+#insecureBar{position:fixed;top:0;left:0;right:0;z-index:95;display:none;
+  padding:calc(env(safe-area-inset-top,0) + 9px) 14px 9px;text-align:center;
+  background:linear-gradient(180deg,rgba(110,31,53,.97),rgba(58,21,36,.97));
+  border-bottom:1px solid rgba(224,104,90,.4);color:var(--champagne);
+  font-size:12.5px;line-height:1.5;cursor:pointer;backdrop-filter:blur(8px)}
+body.insecure #insecureBar{display:block}
+body.insecure .screen{padding-top:46px}
+body.insecure .nav{--nudge:0}
+#insecureBar b{color:var(--alert)}
+#insecureBar u{text-decoration-color:rgba(233,183,165,.45);text-underline-offset:3px}
+
+/* ══════════════════════ EL PACTO ══════════════════════
+   Primera pantalla absoluta. Antes del gesto, antes de todo. Nadie entra
+   sin declarar tres cosas. No es letra chica: es la puerta. */
+#pacto{position:fixed;inset:0;z-index:101;background:var(--noir);display:none;
+  flex-direction:column;padding:calc(env(safe-area-inset-top,0) + 20px) var(--pad) calc(env(safe-area-inset-bottom,0) + 20px);
+  overflow-y:auto;-webkit-overflow-scrolling:touch}
+#pacto.on{display:flex;animation:fadeIn .5s var(--ease)}
+#pacto .wrap{max-width:460px;margin:auto;width:100%}
+#pacto .pt-mark{width:58px;height:58px;margin:0 auto 20px;border-radius:50%;display:grid;place-items:center;
+  background:var(--grad-glow);border:1px solid var(--line-2);font-family:var(--font-d);
+  font-size:26px;color:var(--ember-core)}
+#pacto h2{font-family:var(--font-d);font-weight:400;font-size:clamp(26px,7.4vw,34px);
+  color:var(--champagne);margin:0 0 6px;text-align:center;line-height:1.15}
+#pacto .pt-sub{text-align:center;color:var(--ash-dim);font-family:var(--font-m);font-size:11px;
+  letter-spacing:.14em;text-transform:uppercase;margin:0 0 24px}
+.pt-item{display:flex;gap:13px;align-items:flex-start;padding:15px 15px 15px 13px;margin-bottom:10px;
+  width:100%;text-align:left;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);
+  transition:border-color .25s var(--ease),background .25s var(--ease);cursor:pointer}
+.pt-tx{flex:1;min-width:0}
+.pt-item.on{border-color:rgba(123,174,143,.5);background:rgba(123,174,143,.07)}
+.pt-box{flex:0 0 auto;width:24px;height:24px;border-radius:7px;border:1.6px solid var(--line-2);
+  display:grid;place-items:center;margin-top:1px;transition:all .25s var(--ease-bounce)}
+.pt-item.on .pt-box{background:var(--ok);border-color:var(--ok)}
+.pt-box svg{width:14px;height:14px;stroke:var(--noir);stroke-width:3.4;fill:none;
+  stroke-linecap:round;stroke-linejoin:round;opacity:0;transform:scale(.5);transition:all .25s var(--ease-bounce)}
+.pt-item.on .pt-box svg{opacity:1;transform:none}
+.pt-tx b{display:block;font-size:14.5px;font-weight:600;color:var(--mist);margin-bottom:3px;line-height:1.35}
+.pt-tx small{display:block;font-size:12.5px;line-height:1.62;color:var(--ash)}
+.pt-tx small i{color:var(--rose);font-style:normal}
+#pacto .pt-foot{color:var(--ash-dim);font-size:11.5px;line-height:1.65;text-align:center;margin:18px 0 0}
+#pacto .pt-foot b{color:var(--ash)}
+#pactoGo:disabled{opacity:.32;pointer-events:none}
+.pt-out{display:block;width:100%;text-align:center;margin-top:16px;background:none;border:none;
+  color:var(--ash-dim);font-size:12.5px;text-decoration:underline;text-underline-offset:4px;padding:8px}
+
+/* ══════════════════════ LA REVISIÓN ══════════════════════
+   Chequeo honesto antes de la primera noche. Cada línea dice qué se probó,
+   qué salió y —si salió mal— qué se puede hacer. */
+.rev-row{display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line-3)}
+.rev-row:last-child{border-bottom:none}
+.rev-ico{flex:0 0 auto;width:21px;height:21px;border-radius:50%;display:grid;place-items:center;
+  font-size:11px;font-weight:700;margin-top:1px;background:var(--noir-3);color:var(--ash-dim)}
+.rev-ico.ok{background:rgba(123,174,143,.16);color:var(--ok)}
+.rev-ico.no{background:rgba(224,104,90,.16);color:var(--alert)}
+.rev-ico.warn{background:rgba(229,181,103,.16);color:var(--warn)}
+.rev-ico.run{background:var(--noir-3);color:var(--ash-dim);animation:pulseDot 1s infinite}
+@keyframes pulseDot{0%,100%{opacity:.35}50%{opacity:1}}
+.rev-tx{flex:1;min-width:0}
+.rev-tx b{display:block;font-size:13.5px;font-weight:600;color:var(--mist);margin-bottom:2px}
+.rev-tx small{display:block;font-size:12px;line-height:1.55;color:var(--ash)}
+.rev-tx small.bad{color:var(--warn)}
+.rev-verdict{margin-top:14px;padding:13px 15px;border-radius:var(--r-md);font-size:13px;line-height:1.6;
+  border:1px solid var(--line);background:var(--card);color:var(--ash);display:none}
+.rev-verdict.on{display:block}
+.rev-verdict b{color:var(--champagne)}
+.rev-verdict.good{border-color:rgba(123,174,143,.34);background:rgba(123,174,143,.07)}
+.rev-verdict.bad{border-color:rgba(224,104,90,.3);background:rgba(224,104,90,.06)}
+
+/* Relevos */
+#relayBox{font-family:var(--font-m);font-size:11px;min-height:96px}
+.relay-state{font-family:var(--font-m);font-size:11px;color:var(--ash-dim);margin-top:9px;line-height:1.6}
+.relay-state.ok{color:var(--ok)} .relay-state.no{color:var(--alert)}
+
+/* Invitación entrante */
+.invite-note{padding:13px 15px;border-radius:var(--r-md);margin-bottom:14px;display:none;
+  border:1px solid rgba(232,112,79,.34);background:rgba(232,112,79,.08);
+  font-size:13.5px;line-height:1.6;color:var(--champagne)}
+.invite-note.on{display:block;animation:fadeIn .45s var(--ease)}
+.invite-note b{color:var(--ember-core)}
+
 /* Neutral / notas señuelo */
 #neutral{position:fixed;inset:0;z-index:100;background:#101216;display:none;flex-direction:column;
   padding:calc(env(safe-area-inset-top,0) + 14px) 16px calc(env(safe-area-inset-bottom,0) + 14px)}
@@ -713,6 +821,8 @@ body.reduce #tour .tour-ring::after{animation:none}
   #tour .tour-card{padding:18px 18px 15px}
 }
 /* ══════════════════════ EL DIRECTOR ══════════════════════ */
+.vf-badge{max-width:56%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#peerAway b{color:var(--rose);font-weight:600}
 .mo-entry{position:relative;margin-bottom:12px;border-radius:var(--r-md);padding:14px 16px;overflow:hidden;
   background:linear-gradient(135deg,rgba(232,112,79,.15),rgba(154,127,166,.13));
   border:1px solid rgba(232,112,79,.3);display:flex;align-items:center;gap:12px}
@@ -759,6 +869,7 @@ body.reduce #tour .tour-ring::after{animation:none}
 .mo-pedal button:active{background:rgba(0,0,0,.78)}
 .mo-pedal .mo-end{border-color:rgba(224,104,90,.4);color:var(--rose)}
 .mo-pedal .mo-voice.on{background:var(--grad-ember);color:#fff;border-color:transparent}
+.mo-pedal #moStay.on{background:rgba(224,104,90,.22);border-color:var(--rose);color:var(--rose)}
 .marea.mo-arm{border-color:var(--ember-core);box-shadow:0 0 26px var(--ember-glow);transition:.4s}
 
 .mo-chooser h3,.mo-sheet h3{font-family:var(--font-d);font-size:27px;color:var(--champagne);margin:2px 0 4px}
@@ -775,6 +886,7 @@ body.reduce #tour .tour-ring::after{animation:none}
 <body data-theme="brasa">
 <canvas id="embers"></canvas>
 <div class="veil"><div class="aurora"></div></div>
+<div id="insecureBar"><b>Sin conexión segura.</b> No hay cámara, ni micrófono, ni cifrado. <u>Toca aquí</u></div>
 <div class="conn-bar" id="connBar"><span class="conn-dot" id="connDot"></span><span id="connText">Sin conexión</span></div>
 
 <!-- ══════════════ EL UMBRAL ══════════════ -->
@@ -967,6 +1079,7 @@ body.reduce #tour .tour-ring::after{animation:none}
     <!-- Puerta de consentimiento -->
     <div id="vivoGate">
       <div class="warn-bar" id="insecureWarn">Estás abriendo Sensia sin HTTPS. Sin conexión segura no hay cifrado ni cámara. Ábrela desde una dirección <b>https://</b>.</div>
+      <div class="invite-note" id="inviteNote"></div>
       <div class="card">
         <p class="eyebrow">El enlace</p>
         <h3>Una sesión empieza cuando ambos la eligen</h3>
@@ -1041,6 +1154,8 @@ body.reduce #tour .tour-ring::after{animation:none}
         <video class="local-video" id="localVideo" autoplay playsinline muted></video>
         <div class="trigger-flash" id="triggerFlash"></div>
         <div class="nofeed" id="noFeed">Nadie está mirando todavía.<br>La cámara se enciende solo si tú la enciendes.</div>
+        <div class="nofeed" id="peerAway" style="display:none"><span style="text-align:center"><b>Está fuera de la app un momento.</b><br>Su imagen vuelve cuando regrese.</span></div>
+        <div class="nofeed" id="tapPlay" style="display:none"><span style="text-align:center"><b>Toca la pantalla para verla y oírla.</b><br>Tu teléfono espera un toque tuyo antes de abrir el sonido.</span></div>
         <div class="blind"><span id="blindWord">guíate por su voz…</span></div>
         <div class="vf-badge" id="camBadge" style="display:none">● EN VIVO</div>
         <div class="vf-stat" id="vfStat">—</div>
@@ -1090,6 +1205,7 @@ body.reduce #tour .tour-ring::after{animation:none}
           <span class="eff">llega <b id="mareaEff">0</b> · <span id="mareaWord">reposo</span></span>
           <span class="theirs"><b id="mareaTheirs">0</b> él/ella</span>
         </div>
+        <button class="marea-offer" id="mareaOffer" style="display:none"></button>
         <div class="marea-law">Lo que llega es siempre <b>lo menor de los dos</b>. Nadie puede empujar más allá de donde el otro dejó su dedo. No es una regla de convivencia: es cómo está construida.</div>
       </div>
 
@@ -1266,6 +1382,19 @@ body.reduce #tour .tour-ring::after{animation:none}
     </div>
   </header>
   <div class="pane">
+    <div class="card" style="border-color:rgba(232,112,79,.22)">
+      <p class="eyebrow">Cómo se empieza</p>
+      <h3 style="margin-bottom:8px">Son dos teléfonos, no uno</h3>
+      <p class="lead" style="margin-bottom:12px">Sensia no sirve sola. Todo lo de <b>En Vivo</b>, <b>El Toque</b> y <b>El Ritmo</b> necesita a la otra persona adentro, con esta misma dirección abierta en su teléfono.</p>
+      <ol style="margin:0;padding-left:20px;color:var(--ash);font-size:13.5px;line-height:1.9">
+        <li>Mándale esta dirección. Ella o él abre y traza <b style="color:var(--rose)">su propio gesto</b> — cada teléfono tiene el suyo.</li>
+        <li>Uno de los dos va a <b>En Vivo</b>, toca <b>Generar</b> y luego <b>Compartir enlace</b>.</li>
+        <li>El otro abre ese enlace: el código entra solo. Los dos tocan <b>Entrar</b>.</li>
+        <li>Aparece el <b style="color:var(--rose)">sello</b> — cinco símbolos. <b>Díganlo en voz alta.</b> Si coincide, están solos. Si no coincide, hay alguien en el medio: corten.</li>
+      </ol>
+      <button class="btn ghost sm" id="shareAppBtn" style="width:100%;margin-top:14px">Compartir Sensia con quien entra conmigo</button>
+    </div>
+
     <div class="card">
       <p class="eyebrow">Nuestro registro</p>
       <div class="stats-row" style="margin-top:4px">
@@ -1357,13 +1486,43 @@ body.reduce #tour .tour-ring::after{animation:none}
       <button class="btn ghost sm" id="replayTour" style="width:100%;margin-top:12px">Ver el recorrido otra vez</button>
     </div>
 
+    <div class="card" id="installCard" style="display:none">
+      <p class="eyebrow">Instalar</p>
+      <h3 style="margin-bottom:4px">Ponla en tu pantalla de inicio</h3>
+      <p class="lead">Instalada abre sin barra de direcciones, más rápido, y en la pantalla de inicio se ve como <b>una libreta de notas</b> — mismo nombre, mismo ícono. Nadie que mire tu teléfono va a ver otra cosa.</p>
+      <button class="btn primary sm" id="installBtn" style="width:100%;margin-top:12px">Instalar</button>
+      <p class="dim" id="installHint" style="margin-top:10px;display:none"></p>
+    </div>
+
+    <div class="card">
+      <p class="eyebrow">La Revisión</p>
+      <h3 style="margin-bottom:4px">¿Va a funcionar esta noche?</h3>
+      <p class="lead">Prueba de verdad lo que hace falta: cifrado, cámara, micrófono, servidor y camino de red. Tarda unos segundos y no enciende nada que se vea del otro lado.</p>
+      <button class="btn ghost sm" id="revRun" style="width:100%;margin-top:12px">Revisar este teléfono</button>
+      <div id="revList" style="margin-top:6px"></div>
+      <div class="rev-verdict" id="revVerdict"></div>
+    </div>
+
+    <div class="card">
+      <p class="eyebrow">Los relevos</p>
+      <h3 style="margin-bottom:4px">Cuando no hay camino directo</h3>
+      <p class="lead">En datos móviles muchas veces los dos teléfonos no se ven entre sí y hace falta un <b>relevo</b> que empuje el tráfico —cifrado— de un lado al otro. Sin uno bueno, la sesión a veces no abre. Pega aquí el tuyo y queda guardado en este teléfono.</p>
+      <textarea id="relayBox" class="fld-gap" placeholder="turn:mi-dominio.metered.live:443|usuario|clave&#10;&#10;— o pega el bloque iceServers en JSON —" spellcheck="false" autocomplete="off"></textarea>
+      <div class="row fld-gap">
+        <button class="btn ghost sm" id="relaySave" style="flex:1">Guardar</button>
+        <button class="btn primary sm" id="relayTest" style="flex:1">Probar</button>
+      </div>
+      <div class="relay-state" id="relayState">Sin relevo propio. Se usan los públicos, que a veces están caídos.</div>
+      <p class="dim" style="margin-top:10px;font-size:11.5px;line-height:1.6">Un relevo ve <i>por dónde</i> pasa el tráfico, nunca <i>qué</i> pasa: todo va cifrado de punta a punta antes de tocarlo. Cuentas gratuitas: <b>metered.ca</b>, <b>Cloudflare Calls</b>, <b>Twilio</b>.</p>
+    </div>
+
     <div class="card">
       <p class="eyebrow">Zona delicada</p>
       <button class="btn danger sm" id="wipeAll" style="width:100%">Borrar todo de este teléfono</button>
       <p class="dim" style="margin-top:10px">Elimina el gesto, las fantasías, el vocabulario, las chispas, la bóveda y los ajustes. No se puede deshacer.</p>
     </div>
 
-    <p class="foot-note">Sensia Ω∞ · v4 <b>La Marea</b><br>Túnel P2P cifrado extremo a extremo · sello verificable · sin cuentas ni registro. Nada de lo que se dicen queda en un servidor; para conectarlos (y a veces para sostener la señal) se usa un relay que ve <i>por dónde</i> pasan, nunca <i>qué</i> pasa.</p>
+    <p class="foot-note">Sensia Ω∞ · v5 <b>La Puerta</b><br>Túnel P2P cifrado extremo a extremo · sello verificable · sin cuentas ni registro. Nada de lo que se dicen queda en un servidor; para conectarlos (y a veces para sostener la señal) se usa un relay que ve <i>por dónde</i> pasan, nunca <i>qué</i> pasa.</p>
   </div>
 </section>
 
@@ -1383,6 +1542,7 @@ body.reduce #tour .tour-ring::after{animation:none}
 <div id="pausa">
   <div class="m">Todo se apagó.</div>
   <div class="s">No hace falta explicar nada. Cuando quieras, vuelve. Y si no quieres, también está bien.</div>
+  <div class="s" id="pausaTold" style="color:var(--ash-dim);margin-top:10px"></div>
   <button class="btn ghost" id="pausaBack" style="margin-top:32px;max-width:260px">Volver al umbral</button>
 </div>
 
@@ -1436,13 +1596,51 @@ body.reduce #tour .tour-ring::after{animation:none}
   </div>
 </div>
 
+<!-- ══════════════ EL PACTO ══════════════ -->
+<div id="pacto">
+  <div class="wrap">
+    <div class="pt-mark">Ω</div>
+    <h2>Antes de abrir la puerta</h2>
+    <p class="pt-sub">tres cosas, dichas de frente</p>
+
+    <button class="pt-item" data-pact="edad">
+      <span class="pt-box"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>
+      <span class="pt-tx">
+        <b>Somos adultos</b>
+        <small>Tengo la mayoría de edad donde vivo, y la persona con la que voy a entrar también. Sensia es para adultos. <i>No hay excepción a esto.</i></small>
+      </span>
+    </button>
+
+    <button class="pt-item" data-pact="ambos">
+      <span class="pt-box"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>
+      <span class="pt-tx">
+        <b>Los dos queremos</b>
+        <small>Nadie fue convencido, presionado ni sorprendido. Y cualquiera de los dos puede parar en cualquier momento — <i>sin explicar por qué</i>. Eso no se discute después: se acepta ahora.</small>
+      </span>
+    </button>
+
+    <button class="pt-item" data-pact="limite">
+      <span class="pt-box"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>
+      <span class="pt-tx">
+        <b>Sé lo que Sensia no puede hacer</b>
+        <small>No graba nada y no manda nada a ningún servidor. Pero <i>no puede impedir</i> que la otra persona saque una foto de su pantalla. Eso no lo arregla la tecnología: lo sostiene la confianza. Y mi gesto es la llave: si lo olvido, no hay forma de recuperar nada.</small>
+      </span>
+    </button>
+
+    <button class="btn primary" id="pactoGo" style="width:100%;margin-top:18px" disabled>Entrar</button>
+    <button class="pt-out" id="pactoOut">Esto no es para mí — salir</button>
+
+    <p class="pt-foot">Sensia no tiene cuentas, ni registro, ni tu correo, ni tu teléfono. <b>Nada de lo que aceptas aquí viaja a ningún lado</b>: queda en este dispositivo, como todo lo demás.</p>
+  </div>
+</div>
+
 <div class="sheet" id="sheet"><div class="sheet-inner" id="sheetInner"></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
 "use strict";
 /* ═══════════════════════════════════════════════════════════════════════
-   SENSIA Ω∞  ·  v4 "La Marea"
+   SENSIA Ω∞  ·  v5 "La Puerta"
    Motor único. Sin cuentas. Sin servidor obligatorio. Sin rastro.
    Arquitectura:
      · El gesto del umbral DERIVA la llave que cifra todo lo local.
@@ -1463,6 +1661,29 @@ const uid = () => (crypto.randomUUID ? crypto.randomUUID().slice(0,12)
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const SECURE = !!(window.isSecureContext && window.crypto && window.crypto.subtle);
 const HAS_VIBRATE = typeof navigator.vibrate === 'function';
+/* No alcanza con preguntar si la voz "existe": hay navegadores que la declaran
+   y la dejan sin implementar. Se pregunta por el método que de verdad se usa. */
+/* Un solo lugar donde se explica el origen inseguro, para que el Umbral, el
+   Latido, En Vivo y la barra digan exactamente lo mismo. Distingue los dos
+   casos reales: archivo abierto desde el teléfono, o sitio sin https. */
+function isLocalFile(){
+  const p = location.protocol;
+  return p === 'file:' || p === 'content:' || p === 'blob:' ||
+         (p === 'http:' && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname));
+}
+function insecureWhy(){
+  const p = location.protocol;
+  if (p === 'content:' || p === 'file:')
+    return 'Estás abriendo el <b>archivo descargado</b>, no la página. Así el navegador bloquea cámara, micrófono y cifrado. Ábrela desde su dirección <b>https://</b>.';
+  return 'Sin <b>https</b> el navegador bloquea cámara, micrófono y cifrado. Ábrela desde una dirección <b>https://</b>.';
+}
+function hasTTS(){
+  try{
+    return !!(window.speechSynthesis
+      && typeof window.speechSynthesis.getVoices === 'function'
+      && typeof window.SpeechSynthesisUtterance === 'function');
+  }catch(_){ return false; }
+}
 const IS_IOS = /iP(hone|od|ad)/.test(navigator.platform)
   || /iPhone|iPad|iPod/.test(navigator.userAgent)
   || (navigator.platform === 'MacIntel' && (navigator.maxTouchPoints || 0) > 1);
@@ -1536,7 +1757,7 @@ async function unzip(s){
 /* ───────────────────────── 1 · ALMACÉN (IndexedDB) ───────────────────────── */
 const DB = (() => {
   let db = null, mem = {};
-  const NAME = 'sensia_omega_v4';
+  const NAME = 'sensia_omega_v4';   // v5 lee la misma base: nadie pierde lo suyo al actualizar
   function open(){
     return new Promise(res => {
       try{
@@ -1576,6 +1797,18 @@ const DB = (() => {
         }catch(_){ res(false); }
       });
     },
+    del(k){
+      delete mem[k];
+      return new Promise(res => {
+        if (!db) return res(true);
+        try{
+          const tx = db.transaction('kv','readwrite');
+          tx.objectStore('kv').delete(k);
+          tx.oncomplete = () => res(true);
+          tx.onerror = () => res(false);
+        }catch(_){ res(false); }
+      });
+    },
     wipe(){
       mem = {};
       return new Promise(res => {
@@ -1610,7 +1843,7 @@ function defaultState(){
     settings: {
       discreet:true, veilBg:true, killBg:false, autolock:true, flipExit:true,
       haptics:true, audioHaptic:true, reduce:false, notif:false,
-      theme:'brasa', safeWord:'', triggerWord:'', lastCode:''
+      theme:'brasa', safeWord:'', triggerWord:'', lastCode:'', relays:''
     }
   };
 }
@@ -1882,6 +2115,7 @@ const Gate = (() => {
 
   function show(){
     Live.hardStop(true);
+    try{ Vault.autoLock(); }catch(_){}
     $('#nav').classList.remove('on');
     $$('.screen').forEach(s => s.classList.remove('on'));
     $('#umbral').classList.add('on');
@@ -1926,14 +2160,27 @@ async function afterUnlock(){
   go('diario');
   buzz(28);
   Idle.reset();
-  Onboard.maybeStart();     // El Recorrido: solo la primera vez
+  /* Si llegó por un enlace de invitación, esa es la intención — no el recorrido.
+     Se lleva directo a En Vivo con el código ya puesto. */
+  if (Invite.incoming) setTimeout(() => Invite.apply(), 260);
+  else Onboard.maybeStart();     // El Recorrido: solo la primera vez
 }
 async function hydrate(){
   try{
-    let raw = null;
+    let raw = null, rescued = false;
     if (SECURE && deviceKey){
       const blob = await DB.get('blob');
       if (blob) raw = await aesDec(deviceKey, blob);
+      /* Si alguna vez se abrió esto sin HTTPS, quedó una copia EN CLARO del
+         diario en el dispositivo. Al volver por https nadie la leía —parecía
+         que se había perdido todo— y nadie la borraba: seguía ahí, legible,
+         para siempre. Se rescata una vez, se cifra y se elimina. */
+      const old = await DB.get('plain');
+      if (old){
+        if (!raw) raw = old;
+        await DB.del('plain');
+        rescued = true;
+      }
     } else {
       raw = await DB.get('plain');
     }
@@ -1943,6 +2190,10 @@ async function hydrate(){
       State.stats = Object.assign(defaultState().stats, raw.stats || {});
       State.choices = Object.assign({me:{},them:{}}, raw.choices || {});
       State.filters = Object.assign({lvl:[],cat:[]}, raw.filters || {});
+    }
+    if (rescued){
+      persist();   // vuelve a guardarse, ahora cifrado
+      setTimeout(() => toast('Había una copia sin cifrar en este aparato. La rescaté y la borré.'), 1400);
     }
   }catch(e){ toast('No se pudo leer lo guardado'); }
   if (!State.vocab.length) State.vocab = DEFAULT_VOCAB.slice();
@@ -1990,6 +2241,27 @@ $$('[data-exit]').forEach(b => b.addEventListener('click', quickExit));
 $('#testExit').addEventListener('click', () => { toast('Así se ve la salida rápida'); quickExit(); });
 $('#replayTour').addEventListener('click', () => { go('diario'); setTimeout(() => Onboard.start(true), 320); });
 
+/* --- Santuario · las tarjetas nuevas --- */
+$('#revRun').addEventListener('click', () => Revision.run());
+$('#relaySave').addEventListener('click', () => Relay.save());
+$('#relayTest').addEventListener('click', async () => { if (Relay.save()) await Relay.test(); });
+$('#shareAppBtn').addEventListener('click', async () => {
+  const url = Invite.base();
+  let discreet = true;
+  try{ discreet = State.settings.discreet !== false; }catch(_){}
+  const text = discreet
+    ? 'Ábrelo en tu teléfono. Es una página: no hay que instalar nada ni crear cuenta.\n' + url
+    : 'Sensia — un santuario para dos. Ábrelo en tu teléfono, es una página, no hay que instalar nada ni crear cuenta:\n' + url;
+  try{
+    if (navigator.share){ await navigator.share({ text }); return; }
+    await navigator.clipboard.writeText(text);
+    toast('Enlace copiado');
+  }catch(_){
+    try{ await navigator.clipboard.writeText(url); toast('Enlace copiado'); }
+    catch(__){ toast('Copia la dirección de la barra y mándasela.'); }
+  }
+});
+
 (() => {  // volver: mantener presionado el título
   const t = $('#neutralTitle'); let hold = null;
   const down = () => { hold = setTimeout(() => { hold = null; reenter(); }, 900); };
@@ -1997,7 +2269,11 @@ $('#replayTour').addEventListener('click', () => { go('diario'); setTimeout(() =
   t.addEventListener('pointerdown', down);
   ['pointerup','pointerleave','pointercancel'].forEach(ev => t.addEventListener(ev, up));
 })();
-$('#pausaBack').addEventListener('click', () => { $('#pausa').classList.remove('on'); Gate.show(); });
+$('#pausaBack').addEventListener('click', () => {
+  $('#pausa').classList.remove('on');
+  $('#pausaTold').textContent = '';   // que no quede el aviso de la vez pasada
+  Gate.show();
+});
 
 /* Voltear el teléfono */
 (() => {
@@ -2017,6 +2293,7 @@ $('#pausaBack').addEventListener('click', () => { $('#pausa').classList.remove('
 document.addEventListener('visibilitychange', () => {
   if (document.hidden){
     if (!unlocked) return;
+    if (Live.active && Net.sealed) Net.send({ t:'away', on:true });   // avisar antes de velar
     if (State.settings.killBg){ Live.hardStop(true); }
     else if (State.settings.veilBg){ Live.veil(true); document.body.classList.add('blackout'); }
     Haptics.stopAll();
@@ -2025,6 +2302,10 @@ document.addEventListener('visibilitychange', () => {
     Live.veil(false);
     if (State.settings.discreet) document.title = 'Notas';
     Live.keepAwake(Live.active);
+    if (Live.active){
+      if (Net.sealed) Net.send({ t:'away', on:false });
+      Live.recoverMedia();   // si Android mató la cámara/mic en segundo plano, se recuperan solos
+    }
   }
 });
 
@@ -2214,10 +2495,10 @@ const DEFAULT_VOCAB = [
 
 const SCENES = [
   {id:'susurro',  n:'Susurro',      d:'Solo voz. Venda puesta. La imaginación hace el resto.',  cam:false, mic:true,  blind:true,  marea:20},
-  {id:'ojos',     n:'Ojos en ti',   d:'Yo miro, tú te dejas mirar. Sin apuro.',                  cam:true,  mic:true,  blind:false, marea:0},
+  {id:'ojos',     n:'Ojos en ti',   d:'Yo miro, tú te dejas mirar. Sin apuro.',                  cam:true,  mic:true,  blind:false},
   {id:'oscuras',  n:'A oscuras',    d:'Sin imagen. Solo el pulso y la marea.',                   cam:false, mic:false, blind:true,  marea:45},
-  {id:'guion',    n:'El guion',     d:'Escriben juntos lo que va a pasar. Después, pasa.',       cam:false, mic:true,  blind:false, marea:0, script:true},
-  {id:'espejo',   n:'Espejo',       d:'Los dos hacen lo mismo, al mismo tiempo.',                cam:true,  mic:true,  blind:false, marea:0, breath:true}
+  {id:'guion',    n:'El guion',     d:'Escriben juntos lo que va a pasar. Después, pasa.',       cam:false, mic:true,  blind:false, script:true},
+  {id:'espejo',   n:'Espejo',       d:'Los dos hacen lo mismo, al mismo tiempo.',                cam:true,  mic:true,  blind:false, breath:true}
 ];
 
 const SAS_EMOJI = ['🔥','🌙','⭐','🌊','💧','🍷','🕯️','🗝️','⚓','🌿','🍃','🐚','🪶','🎭','🎸','🥁',
@@ -2706,14 +2987,21 @@ const Heart = (() => {
     el.classList.toggle('on', !!(ok && resT && Date.now() - resT > 3000));
   }
   async function start(){
-    if (!navigator.mediaDevices){ toast('Cámara no disponible aquí'); return; }
     if (Live.cam){ toast('Apaga la cámara de la sesión primero'); return; }
+    /* Antes esto decía "no se pudo abrir la cámara trasera" y ahí moría: la causa
+       más común —estar en un archivo local, no en una página https— quedaba sin
+       nombrar y no había nada que hacer con el aviso. mediaErr() ya sabe traducir
+       cada error del navegador a algo accionable. */
+    if (!SECURE){ toast(insecureWhy()); return; }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+      toast(mediaErr(null, 'la cámara trasera')); return;
+    }
     try{
       stream = await navigator.mediaDevices.getUserMedia({
         video:{ facingMode:{ideal:'environment'}, width:{ideal:320}, height:{ideal:240}, frameRate:{ideal:30} },
         audio:false
       });
-    }catch(_){ toast('No se pudo abrir la cámara trasera'); return; }
+    }catch(e){ toast(mediaErr(e, 'la cámara trasera')); return; }
     track = stream.getVideoTracks()[0];
     // La linterna (torch) no existe en Safari iOS: la promesa se resuelve pero no enciende nada.
     // Detectamos el flash de verdad y, si no hay, lo decimos claro en vez de fallar en silencio.
@@ -2962,13 +3250,40 @@ $('#qVault').addEventListener('click', () => {
    sellos NO coinciden. Por eso el sello se dice en voz alta. Esa
    comparación humana es la que cierra el hueco. Es un paso, no un hechizo.
    ──────────────────────────────────────────────────────────────── */
+/* ────────────────────────────────────────────────────────────────
+   RELEVOS (TURN) — el plan B cuando NO hay camino directo.
+   En redes móviles (datos, CGNAT, WiFi con NAT simétrico) muchas veces
+   no existe un camino directo entre los dos teléfonos. Ahí entra un
+   relevo (TURN). Si el relevo está muerto, la conexión entera se cae:
+   es el "El túnel no pudo abrirse". Los relevos gratis de abajo
+   (openrelay) son poco confiables — por eso a veces conecta "directa"
+   y otras veces falla.
+
+   → PARA QUE CONECTE SIEMPRE, poné tu propio TURN gratis:
+     1. Entrá a https://dashboard.metered.ca  (cuenta gratis, ~50 GB/mes).
+     2. Creá una app y copiá tu bloque "iceServers" (te lo dan listo).
+     3. Pegá esas líneas dentro de MIS_RELEVOS, borrando el ejemplo.
+
+   → PARA PROBAR que tu TURN sirve: abrí la app con  #relay  al final de
+     la URL  (…onrender.com/#relay). Eso obliga a que TODO pase por el
+     relevo. Si con #relay conecta, tu TURN está vivo y ya conectan
+     siempre. Si con #relay NO conecta, el TURN está mal puesto.
+   ──────────────────────────────────────────────────────────────── */
+const MIS_RELEVOS = [
+  /* ↓↓↓ PEGÁ ACÁ TUS CREDENCIALES (Metered / Cloudflare / Twilio) ↓↓↓
+  { urls:'turn:TU-DOMINIO.metered.live:80',                 username:'TU_USUARIO', credential:'TU_CLAVE' },
+  { urls:'turn:TU-DOMINIO.metered.live:443',                username:'TU_USUARIO', credential:'TU_CLAVE' },
+  { urls:'turns:TU-DOMINIO.metered.live:443?transport=tcp', username:'TU_USUARIO', credential:'TU_CLAVE' },
+     ↑↑↑ borrá este comentario cuando pegues las tuyas ↑↑↑ */
+];
 const ICE = {
   iceServers: [
     { urls:'stun:stun.l.google.com:19302' },
     { urls:'stun:stun1.l.google.com:19302' },
-    { urls:'turn:openrelay.metered.ca:80',  username:'openrelayproject', credential:'openrelayproject' },
-    { urls:'turn:openrelay.metered.ca:443', username:'openrelayproject', credential:'openrelayproject' },
-    { urls:'turn:openrelay.metered.ca:443?transport=tcp', username:'openrelayproject', credential:'openrelayproject' }
+    ...MIS_RELEVOS,
+    /* último recurso gratis (puede estar caído): */
+    { urls:'turn:openrelay.metered.ca:443',                username:'openrelayproject', credential:'openrelayproject' },
+    { urls:'turn:openrelay.metered.ca:443?transport=tcp',  username:'openrelayproject', credential:'openrelayproject' }
   ],
   iceCandidatePoolSize: 4
 };
@@ -3000,6 +3315,7 @@ function preferVideoCodec(tc){
 
 const Net = {
   socket:null, pc:null, dc:null, tcA:null, tcV:null,
+  remoteStream:null, lastRestart:0, waiting:false,
   room:'', code:'', mode:'server', initiator:false,
   key:null, mediaKeySend:null, mediaKeyRecv:null, sas:'', sasWords:'',
   sealed:false, connected:false, bad:0, offset:0, rtt:0,
@@ -3013,6 +3329,7 @@ const Net = {
     if (this.pc){ try{ this.pc.close(); }catch(_){} }
     if (this.socket){ try{ this.socket.disconnect(); }catch(_){} }
     this.socket = this.pc = this.dc = this.tcA = this.tcV = null;
+    this.remoteStream = null; this.lastRestart = 0; this.waiting = false;
     this.key = this.mediaKeySend = this.mediaKeyRecv = null;
     this.sas = this.sasWords = '';
     this.sealed = false; this.connected = false; this.bad = 0;
@@ -3023,7 +3340,15 @@ const Net = {
 
   createPC(){
     const cfg = Object.assign({}, ICE);
+    /* Los relevos que el usuario pegó en el Santuario van PRIMERO: son los
+       suyos, los que paga o administra, y los únicos en los que se puede
+       confiar. Los públicos quedan detrás, como último recurso. */
+    try{
+      const mine = Relay.list();
+      if (mine.length) cfg.iceServers = mine.concat(ICE.iceServers);
+    }catch(_){}
     if (CFG.e2ee && CAN_E2EE) cfg.encodedInsertableStreams = true;
+    if (HASH0.indexOf('relay') >= 0) cfg.iceTransportPolicy = 'relay';  // prueba: fuerza TODO por el relevo
     const pc = new RTCPeerConnection(cfg);
     this.pc = pc;
 
@@ -3041,17 +3366,49 @@ const Net = {
       Live.badge();
     };
     pc.oniceconnectionstatechange = () => {
-      if (pc.iceConnectionState === 'failed'){ try{ pc.restartIce(); }catch(_){} }
+      if (pc.iceConnectionState === 'failed') this.iceRestart();
     };
-    pc.ontrack = ({ streams }) => {
+    /* FIX CRÍTICO · Con transceptores "tibios" (addTransceiver sin pista + replaceTrack
+       después) el SDP no asocia ningún MediaStream (msid "-"), así que event.streams
+       llega VACÍO del otro lado. El srcObject remoto no se montaba nunca: los dos
+       veían negro, en ambos sentidos, en modo servidor y manual. La solución canónica:
+       un MediaStream propio por conexión, y le colgamos cada pista que llegue. */
+    this.remoteStream = new MediaStream();
+    pc.ontrack = ({ track }) => {
+      if (!track) return;
       const rv = $('#remoteVideo');
-      if (streams[0] && rv.srcObject !== streams[0]){
-        rv.srcObject = streams[0];
-        rv.play().catch(() => {});
+      if (!this.remoteStream.getTrackById(track.id)) this.remoteStream.addTrack(track);
+      if (rv.srcObject !== this.remoteStream) rv.srcObject = this.remoteStream;
+      Live.playRemote();
+      if (track.kind === 'video'){
+        /* "Nadie está mirando" se quita cuando DE VERDAD llega video (unmute), no al
+           negociar: los transceptores disparan ontrack al sellar, con la pista muda. */
+        if (!track.muted){ Live.hadRemote = true; Live.remoteFeed(); }
+        track.onunmute = () => { Live.hadRemote = true; Live.remoteFeed(); if (Live.peerAway === 'cam') Live.setPeerAway(0); };
+        track.onmute   = () => { if (Live.hadRemote && !Live.peerAway) Live.setPeerAway('cam'); };
       }
-      Live.remoteFeed();
     };
     return pc;
+  },
+
+  /* restartIce() a secas solo marca una bandera: sin una OFERTA nueva no pasa nada
+     y un túnel caído se quedaba caído. El iniciador re-oferta con iceRestart; el
+     que respondió se lo pide por señal. Con enfriamiento para no entrar en bucle. */
+  async iceRestart(){
+    if (!this.pc) return;
+    if (this.mode !== 'server' || !this.socket){ try{ this.pc.restartIce(); }catch(_){} return; }
+    const now = Date.now();
+    if (now - this.lastRestart < 4000) return;
+    this.lastRestart = now;
+    try{
+      if (this.initiator){
+        const offer = await this.pc.createOffer({ iceRestart:true });
+        await this.pc.setLocalDescription(offer);
+        this.socket.emit('signal', { room:this.room, data:{ sdp:this.pc.localDescription } });
+      } else {
+        this.socket.emit('signal', { room:this.room, data:{ rn:1 } });
+      }
+    }catch(_){}
   },
 
   bindTransceivers(fromRemote){
@@ -3066,14 +3423,26 @@ const Net = {
       this.tcV = pc.addTransceiver('video', { direction:'sendrecv' });
     }
     if (this.tcV) preferVideoCodec(this.tcV);
-    if (CFG.e2ee && CAN_E2EE) [this.tcA, this.tcV].forEach(t => { if (t) E2EE.attach(t); });
+    /* Una sola vez por transceptor: createEncodedStreams() explota si se llama
+       dos veces, y ahora bindTransceivers puede correr de nuevo en un reinicio
+       de ICE. La marca vive en el transceptor, que muere con la conexión. */
+    if (CFG.e2ee && CAN_E2EE) [this.tcA, this.tcV].forEach(t => {
+      if (t && !t.__sensiaE2EE){ t.__sensiaE2EE = true; E2EE.attach(t); }
+    });
   },
 
   setupDC(dc){
     this.dc = dc;
     dc.binaryType = 'arraybuffer';
     dc.onopen = () => { this.derive().then(() => this.handshake()); Live.badge(); };
-    dc.onclose = () => { this.connected = false; Live.badge(); };
+    dc.onclose = () => {
+      this.connected = false;
+      /* Sin el otro lado no hay "lo menor de los dos": hay uno solo. Antes su
+         último valor quedaba congelado y la marea seguía subiendo contra un
+         número de alguien que ya no estaba. */
+      Live.remoteMarea(0);
+      Live.badge();
+    };
     dc.onmessage = e => {
       if (!this.key){ if (this.rawQ.length < 500) this.rawQ.push(e.data); return; }
       this.inChain = this.inChain.then(() => this.decode(e.data)).catch(() => {});
@@ -3168,6 +3537,27 @@ const Net = {
     const q = this.outQ.slice(); this.outQ = [];
     q.forEach(o => this.send(o));
   },
+
+  /* Hay un mensaje que no puede hacer cola: la palabra segura. send() lo
+     encadenaba detrás de cada actualización de La Marea y de cada señal de
+     El Director, y 300 ms después Net.reset() cerraba el canal. Si la cola no
+     había drenado, el aviso moría en silencio y del otro lado solo se veía
+     "se desconectó" — como si fuera la red, no una decisión. Esto se saltea
+     la cola y avisa si salió o no, con techo duro para no demorar la salida. */
+  sendNow(obj){
+    return new Promise(res => {
+      if (!this.dc || this.dc.readyState !== 'open' || !this.key) return res(false);
+      let done = false;
+      const fin = ok => { if (!done){ done = true; res(ok); } };
+      setTimeout(() => fin(false), 600);
+      aesEnc(this.key, obj).then(r => {
+        try{
+          if (this.dc && this.dc.readyState === 'open'){ this.dc.send(r.iv + '.' + r.ct); fin(true); }
+          else fin(false);
+        }catch(_){ fin(false); }
+      }).catch(() => fin(false));
+    });
+  },
   async decode(data){
     const s = String(data), i = s.indexOf('.');
     if (i < 0) return;
@@ -3184,7 +3574,7 @@ const Net = {
   get offsetMs(){ return this.offset; },
 
   /* ---------- señalización con servidor ---------- */
-  async joinServer(code){
+  async joinServer(code, transports){
     if (typeof io === 'undefined' || window.__noSocket){
       toast('No hay servidor. Usa el modo sin servidor.');
       return;
@@ -3194,20 +3584,43 @@ const Net = {
     this.room = (await sha256hex('sensia|room|' + code)).slice(0, 32);
     State.settings.lastCode = code; persist();
 
-    $('#startSession').disabled = true;
     $('#vivoStatus').style.display = 'block';
     $('#vivoStatus').textContent = 'Buscando…';
     setConn('connecting', 'Conectando…', true);
 
-    const sock = io(location.origin, { reconnection:true, reconnectionAttempts:4, reconnectionDelay:900, transports:['websocket','polling'] });
-    this.socket = sock;
-
-    sock.on('connect', () => sock.emit('join-room', this.room));
-    sock.on('connect_error', () => {
-      setConn('offline', 'Sin servidor');
-      $('#vivoStatus').textContent = 'El servidor no responde. Prueba el modo sin servidor.';
-      $('#startSession').disabled = false;
+    /* Un servidor gratuito dormido tarda entre 30 y 60 segundos en despertar.
+       Con 4 intentos y 900 ms nos rendíamos a los ~10 — y peor: declarábamos
+       "no responde" en el PRIMER fallo, al segundo de empezar, mientras el
+       socket seguía reintentando por debajo. La primera sesión del día fallaba
+       siempre, y no por culpa de la red. Ahora se espera de verdad, se dice lo
+       que está pasando, y se puede cancelar. */
+    this.waiting = true;
+    startBtn('waiting');
+    const tp = transports || ['websocket','polling'];
+    const sock = io(location.origin, {
+      reconnection:true, reconnectionAttempts:14,
+      reconnectionDelay:700, reconnectionDelayMax:4000,
+      transports:tp
     });
+    this.socket = sock;
+    let tries = 0;
+
+    sock.on('connect', () => {
+      if (this.socket !== sock) return;
+      this.waiting = false;
+      startBtn('busy');
+      setConn('connecting', 'Conectando…', true);
+      sock.emit('join-room', this.room);
+    });
+    sock.on('connect_error', () => {
+      if (this.socket !== sock || !this.waiting) return;
+      tries++;
+      setConn('connecting', 'Despertando…', true);
+      $('#vivoStatus').textContent = tries < 3
+        ? 'Buscando el servidor…'
+        : 'Despertando el servidor. Puede tardar un minuto — no cierres la app.';
+    });
+    sock.io.on('reconnect_failed', () => { if (this.socket === sock) this.serverDown(code, tp); });
     sock.on('room-full', () => { toast('Ese santuario ya está ocupado'); Live.hardStop(true); });
     sock.on('joined', room => { this.room = room || this.room; $('#vivoStatus').textContent = 'Esperando a tu pareja…'; });
     sock.on('peer-joined', async () => {
@@ -3220,7 +3633,7 @@ const Net = {
       await this.pc.setLocalDescription(offer);
       sock.emit('signal', { room:this.room, data:{ sdp:this.pc.localDescription } });
     });
-    sock.on('signal', async ({ sdp, candidate }) => {
+    sock.on('signal', async ({ sdp, candidate, rn }) => {
       try{
         if (sdp){
           if (!this.pc){
@@ -3242,10 +3655,38 @@ const Net = {
         } else if (candidate){
           if (!this.pc || !this.pc.remoteDescription){ this.candQ.push(candidate); return; }
           try{ await this.pc.addIceCandidate(new RTCIceCandidate(candidate)); }catch(_){}
+        } else if (rn && this.initiator){
+          this.lastRestart = 0;   // lo pidió el otro lado: sin espera
+          this.iceRestart();
         }
       }catch(err){ console.warn('signal', err); }
     });
     sock.on('peer-disconnected', () => { toast('Se desconectó'); Live.softStop(); });
+  },
+
+  serverDown(code, tp){
+    if (!this.waiting) return;
+    /* Hay redes —wifi de hotel, algún operador móvil— que bloquean los websockets
+       sin decirlo. socket.io 4.7 no cambia de transporte por su cuenta: si falla
+       websocket, reintenta websocket para siempre. Se lo pedimos a mano una vez. */
+    if (tp[0] === 'websocket'){
+      $('#vivoStatus').textContent = 'Probando por otra vía…';
+      this.joinServer(code, ['polling','websocket']);
+      return;
+    }
+    this.waiting = false;
+    setConn('offline', 'Sin servidor');
+    $('#vivoStatus').textContent = 'El servidor no responde. Prueba el modo sin servidor.';
+    startBtn('idle');
+  },
+
+  cancelJoin(){
+    this.waiting = false;
+    this.reset();
+    setConn('offline', 'Desconectado');
+    $('#vivoStatus').textContent = '';
+    $('#vivoStatus').style.display = 'none';
+    startBtn('idle');
   },
 
   /* ---------- señalización manual (cero servidor) ---------- */
@@ -3392,17 +3833,50 @@ function handle(m){
     case 'capNo':      toast('Prefiere no guardar este momento'); break;
     case 'after':      Rescoldo.remote(m); break;
     case 'mo':         Maestro.recv(m); break;
+    case 'away':       Live.setPeerAway(m.on ? 'app' : 0); break;
     case 'bye':        Live.softStop(); break;
   }
 }
 
 /* ───────────────────────── 13 · EN VIVO ───────────────────────── */
+/* El botón de entrar tiene tres vidas: quieto, esperando (y cancelable) y ocupado. */
+function startBtn(state){
+  const b = $('#startSession');
+  if (!b) return;
+  b.disabled = state === 'busy';
+  b.textContent = state === 'waiting' ? 'Cancelar' : 'Entrar';
+  b.classList.toggle('ghost', state === 'waiting');
+  b.classList.toggle('primary', state !== 'waiting');
+}
+
+/* Un fallo de cámara sin causa deja a la pareja mirando negro sin saber por qué.
+   Cada error del navegador tiene un nombre; lo traducimos a algo que se pueda hacer. */
+function mediaErr(e, qué){
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia)
+    return 'Este navegador no da acceso a ' + qué + '. Abre Sensia con <b>https</b>.';
+  switch ((e && e.name) || ''){
+    case 'NotAllowedError':
+    case 'SecurityError':
+      return 'Está bloqueado el permiso de ' + qué + '. Ábrelo en el candado de la barra de direcciones y recarga.';
+    case 'NotFoundError':
+      return 'Este teléfono no encuentra ' + qué + '.';
+    case 'NotReadableError':
+    case 'AbortError':
+      return 'Otra app está usando ' + qué + '. Ciérrala y vuelve a intentar.';
+    case 'OverconstrainedError':
+      return 'Esa cámara no acepta esta calidad. Prueba con la otra.';
+    default:
+      return 'No se pudo abrir ' + qué + '.';
+  }
+}
+
 const Live = {
-  active:false, cam:null, mic:null, share:null, facing:'user',
+  active:false, cam:null, mic:null, share:null, facing:'user', flipping:false,
   filterIdx:0, blind:false, wl:null, t0:0, hadMedia:false,
   marea:{ mine:0, theirs:0 }, resSince:0, mareaRaf:0, mareaPhase:0,
   recog:null, listening:false, statT:null, pendingShot:null, sceneId:'',
-  sendT:0,
+  hadRemote:false, peerAway:0,
+  sendT:0, mareaT:0, mareaSent:-1, offerT:0,
 
   /* --- ciclo --- */
   onSealed(){
@@ -3436,13 +3910,63 @@ const Live = {
     b.classList.toggle('on', !!Net.connected);
   },
   remoteFeed(){
-    $('#noFeed').style.display = 'none';
+    const nf = $('#noFeed');
+    if (nf.style.display === 'none') return;   // ya estaba a la vista: no vibrar de nuevo
+    nf.style.display = 'none';
     buzz(26);
+  },
+  /* iOS bloquea el autoplay con sonido hasta que haya un toque. Antes eso era
+     una pantalla negra muda sin explicación; ahora se pide el toque. */
+  playRemote(){
+    const rv = $('#remoteVideo');
+    if (!rv || !rv.srcObject) return;
+    const p = rv.play();
+    if (p && p.then) p.then(() => this.needTap(false)).catch(() => this.needTap(true));
+  },
+  needTap(on){
+    const el = $('#tapPlay');
+    if (el) el.style.display = on ? 'grid' : 'none';
   },
   veil(on){
     if (!this.active) return;
     if (this.cam) this.cam.getVideoTracks().forEach(t => t.enabled = !on);
     if (this.share) this.share.getVideoTracks().forEach(t => t.enabled = !on);
+  },
+  /* el otro lado salió de la app o su cámara se pausó: decirlo, no dejar negro mudo */
+  setPeerAway(kind){
+    this.peerAway = kind || 0;
+    const el = $('#peerAway');
+    if (!el) return;
+    if (this.peerAway && this.active && $('#noFeed').style.display === 'none'){
+      el.querySelector('b').textContent = this.peerAway === 'app'
+        ? 'Está fuera de la app un momento.'
+        : 'Su cámara está en pausa.';
+      el.style.display = 'grid';
+    } else el.style.display = 'none';
+  },
+  /* Android suele matar cámara y micrófono al pasar a segundo plano; al volver, se re-agarran */
+  async recoverMedia(){
+    try{
+      if (this.cam){
+        const tr = this.cam.getVideoTracks()[0];
+        if (!tr || tr.readyState === 'ended'){
+          const st = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:this.facing, width:{ideal:960}, height:{ideal:1280} }, audio:false });
+          this.cam = st;
+          if (Net.tcV && Net.tcV.sender) await Net.tcV.sender.replaceTrack(st.getVideoTracks()[0]);
+          $('#localVideo').srcObject = st;
+        }
+      }
+      if (this.mic){
+        const tr = this.mic.getAudioTracks()[0];
+        if (!tr || tr.readyState === 'ended'){
+          const st = await navigator.mediaDevices.getUserMedia({ audio:{ echoCancellation:true, noiseSuppression:true, autoGainControl:true }, video:false });
+          this.mic = st;
+          if (Net.tcA && Net.tcA.sender) await Net.tcA.sender.replaceTrack(st.getAudioTracks()[0]);
+        }
+      }
+      /* Android a veces deja el <video> remoto en pausa al volver del fondo */
+      this.playRemote();
+    }catch(_){}
   },
   async keepAwake(on){
     try{
@@ -3458,10 +3982,14 @@ const Live = {
     if (Net.tcA && Net.tcA.sender) try{ Net.tcA.sender.replaceTrack(null); }catch(_){}
     $('#localVideo').srcObject = null;
     $('#remoteVideo').srcObject = null;
+    this.needTap(false);
     Maestro.stop();
+    this.hadRemote = false;
+    this.setPeerAway(0);
     Haptics.stopAll();
     this.stopListening();
     this.marea = { mine:0, theirs:0 };
+    clearTimeout(this.mareaT); this.mareaT = 0; this.mareaSent = -1;
     cancelAnimationFrame(this.mareaRaf); this.mareaRaf = 0;
     clearInterval(this.statT);
     this.keepAwake(false);
@@ -3476,6 +4004,7 @@ const Live = {
     $('#chatInput').classList.remove('on');
     $('#scriptOverlay').classList.remove('on'); $('#scriptEditor').value = '';
     $('#noFeed').style.display = 'grid';
+    this.needTap(false);
     $('#camBadge').style.display = 'none';
     $('#vfStat').classList.remove('on');
     $('#videoFrame').classList.remove('blind-on');
@@ -3485,7 +4014,8 @@ const Live = {
     $('#blindToggle').classList.remove('on'); $('#blindToggle').textContent = 'Oscurecer';
     $('#triggerToggle').classList.remove('on'); $('#triggerToggle').textContent = 'Empezar a escuchar';
     $('#mareaRange').value = '0';
-    $('#startSession').disabled = false;
+    this.hideOffer();
+    startBtn('idle');
     $('#vivoStatus').style.display = 'none';
     $('#remoteVideo').style.transform = ''; $('#remoteVideo').style.filter = '';
     $('#zoomRange').value = '100'; $('#lightRange').value = '100';
@@ -3529,17 +4059,28 @@ const Live = {
 
   /* --- palabra segura --- */
   safeword(fromPeer){
-    if (!fromPeer) Net.send({ t:'safeword' });
+    // 1) El aviso arranca primero. Es asíncrono: no demora nada de lo de abajo.
+    const told = fromPeer ? null : Net.sendNow({ t:'safeword' });
+    // 2) El corte local pasa YA, pase lo que pase con el aviso. Nada lo condiciona.
     Haptics.stopAll();
     this.countMinutes();
-    this.stopMedia();
-    setTimeout(() => Net.reset(), 300);
+    this.stopMedia();          // apaga cámara, micrófono, El Director y la voz
     this.active = false; this.hadMedia = false;
     this.resetUI();
     $$('.screen').forEach(s => s.classList.remove('on'));
     $('#nav').classList.remove('on');
     $('#pausa').classList.add('on');
     setConn(null);
+    // 3) Y recién entonces se dice la verdad sobre si el otro lado se enteró.
+    const note = $('#pausaTold');
+    if (note) note.textContent = fromPeer ? 'Lo cortó del otro lado. Aquí se apagó todo.' : '';
+    if (!told){ setTimeout(() => Net.reset(), 300); return; }
+    told.then(ok => {
+      if (note) note.textContent = ok
+        ? 'Del otro lado también se apagó.'
+        : 'No alcanzamos a avisar: la conexión ya no estaba. Al cortarse, allá también se apaga.';
+      Net.reset();
+    });
   },
 
   ignite(fromPeer){
@@ -3553,8 +4094,12 @@ const Live = {
   startListening(){
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) return;
-    const trig = (State.settings.triggerWord || '').trim().toLowerCase();
-    const safe = (State.settings.safeWord || '').trim().toLowerCase();
+    /* El reconocedor devuelve "azucar" donde tú escribiste "azúcar", o al revés.
+       En una palabra segura, un acento de diferencia es un fallo de seguridad:
+       la dices, y no pasa nada. Se comparan las dos sin tildes. */
+    const flat = x => (x || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const trig = flat(State.settings.triggerWord);
+    const safe = flat(State.settings.safeWord);
     if (!trig && !safe) return;
     if (this.listening) return;
     try{
@@ -3564,7 +4109,7 @@ const Live = {
       r.onresult = ev => {
         let txt = '';
         for (let i = ev.resultIndex; i < ev.results.length; i++) txt += ev.results[i][0].transcript + ' ';
-        txt = txt.toLowerCase();
+        txt = flat(txt);
         if (safe && txt.indexOf(safe) >= 0){ this.safeword(false); return; }
         if (trig && txt.indexOf(trig) >= 0 && Date.now() > cd){
           cd = Date.now() + 4000;
@@ -3622,10 +4167,63 @@ const Live = {
   },
   setMarea(v){
     this.marea.mine = clamp(v|0, 0, 100);
-    const now = Date.now();
-    if (now - this.sendT > 90){ this.sendT = now; Net.send({ t:'marea', v:this.marea.mine }); }
+    this.pushMarea();
     this.updateMarea();
   },
+  /* El acelerador tenía solo borde de ENTRADA: mandaba el primer valor de cada
+     ventana de 90 ms y tiraba el resto — incluido el último. Y los eventos del
+     deslizador paran cuando dejas de mover el dedo, no cuando lo levantas: el
+     valor donde de verdad quedaba tu dedo casi nunca salía. Del otro lado
+     quedaba un número viejo.
+
+     Lo peor era bajar. Si retirabas de 100 a 0 de un tirón, allá seguía
+     diciendo 100 — y como lo que llega es min(tuyo, suyo), seguían sintiendo
+     lo que tú ya habías retirado, con la pantalla asegurándoles que tú seguías
+     ahí. Eso es exactamente lo que la ley de La Marea promete que no puede
+     pasar.
+
+     Ahora: bajar sale YA, sin acelerador —retirar consentimiento no espera—
+     y subir tiene borde de salida, así que el valor final siempre llega. */
+  pushMarea(){
+    const v = this.marea.mine, now = Date.now();
+    const bajando = this.mareaSent >= 0 && v < this.mareaSent;
+    if (bajando || now - this.sendT > 90){
+      clearTimeout(this.mareaT); this.mareaT = 0;
+      this.sendT = now; this.mareaSent = v;
+      Net.send({ t:'marea', v:v });
+      return;
+    }
+    if (this.mareaT) return;
+    this.mareaT = setTimeout(() => {
+      this.mareaT = 0; this.sendT = Date.now(); this.mareaSent = this.marea.mine;
+      Net.send({ t:'marea', v:this.marea.mine });
+    }, 90 - (now - this.sendT));
+  },
+  /* Una Escena cambia el cuarto: cámara, micrófono, venda, respiración. La
+     marea no es el cuarto — es el dedo de alguien sobre su propio límite.
+     Antes una Escena lo movía sola: elegías "A oscuras" y la app te subía a 45
+     sin preguntarte. Nunca entregaba de más, porque min(tuyo,suyo) seguía
+     mandando, pero era la app moviéndote el dedo.
+
+     La regla ahora es la misma que rige el envío: BAJAR se hace solo, porque
+     nunca entrega más de lo que ya había. SUBIR se ofrece y lo decide el dedo.
+     Un toque, no un arrastre: la fricción justa para que sea una decisión,
+     no tanta como para romper el momento. */
+  suggestMarea(v){
+    const el = $('#mareaOffer');
+    if (v <= this.marea.mine){
+      if (v < this.marea.mine){ $('#mareaRange').value = String(v); this.setMarea(v); }
+      this.hideOffer();
+      return;
+    }
+    if (!el) return;
+    el.innerHTML = 'Esta escena sugiere marea <b>' + v + '</b> · tócalo para subir';
+    el.dataset.v = String(v);
+    el.style.display = 'block';
+    clearTimeout(this.offerT);
+    this.offerT = setTimeout(() => this.hideOffer(), 14000);
+  },
+  hideOffer(){ clearTimeout(this.offerT); this.offerT = 0; const el = $('#mareaOffer'); if (el) el.style.display = 'none'; },
   remoteMarea(v){ this.marea.theirs = clamp(v|0, 0, 100); this.updateMarea(); },
   updateMarea(){
     const eff = Math.min(this.marea.mine, this.marea.theirs);
@@ -3684,7 +4282,7 @@ const Live = {
     if (s.mic && !this.mic) await this.toggleMic();
     if (!s.mic && this.mic) await this.toggleMic();
     if (s.blind !== this.blind) this.toggleBlind();
-    if (s.marea){ $('#mareaRange').value = String(s.marea); this.setMarea(s.marea); }
+    if (s.marea != null) this.suggestMarea(s.marea);
     if (s.script) $('#scriptOverlay').classList.add('on');
     if (s.breath && !Breath.on) Breath.toggle();
     toast('Escena: <b>' + esc(s.n) + '</b>');
@@ -3697,7 +4295,7 @@ const Live = {
     if (this.cam){
       this.cam.getTracks().forEach(t => t.stop());
       this.cam = null;
-      if (Net.tcV && Net.tcV.sender) try{ await Net.tcV.sender.replaceTrack(null); }catch(_){}
+      if (!this.share && Net.tcV && Net.tcV.sender) try{ await Net.tcV.sender.replaceTrack(null); }catch(_){}
       $('#localVideo').srcObject = null;
       $('#camToggle').classList.remove('on');
       $('#camToggle').textContent = 'Encender cámara';
@@ -3708,7 +4306,9 @@ const Live = {
       const st = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:this.facing, width:{ideal:960}, height:{ideal:1280} }, audio:false });
       this.cam = st;
       const track = st.getVideoTracks()[0];
-      if (Net.tcV && Net.tcV.sender) await Net.tcV.sender.replaceTrack(track);
+      // Si están compartiendo pantalla, la cámara se enciende para ti pero no
+      // pisa lo que ya se está enviando; al dejar de compartir, entra sola.
+      if (!this.share && Net.tcV && Net.tcV.sender) await Net.tcV.sender.replaceTrack(track);
       if (CFG.lowdata && Net.tcV && Net.tcV.sender){
         try{
           const p = Net.tcV.sender.getParameters();
@@ -3722,7 +4322,7 @@ const Live = {
       $('#camToggle').textContent = 'Apagar cámara';
       this.hadMedia = true;
       buzz(20);
-    }catch(_){ toast('No se pudo abrir la cámara'); }
+    }catch(e){ this.cam = null; toast(mediaErr(e, 'la cámara')); }
   },
   async toggleMic(){
     if (!Net.pc || !Net.sealed) return;
@@ -3741,22 +4341,41 @@ const Live = {
       $('#micToggle').classList.add('on');
       $('#micToggle').textContent = 'Silenciar';
       this.hadMedia = true;
-      $('#remoteVideo').play().catch(() => {});
+      this.playRemote();
       buzz(18);
-    }catch(_){ toast('No se pudo abrir el micrófono'); }
+    }catch(e){ toast(mediaErr(e, 'el micrófono')); }
   },
+  /* Antes se apagaba la cámara vieja ANTES de pedir la nueva: si el teléfono
+     tenía una sola, quedabas a oscuras con el botón encendido y tu pareja
+     mirando un cuadro congelado para siempre. Ahora se pide primero. */
   async flip(){
     if (!this.cam){ toast('Enciende la cámara primero'); return; }
-    this.facing = this.facing === 'user' ? 'environment' : 'user';
+    if (this.flipping) return;
+    this.flipping = true;
+    const next = this.facing === 'user' ? 'environment' : 'user';
+    const old = this.cam;
+    let st = null;
     try{
-      this.cam.getTracks().forEach(t => t.stop());
-      const st = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:this.facing }, audio:false });
+      st = await navigator.mediaDevices.getUserMedia({
+        video:{ facingMode:{ exact:next }, width:{ideal:960}, height:{ideal:1280} }, audio:false });
+    }catch(_){
+      this.flipping = false;
+      toast('Este teléfono tiene una sola cámara');
+      return;
+    }
+    try{
+      if (!this.share && Net.tcV && Net.tcV.sender) await Net.tcV.sender.replaceTrack(st.getVideoTracks()[0]);
+      old.getTracks().forEach(t => t.stop());
       this.cam = st;
-      if (Net.tcV && Net.tcV.sender) await Net.tcV.sender.replaceTrack(st.getVideoTracks()[0]);
+      this.facing = next;
       $('#localVideo').srcObject = st;
-      $('#videoFrame').classList.toggle('mirror', this.facing === 'user');
+      $('#videoFrame').classList.toggle('mirror', next === 'user');
       buzz(14);
-    }catch(_){ toast('Solo hay una cámara'); }
+    }catch(e){
+      st.getTracks().forEach(t => t.stop());   // se queda la que ya andaba
+      toast(mediaErr(e, 'la otra cámara'));
+    }
+    this.flipping = false;
   },
   async toggleShare(){
     if (!Net.pc || !Net.sealed) return;
@@ -3862,6 +4481,9 @@ const Live = {
     const time = new Date(ts).toLocaleTimeString('es', { hour:'2-digit', minute:'2-digit' });
     el.innerHTML = esc(text) + '<div class="meta">' + time + '</div>';
     c.appendChild(el);
+    /* Sin tope, una sesión de dos horas deja cientos de nodos vivos y el
+       scroll se vuelve pesado justo cuando menos conviene. */
+    while (c.children.length > 140) c.removeChild(c.firstChild);
     c.scrollTop = c.scrollHeight;
   },
 
@@ -3910,16 +4532,18 @@ const Live = {
         }
         const badge = $('#camBadge'); badge.style.display = 'block';
         pill.textContent = conn + ' · ↑' + up + ' ↓' + dn + ' kb/s';
-        if (moved){
+        if (moved) this.hadRemote = true;
+        if (moved && this.peerAway === 'cam') this.setPeerAway(0);
+        const amber = t => { badge.textContent = t; badge.style.color = '#E0A15A'; pill.style.color = '#E0A15A'; };
+        if (this.peerAway === 'app') amber('◌ salió de la app un momento');
+        else if (this.peerAway === 'cam') amber('◌ su cámara en pausa');
+        else if (moved){
           badge.textContent = '● EN VIVO'; badge.style.color = '#8BE59A'; pill.style.color = '#8BE59A';
           $('#noFeed').style.display = 'none';
-        } else if (!tx){
-          badge.textContent = '◌ enciende tu cámara'; badge.style.color = '#E0A15A'; pill.style.color = '#E0A15A';
-        } else if (up > 0){
-          badge.textContent = '◌ tú envías · falta su cámara'; badge.style.color = '#E0A15A'; pill.style.color = '#E0A15A';
-        } else {
-          badge.textContent = '◌ sin imagen de tu pareja'; badge.style.color = '#E0A15A'; pill.style.color = '#E0A15A';
         }
+        else if (!tx) amber('◌ enciende tu cámara');
+        else if (up > 0) amber('◌ envías · sin señal de su lado');
+        else amber('◌ sin imagen de tu pareja');
       }catch(_){}
     }, 1500);
   }
@@ -3953,15 +4577,17 @@ const Maestro = (() => {
 
   /* ---------- susurro en voz (opcional, se degrada a texto+háptica) ---------- */
   function pickVoice(){
-    if (!('speechSynthesis' in window)) return;
-    const vs = speechSynthesis.getVoices(); if (!vs.length) return;
+    if (!hasTTS()) return;
+    let vs = [];
+    try{ vs = speechSynthesis.getVoices() || []; }catch(_){ return; }
+    if (!vs.length) return;
     const pref = ['es-us','es-mx','es-419','es-co','es-pe','es-es','es'];
     for (const p of pref){ const v = vs.find(v => (v.lang||'').toLowerCase().replace('_','-').startsWith(p.trim())); if (v){ voice = v; return; } }
     voice = vs.find(v => (v.lang||'').toLowerCase().startsWith('es')) || null;
   }
-  if ('speechSynthesis' in window){ pickVoice(); try{ speechSynthesis.onvoiceschanged = pickVoice; }catch(_){} }
+  if (hasTTS()){ pickVoice(); try{ speechSynthesis.onvoiceschanged = pickVoice; }catch(_){} }
   function whisper(text){
-    if (!voiceOn || !text || !('speechSynthesis' in window)) return;
+    if (!voiceOn || !text || !hasTTS()) return;
     try{ speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
       if (voice) u.voice = voice;
@@ -4044,14 +4670,18 @@ const Maestro = (() => {
   /* ---------- pedal suave (no es la palabra segura) ---------- */
   function applySoft(d){
     if (d === 'slow') slowMul = Math.min(2.6, slowMul + .5);
-    else if (d === 'stay') paused = !paused;
+    /* Pedir "quédate" y no ver nada en ninguna de las dos pantallas es pedir
+       algo y no saber si te escucharon. Aquí es una señal de consentimiento:
+       tiene que verse, y en los dos lados. */
+    else if (d === 'stay'){ paused = !paused; showPause(paused); Net.send({ t:'mo', k:'pause', on:paused }); }
     else if (d === 'skip'){ paused = false; advance(); }
     else if (d === 'coda') toCoda();
   }
   function soft(d){
     if (!running) return;
     if (role === 'conductor') applySoft(d); else Net.send({ t:'mo', k:'soft', d:d });
-    if (d === 'slow') toast('Más despacio…'); else if (d === 'stay') toast(paused || role !== 'conductor' ? 'Quédense ahí.' : 'Seguimos.');
+    if (d === 'slow') toast('Más despacio…');
+    else if (d === 'stay' && role === 'conductor') toast(paused ? 'Quédense ahí.' : 'Seguimos.');
     buzz(14);
   }
   function tapReady(){
@@ -4059,6 +4689,29 @@ const Maestro = (() => {
     if (role === 'conductor') readyMe = true; else Net.send({ t:'mo', k:'ready' });
     const btn = $('#moTapBtn'); btn.classList.add('waiting'); btn.querySelector('.mo-tap-label').textContent = 'Ya estás — falta el otro lado…'; buzz(18);
   }
+  /* El que sigue no tiene reloj propio: solo reacciona a los latidos del que
+     conduce. Si el canal moría a mitad de la noche —red caída, el otro teléfono
+     apagado, o un "accept" que llegó después de que venciera la propuesta— se
+     quedaba con el velo puesto y el último susurro congelado en la pantalla,
+     esperando una señal que ya no iba a llegar nunca. Acostado, esperando.
+     Ahora hay un vigía: si el enlace se cae, la noche se cierra y se dice. */
+  function watch(){
+    if (!running) return;
+    const muerto = !Net.connected || !Net.dc || Net.dc.readyState !== 'open';
+    // 210 s: un compás con "más lento" al máximo puede tardar 156, así que el
+    // silencio solo se declara cuando ya no hay explicación posible.
+    const mudo = role !== 'conductor' && beatT0 && (Date.now() - beatT0) > 210000;
+    if (!muerto && !mudo) return;
+    running = false;
+    clearInterval(gateTimer); gateTimer = null;
+    setWhisper('Se cortó el enlace. La noche termina acá.');
+    toast('Se perdió el enlace. El Director se detuvo.');
+    setTimeout(fadeOut, 2200);
+  }
+  function tick(){ poll(); watch(); }
+
+  function showPause(on){ const el = $('#moStay'); if (el) el.classList.toggle('on', !!on); }
+
   function endNight(){ if (running) soft('coda'); }
   function toCoda(){
     if (role !== 'conductor') return;
@@ -4076,6 +4729,7 @@ const Maestro = (() => {
     running = false; role = null; nightId = null; idx = -1; beats = []; paused = false; slowMul = 1;
     readyMe = readyPeer = false; holdSince = 0;
     clearInterval(gateTimer); gateTimer = null;
+    showPause(false);
     try{ speechSynthesis.cancel(); }catch(_){}
     if (Breath.on && breathByMe){ Breath.toggle(); } breathByMe = false;
     $('#moStage').classList.remove('on'); $('#moVeil').style.opacity = '0';
@@ -4118,7 +4772,7 @@ const Maestro = (() => {
   function startConductor(){
     beats = buildNight(nightId); running = true; idx = -1; paused = false; slowMul = 1; readyMe = readyPeer = false; holdSince = 0;
     const e = $('#maestroEntry'); if (e) e.classList.remove('busy');
-    openStage(); clearInterval(gateTimer); gateTimer = setInterval(poll, 130); advance();
+    openStage(); clearInterval(gateTimer); gateTimer = setInterval(tick, 130); advance();
   }
   function onOffer(id){
     if (running || role){ Net.send({ t:'mo', k:'no' }); return; }
@@ -4133,7 +4787,9 @@ const Maestro = (() => {
   }
   function acceptOffer(id){
     role = 'follower'; nightId = id; running = true; readyMe = readyPeer = false;
+    beatT0 = Date.now();   // arranca el reloj del silencio ya mismo
     openStage(); Net.send({ t:'mo', k:'accept' });
+    clearInterval(gateTimer); gateTimer = setInterval(tick, 400);
   }
 
   function recv(m){
@@ -4144,6 +4800,7 @@ const Maestro = (() => {
       case 'beat':   beatT0 = Date.now(); render(m.b); fireFx(m.b.fx, m.b.at, m.b); break;
       case 'ready':  readyPeer = true; break;
       case 'soft':   if (role === 'conductor') applySoft(m.d); break;
+      case 'pause':  showPause(!!m.on); break;
       case 'end':    if (role !== 'conductor') fadeOut(); break;
     }
   }
@@ -4255,14 +4912,14 @@ function genCode(){
 }
 $('#genCode').addEventListener('click', () => { $('#roomCode').value = genCode(); buzz(14); });
 $('#shareCode').addEventListener('click', async () => {
-  const c = $('#roomCode').value.trim();
-  if (!c){ toast('Genera un código primero'); return; }
-  try{
-    if (navigator.share) await navigator.share({ text:c });
-    else { await navigator.clipboard.writeText(c); toast('Código copiado'); }
-  }catch(_){}
+  const c = $('#roomCode').value.trim().toLowerCase();
+  if (c.length < 6){ toast('Genera un código primero'); return; }
+  const r = await Invite.share(c);
+  if (r === 'copy') toast('Enlace copiado. Mándaselo por donde quieras.');
+  else if (r === 'fail') toast('No se pudo compartir. Copia el código a mano: <b>' + esc(c) + '</b>');
 });
 $('#startSession').addEventListener('click', () => {
+  if (Net.waiting){ Net.cancelJoin(); return; }
   const c = $('#roomCode').value.trim().toLowerCase();
   if (c.length < 6){ toast('El código tiene que ser largo. Toca <b>Generar</b>.'); return; }
   Net.joinServer(c);
@@ -4322,7 +4979,14 @@ $('#blindToggle').addEventListener('click', () => Live.toggleBlind());
 $('#filterToggle').addEventListener('click', () => Live.cycleFx());
 $('#zoomRange').addEventListener('input', () => Live.applyFx());
 $('#lightRange').addEventListener('input', () => Live.applyFx());
-$('#mareaRange').addEventListener('input', e => Live.setMarea(+e.target.value));
+$('#mareaRange').addEventListener('input', e => { Live.hideOffer(); Live.setMarea(+e.target.value); });
+$('#mareaOffer').addEventListener('click', e => {
+  const v = clamp(+e.currentTarget.dataset.v || 0, 0, 100);
+  $('#mareaRange').value = String(v);
+  Live.setMarea(v);
+  Live.hideOffer();
+  buzz(20);
+});
 $('#captureBtn').addEventListener('click', () => {
   if (!Net.sealed){ toast('Todavía no hay túnel'); return; }
   if (!$('#remoteVideo').videoWidth){ toast('No hay imagen suya que guardar'); return; }
@@ -4589,7 +5253,7 @@ async function shrink(dataUrl, max, q){
 }
 
 const Vault = {
-  key:null, which:null, fp:'···', pendingImg:null, pendingAudio:null, sealAt:0, rec:null,
+  key:null, which:null, fp:'···', pendingImg:null, pendingAudio:null, sealAt:0, rec:null, nueva:null,
 
   async open(pass, target){
     const salt = crypto.getRandomValues(new Uint8Array(16));
@@ -4622,12 +5286,25 @@ const Vault = {
     }
     return false;
   },
-  lock(){
+  wipeOpen(){
     this.key = null; this.which = null; this.fp = '···';
-    this.pendingImg = this.pendingAudio = null; this.sealAt = 0;
+    this.pendingImg = this.pendingAudio = null; this.sealAt = 0; this.nueva = null;
+    const inp = $('#vaultInput'); if (inp) inp.value = '';
+    const pv = $('#attachPreview'); if (pv) pv.innerHTML = '';
+    // Lo descifrado no puede quedarse en el DOM después de cerrar.
+    const en = $('#vaultEntries'); if (en) en.innerHTML = '';
     this.ui();
+  },
+  lock(){
+    this.wipeOpen();
     toast('Bóveda cerrada · llave borrada de la memoria');
   },
+  /* La app promete: "ni siquiera tu gesto la abre". Pero el autobloqueo a los
+     3 minutos solo mostraba el Umbral otra vez y dejaba la llave de la Bóveda
+     en memoria: volvías a entrar con el gesto y la Bóveda seguía abierta.
+     O sea, el gesto SÍ la abría. Cerrar la puerta de calle y dejar la caja
+     fuerte abierta adentro. */
+  autoLock(){ if (this.key) this.wipeOpen(); },
   box(){ return State.vault[this.which]; },
 
   async add(obj){
@@ -4645,9 +5322,17 @@ const Vault = {
     $('#vaultOpen').style.display = open ? 'block' : 'none';
     if (open){
       $('#vaultFingerprint').textContent = this.fp;
+      /* El señuelo existe para un momento feo: alguien te obliga a abrir la
+         Bóveda. Le das la frase señuelo y ve un cuarto que no es el tuyo.
+         Pero la insignia decía, en castellano, "Bóveda señuelo" — es decir,
+         le anunciaba al que te estaba obligando que le estabas mintiendo.
+         La única función de la pieza, arruinada por su propia etiqueta.
+         Ahora las dos se ven idénticas. Tú sabes en cuál estás porque sabes
+         qué frase escribiste, y porque la huella Ω es distinta en cada una:
+         una señal que solo significa algo para quien ya la conoce. */
       const dec = this.which === 'decoy';
-      $('#vaultBadge').textContent = dec ? 'Bóveda señuelo' : 'Bóveda abierta';
-      $('#vaultBadge').className = 'pill ' + (dec ? 'seal' : 'ok');
+      $('#vaultBadge').textContent = 'Bóveda abierta';
+      $('#vaultBadge').className = 'pill ok';
       $('#vaultDecoy').style.display = dec ? 'none' : 'inline-flex';
       this.render();
       if (Live.pendingShot){
@@ -4725,13 +5410,43 @@ const Vault = {
       $('#vaultVoice').innerHTML = '<span class="rec-dot"></span>Detener';
       $('#vaultVoice').classList.add('on');
       setTimeout(() => { if (this.rec) this.rec.stop(); }, 120000);
-    }catch(_){ toast('No se pudo abrir el micrófono'); }
+    }catch(e){ toast(mediaErr(e, 'el micrófono')); }
   }
 };
 
 $('#vaultUnlock').addEventListener('click', async () => {
   const p = $('#vaultPass').value;
   if (p.length < 4){ toast('Al menos 4 caracteres'); return; }
+
+  /* La primera frase que escribías CREABA la bóveda, sin repetirla. Una tecla
+     de más y quedaba una bóveda con una frase que nunca supiste, y todo lo que
+     guardaras después era irrecuperable — no hay recuperación, por diseño.
+     Se pide dos veces, como cualquier cosa que no se puede deshacer. */
+  const esNueva = !(State.vault && State.vault.real);
+  if (esNueva){
+    if (Vault.nueva === null){
+      Vault.nueva = p;
+      $('#vaultPass').value = '';
+      $('#vaultPass').placeholder = 'escríbela otra vez';
+      $('#vaultDesc').textContent = 'Escríbela una vez más. Si no coinciden, empezamos de nuevo — después de esto no hay forma de recuperarla.';
+      $('#vaultUnlock').textContent = 'Confirmar';
+      buzz(18);
+      return;
+    }
+    if (Vault.nueva !== p){
+      Vault.nueva = null;
+      $('#vaultPass').value = '';
+      $('#vaultPass').placeholder = 'una frase que solo ustedes sepan';
+      $('#vaultUnlock').textContent = 'Abrir';
+      Vault.ui();
+      toast('No coincidieron. Empecemos de nuevo.');
+      buzz([40,60,40]);
+      return;
+    }
+    Vault.nueva = null;
+    $('#vaultPass').placeholder = 'una frase que solo ustedes sepan';
+  }
+
   $('#vaultUnlock').disabled = true;
   $('#vaultUnlock').textContent = 'Abriendo…';
   const ok = await Vault.unlock(p);
@@ -4890,6 +5605,7 @@ $('#wipeAll').addEventListener('click', () => {
   $('#wYes').addEventListener('click', async () => {
     Live.hardStop(true);
     await DB.wipe();
+    Pacto.forget();
     META = null; deviceKey = null; unlocked = false;
     Vault.key = null;
     State = defaultState();
@@ -4917,6 +5633,7 @@ function renderAll(){
   Spark.render(); Spark.reunion(); Spark.badge();
   Vault.ui();
   Settings.sync(); Settings.stats();
+  Relay.ui();
   Live.scenes();
   Live.badge();
   setTimeout(() => Lienzo.size(), 60);
@@ -5214,9 +5931,503 @@ const Onboard = (() => {
 })();
 window.Onboard = Onboard;
 
+/* ───────────────────────── 19 · EL PACTO ─────────────────────────
+   La primera puerta, antes del gesto. Tres declaraciones que no son letra
+   chica: son la condición para entrar. Se guarda en este teléfono y nunca
+   viaja. "Borrar todo" también borra esto — memoria en blanco, pacto en
+   blanco. Es síncrono a propósito: se pinta antes que nada, sin parpadeo.
+   ────────────────────────────────────────────────────────────────── */
+const Pacto = (() => {
+  const KEY = 'sx_pacto_v1';
+  const NEED = ['edad','ambos','limite'];
+  let marked = Object.create(null), ready = null;
+
+  function accepted(){
+    try{ return localStorage.getItem(KEY) === '1'; }catch(_){ return false; }
+  }
+  function mark(){
+    try{ localStorage.setItem(KEY, '1'); }catch(_){}
+  }
+  function forget(){
+    try{ localStorage.removeItem(KEY); }catch(_){}
+  }
+  function sync(){
+    const go = $('#pactoGo');
+    if (go) go.disabled = !NEED.every(k => marked[k]);
+  }
+  function bind(){
+    $$('#pacto .pt-item').forEach(el => {
+      el.addEventListener('click', () => {
+        const k = el.dataset.pact;
+        marked[k] = !marked[k];
+        el.classList.toggle('on', !!marked[k]);
+        buzz(marked[k] ? 14 : 8);
+        sync();
+      });
+    });
+    $('#pactoGo').addEventListener('click', () => {
+      if (!NEED.every(k => marked[k])) return;
+      mark(); buzz([18,44,18]);
+      $('#pacto').classList.remove('on');
+      if (ready){ const r = ready; ready = null; r(); }
+    });
+    $('#pactoOut').addEventListener('click', () => {
+      /* Salir de verdad: no se puede cerrar una pestaña que no abrimos nosotros,
+         así que hacemos lo único honesto — dejarlo en la pantalla neutra. */
+      try{ window.close(); }catch(_){}
+      $('#pacto').classList.remove('on');
+      document.getElementById('neutral').classList.add('on');
+    });
+  }
+  /* Resuelve cuando el pacto está aceptado — ya sea de antes o ahora mismo. */
+  function require(){
+    if (accepted()) return Promise.resolve();
+    return new Promise(res => {
+      ready = res;
+      marked = Object.create(null);
+      $$('#pacto .pt-item').forEach(el => el.classList.remove('on'));
+      sync();
+      $('#pacto').classList.add('on');
+    });
+  }
+  return { require, bind, accepted, forget };
+})();
+
+/* ───────────────────────── 20 · LA INVITACIÓN ─────────────────────────
+   El código a mano era el cuello de botella: uno lo generaba, el otro lo
+   tecleaba mal, y la primera noche se iba en soporte técnico. Ahora se
+   comparte un enlace; del otro lado el código entra solo. El hash se limpia
+   en el acto para que no quede colgado en el historial ni en una captura.
+   ──────────────────────────────────────────────────────────────────── */
+const HASH0 = location.hash || '';   // congelado antes de limpiarlo (#relay depende de esto)
+const Invite = {
+  incoming:'',
+  read(){
+    const src = HASH0 + '&' + (location.search || '');
+    const m = /[#&?]s=([A-Za-z0-9_-]{6,64})/.exec(src);
+    if (m) this.incoming = m[1].toLowerCase();
+    if (HASH0 && /[#&]s=/.test(HASH0)){
+      try{ history.replaceState(null, '', location.pathname + location.search); }catch(_){}
+    }
+    return this.incoming;
+  },
+  base(){ return location.origin + location.pathname; },
+  link(code){ return this.base() + '#s=' + encodeURIComponent(code); },
+  async share(code){
+    const url = this.link(code);
+    /* Con apariencia discreta encendida, el mensaje que queda en el chat de la
+       otra persona no puede nombrar la app: la vista previa del enlace ya dice
+       "Notas", y el texto tiene que decir lo mismo. */
+    let discreet = true;
+    try{ discreet = State.settings.discreet !== false; }catch(_){}
+    const text = discreet
+      ? 'Te dejé esto abierto. Ábrelo en tu teléfono y toca Entrar:\n' + url
+      : 'Te abrí un santuario en Sensia. Abre este enlace en tu teléfono y toca Entrar:\n' + url;
+    try{
+      if (navigator.share){ await navigator.share({ text }); return 'share'; }
+      await navigator.clipboard.writeText(text);
+      return 'copy';
+    }catch(_){
+      try{ await navigator.clipboard.writeText(url); return 'copy'; }catch(__){ return 'fail'; }
+    }
+  },
+  /* Si llegamos por invitación: cargamos el código, vamos a En Vivo y lo decimos.
+     No entramos solos — entrar es siempre una decisión que se toca. */
+  apply(){
+    if (!this.incoming) return;
+    const inp = $('#roomCode');
+    if (inp) inp.value = this.incoming;
+    const note = $('#inviteNote');
+    if (note){
+      note.innerHTML = '<b>Te invitaron a un santuario.</b><br>El código ya está puesto. Cuando los dos estén listos, toquen <b>Entrar</b> — y comparen el sello en voz alta.';
+      note.classList.add('on');
+    }
+    try{ go('vivo'); }catch(_){}
+    buzz([16,40,16]);
+  }
+};
+
+/* ───────────────────────── 21 · LOS RELEVOS ─────────────────────────
+   En datos móviles (CGNAT, NAT simétrico) muchas veces NO existe camino
+   directo entre los dos teléfonos, y sin relevo la sesión no abre nunca.
+   Los relevos públicos gratuitos se caen seguido: esa era la causa real
+   del "El túnel no pudo abrirse". Ahora se configura sin tocar el código,
+   se guarda cifrado con el gesto y se puede PROBAR de verdad.
+   ─────────────────────────────────────────────────────────────────── */
+const Relay = {
+  /* Acepta tres formas: JSON del proveedor, objeto JS pegado tal cual
+     (comillas simples / claves sin comillas), o una línea por servidor. */
+  parse(txt){
+    const raw = String(txt || '').trim();
+    if (!raw) return [];
+    const out = [];
+
+    const asJson = s => {
+      let t = s.replace(/^\s*(?:const|let|var)?\s*iceServers\s*[:=]\s*/i, '').replace(/;\s*$/, '');
+      try{ return JSON.parse(t); }catch(_){}
+      try{
+        const fixed = t
+          .replace(/([{,]\s*)([A-Za-z_$][\w$]*)\s*:/g, '$1"$2":')   // claves sin comillas
+          .replace(/'/g, '"')                                        // comillas simples
+          .replace(/,\s*([}\]])/g, '$1');                            // coma colgada
+        return JSON.parse(fixed);
+      }catch(_){ return null; }
+    };
+
+    const push = o => {
+      if (!o || !o.urls) return;
+      const urls = Array.isArray(o.urls) ? o.urls : [o.urls];
+      const clean = urls.filter(u => typeof u === 'string' && /^(stun|turn)s?:/i.test(u.trim()))
+                        .map(u => u.trim());
+      if (!clean.length) return;
+      const s = { urls: clean.length === 1 ? clean[0] : clean };
+      if (o.username) s.username = String(o.username);
+      if (o.credential) s.credential = String(o.credential);
+      out.push(s);
+    };
+
+    if (/[{[]/.test(raw)){
+      const j = asJson(raw);
+      const arr = Array.isArray(j) ? j : (j && Array.isArray(j.iceServers) ? j.iceServers : null);
+      if (arr){ arr.forEach(push); if (out.length) return out; }
+    }
+
+    raw.split(/[\n,]+/).forEach(line => {
+      const l = line.trim();
+      if (!l || !/^(stun|turn)s?:/i.test(l)) return;
+      const p = l.split('|').map(x => x.trim());
+      push({ urls:p[0], username:p[1] || '', credential:p[2] || '' });
+    });
+    return out;
+  },
+
+  list(){
+    try{ return this.parse(State.settings.relays || ''); }catch(_){ return []; }
+  },
+  has(){ return this.list().some(s => /^turns?:/i.test(Array.isArray(s.urls) ? s.urls[0] : s.urls)); },
+
+  ui(){
+    const box = $('#relayBox'), st = $('#relayState');
+    if (!box || !st) return;
+    if (document.activeElement !== box) box.value = State.settings.relays || '';
+    const n = this.list().length;
+    st.className = 'relay-state' + (this.has() ? ' ok' : '');
+    st.textContent = n
+      ? (this.has() ? n + ' servidor(es) tuyos · con relevo propio' : n + ' servidor(es) · sin relevo TURN, solo STUN')
+      : 'Sin relevo propio. Se usan los públicos, que a veces están caídos.';
+  },
+
+  save(){
+    const box = $('#relayBox');
+    const txt = box ? box.value : '';
+    const parsed = this.parse(txt);
+    if (txt.trim() && !parsed.length){
+      toast('No entendí ese formato. Pega el bloque <b>iceServers</b> o una línea <b>turn:host:puerto|usuario|clave</b>.');
+      return false;
+    }
+    State.settings.relays = txt.trim();
+    persist();
+    this.ui();
+    toast(parsed.length ? 'Relevos guardados · ' + parsed.length : 'Relevos borrados');
+    return true;
+  },
+
+  /* La prueba real: ¿este teléfono consigue un candidato de tipo relay?
+     Si sí, la sesión abre incluso sin camino directo. Si no, va a fallar
+     en datos móviles por más que el servidor esté vivo. */
+  async test(){
+    const st = $('#relayState');
+    const mine = this.list();
+    if (!mine.length){ toast('Primero pega y guarda un relevo'); return; }
+    if (!this.has()){ toast('Eso es solo STUN. Un relevo empieza con <b>turn:</b>'); return; }
+    st.className = 'relay-state';
+    st.textContent = 'Probando el relevo… (hasta 10 s)';
+    const r = await iceProbe(mine, 10000, true);
+    if (r.relay){
+      st.className = 'relay-state ok';
+      st.textContent = '✓ El relevo responde. La sesión va a abrir también en datos móviles.';
+      buzz([18,40,18]);
+    } else {
+      st.className = 'relay-state no';
+      st.textContent = '✕ No se consiguió camino por el relevo. Revisa usuario, clave y puerto (prueba 443).'
+        + (r.err ? ' · ' + r.err : '');
+      buzz([40,60,40]);
+    }
+  }
+};
+
+/* Sonda de ICE: junta candidatos y reporta qué tipos aparecieron.
+   onlyRelay fuerza iceTransportPolicy:'relay' — así la prueba es honesta:
+   si aparece algo, es porque el relevo funciona, no porque había red local. */
+function iceProbe(servers, ms, onlyRelay){
+  return new Promise(res => {
+    const out = { host:false, srflx:false, relay:false, err:'' };
+    let pc;
+    try{
+      const cfg = { iceServers:servers || [], iceCandidatePoolSize:0 };
+      if (onlyRelay) cfg.iceTransportPolicy = 'relay';
+      pc = new RTCPeerConnection(cfg);
+    }catch(e){ out.err = (e && e.message) || 'no se pudo crear la conexión'; return res(out); }
+    let done = false;
+    const fin = () => { if (done) return; done = true; clearTimeout(t); try{ pc.close(); }catch(_){} res(out); };
+    const t = setTimeout(fin, ms || 8000);
+    pc.onicecandidate = ({ candidate }) => {
+      if (!candidate){ return fin(); }
+      const c = candidate.candidate || '';
+      if (/ typ host/.test(c))  out.host = true;
+      if (/ typ srflx/.test(c)) out.srflx = true;
+      if (/ typ relay/.test(c)){ out.relay = true; fin(); }
+    };
+    try{
+      pc.createDataChannel('probe');
+      pc.createOffer().then(o => pc.setLocalDescription(o))
+        .catch(e => { out.err = (e && e.message) || 'oferta rechazada'; fin(); });
+    }catch(e){ out.err = (e && e.message) || 'error'; fin(); }
+  });
+}
+
+/* ───────────────────────── 22 · LA REVISIÓN ─────────────────────────
+   Lo que un primer usuario necesita cuando algo no anda: saber QUÉ falló.
+   Cada línea prueba una cosa de verdad —no una bandera del navegador— y
+   dice qué hacer si sale mal. Nada de esto enciende algo del otro lado.
+   ─────────────────────────────────────────────────────────────────── */
+const Revision = {
+  running:false,
+  row(id, name){
+    const l = $('#revList');
+    const d = document.createElement('div');
+    d.className = 'rev-row'; d.id = 'rev_' + id;
+    d.innerHTML = '<span class="rev-ico run">·</span><div class="rev-tx"><b></b><small>probando…</small></div>';
+    d.querySelector('b').textContent = name;
+    l.appendChild(d);
+    return d;
+  },
+  set(id, state, msg){
+    const d = $('#rev_' + id); if (!d) return;
+    const ico = d.querySelector('.rev-ico'), sm = d.querySelector('small');
+    ico.className = 'rev-ico ' + state;
+    ico.textContent = state === 'ok' ? '✓' : state === 'no' ? '✕' : state === 'warn' ? '!' : '·';
+    sm.className = state === 'ok' ? '' : 'bad';
+    sm.innerHTML = msg;
+  },
+
+  async run(){
+    if (this.running) return;
+    this.running = true;
+    const btn = $('#revRun');
+    btn.disabled = true; btn.textContent = 'Revisando…';
+    $('#revList').innerHTML = '';
+    $('#revVerdict').className = 'rev-verdict';
+
+    const score = { fatal:0, warn:0 };
+    const bad  = (id, m) => { this.set(id, 'no', m); score.fatal++; };
+    const soso = (id, m) => { this.set(id, 'warn', m); score.warn++; };
+
+    /* 1 · origen seguro */
+    this.row('sec', 'Conexión segura');
+    await sleep(120);
+    if (window.isSecureContext) this.set('sec', 'ok', 'Estás en https. El cifrado es posible.');
+    else bad('sec', 'Sin https no hay cifrado, ni cámara, ni micrófono. Abre Sensia desde una dirección <b>https://</b>.');
+
+    /* 2 · cifrado real, no declarado */
+    this.row('cry', 'Cifrado del navegador');
+    let cryOk = false;
+    try{
+      const k = await crypto.subtle.importKey('raw', crypto.getRandomValues(new Uint8Array(32)), { name:'AES-GCM' }, false, ['encrypt','decrypt']);
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const ct = await crypto.subtle.encrypt({ name:'AES-GCM', iv }, k, ENC.encode('sensia'));
+      cryOk = DEC.decode(await crypto.subtle.decrypt({ name:'AES-GCM', iv }, k, ct)) === 'sensia';
+    }catch(_){}
+    if (cryOk) this.set('cry', 'ok', 'AES-GCM cifra y descifra. La Bóveda y el túnel funcionan.');
+    else bad('cry', 'Este navegador no cifra. La Bóveda no puede abrirse.');
+
+    /* 3 · memoria del teléfono */
+    this.row('db', 'Memoria de este teléfono');
+    const probe = 'sx_probe_' + Date.now();
+    let dbOk = false;
+    try{ await DB.put(probe, { t:1 }); const v = await DB.get(probe); dbOk = !!(v && v.t === 1); await DB.del(probe); }catch(_){}
+    if (dbOk) this.set('db', 'ok', 'Lo que guardes sobrevive a cerrar la app.');
+    else soso('db', 'No se puede escribir en el disco (¿navegación privada?). Todo va a vivir solo mientras la app esté abierta.');
+
+    /* 4 · cámara */
+    this.row('cam', 'Cámara');
+    const cam = await mediaProbe('video');
+    if (cam.ok) this.set('cam', 'ok', 'Se abre y se apaga bien. Se cerró de inmediato.');
+    else bad('cam', cam.msg);
+
+    /* 5 · micrófono */
+    this.row('mic', 'Micrófono');
+    const mic = await mediaProbe('audio');
+    if (mic.ok) this.set('mic', 'ok', 'Se abre y se apaga bien.');
+    else bad('mic', mic.msg);
+
+    /* 6 · servidor de encuentro */
+    this.row('srv', 'Servidor de encuentro');
+    if (Live.active || Net.socket) this.set('srv', 'warn', 'Hay una sesión abierta. Ciérrala para probar esto.');
+    else {
+      const s = await serverProbe(15000);
+      if (s.ok) this.set('srv', 'ok', 'Responde. Pueden encontrarse con un código.');
+      else if (s.why === 'no-lib') soso('srv', 'No cargó la librería del servidor (¿red que bloquea CDN?). Usen el <b>modo sin servidor</b>.');
+      else soso('srv', 'No respondió a tiempo. Si está dormido puede tardar un minuto la primera vez; si no, usen el <b>modo sin servidor</b>.');
+    }
+
+    /* 7 · camino de red — la prueba que de verdad predice si va a conectar */
+    this.row('net', 'Camino hasta el otro teléfono');
+    const mine = Relay.list();
+    const base = ICE.iceServers.concat(mine);
+    const p = await iceProbe(base, 9000, false);
+    let relayOk = false;
+    if (mine.length && Relay.has()){
+      const r2 = await iceProbe(mine, 9000, true);
+      relayOk = r2.relay;
+    } else {
+      relayOk = p.relay;
+    }
+    if (relayOk) this.set('net', 'ok', 'Hay relevo vivo: van a conectar incluso en datos móviles.');
+    else if (p.srflx) soso('net', 'Hay camino directo, pero <b>sin relevo</b>. En wifi suele andar; en datos móviles puede no abrir. Configura un relevo abajo.');
+    else if (p.host) soso('net', 'Solo se ve la red local. Sin relevo, fuera de esta red probablemente no conecte.');
+    else bad('net', 'No se obtuvo ningún camino de red. Revisa la conexión o un firewall muy cerrado.');
+
+    /* 8 · extras honestos */
+    this.row('e2', 'Cifrado Ω del video');
+    if (CAN_E2EE && window.isSecureContext) this.set('e2', 'ok', 'Disponible: el video puede ir con una capa propia además de la del túnel.');
+    else this.set('e2', 'warn', 'No disponible en este navegador. El video igual viaja cifrado por el túnel (DTLS-SRTP).');
+
+    this.row('vib', 'Vibración');
+    if (HAS_VIBRATE) this.set('vib', 'ok', 'El motor responde. Los pulsos se sienten.');
+    else this.set('vib', 'warn', 'Este teléfono no vibra desde el navegador (típico en iPhone). Activa el <b>sonido de respaldo</b> arriba.');
+
+    this.row('scr', 'Compartir pantalla');
+    if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) this.set('scr', 'ok', 'Disponible.');
+    else this.set('scr', 'warn', 'No existe en este navegador (Safari en iPhone). Todo lo demás funciona igual.');
+
+    /* veredicto */
+    const v = $('#revVerdict');
+    if (score.fatal){
+      v.className = 'rev-verdict on bad';
+      v.innerHTML = '<b>Hay algo que va a romper la noche.</b> Arregla primero lo marcado con ✕ — sin eso, la sesión no va a abrir o va a abrir a medias.';
+    } else if (score.warn){
+      v.className = 'rev-verdict on';
+      v.innerHTML = '<b>Se puede usar, con reservas.</b> Lo marcado con ! no impide la sesión, pero puede hacerla frágil. Vale la pena mirarlo antes de la primera vez.';
+    } else {
+      v.className = 'rev-verdict on good';
+      v.innerHTML = '<b>Este teléfono está listo.</b> Cifrado, cámara, micrófono, servidor y camino de red: todo responde. Que la otra persona haga esta misma revisión en el suyo.';
+    }
+    btn.disabled = false; btn.textContent = 'Revisar de nuevo';
+    this.running = false;
+  }
+};
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+async function mediaProbe(kind){
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia)
+    return { ok:false, msg:'Este navegador no da acceso. Abre Sensia con <b>https</b>.' };
+  try{
+    const st = await navigator.mediaDevices.getUserMedia(kind === 'video' ? { video:true } : { audio:true });
+    st.getTracks().forEach(t => { try{ t.stop(); }catch(_){} });
+    return { ok:true };
+  }catch(e){
+    return { ok:false, msg: mediaErr(e, kind === 'video' ? 'la cámara' : 'el micrófono') };
+  }
+}
+
+function serverProbe(ms){
+  return new Promise(res => {
+    if (typeof io === 'undefined' || window.__noSocket) return res({ ok:false, why:'no-lib' });
+    let s = null, done = false;
+    const fin = r => { if (done) return; done = true; clearTimeout(t); try{ s && s.disconnect(); }catch(_){} res(r); };
+    const t = setTimeout(() => fin({ ok:false, why:'timeout' }), ms || 12000);
+    try{
+      s = io(location.origin, { reconnection:false, timeout:ms || 12000, transports:['websocket','polling'], forceNew:true });
+    }catch(_){ return fin({ ok:false, why:'throw' }); }
+    s.on('connect', () => fin({ ok:true }));
+    s.on('connect_error', () => fin({ ok:false, why:'error' }));
+  });
+}
+
+/* ───────────────────────── 23 · INSTALAR ─────────────────────────
+   Instalada, Sensia cumple del todo su promesa de discreción: en la pantalla
+   de inicio es una libreta llamada "Notas", con ícono de libreta, y abre sin
+   barra de direcciones. El manifiesto se arma en memoria — el archivo sigue
+   siendo uno solo, sin dependencias externas.
+   ────────────────────────────────────────────────────────────────── */
+const Install = (() => {
+  let deferred = null;
+  const ICON = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%232b2e33'/%3E%3Crect x='128' y='104' width='256' height='304' rx='24' fill='%23e9e5dd'/%3E%3Cg fill='%239aa0a6'%3E%3Crect x='168' y='168' width='176' height='18' rx='9'/%3E%3Crect x='168' y='222' width='176' height='18' rx='9'/%3E%3Crect x='168' y='276' width='120' height='18' rx='9'/%3E%3C/g%3E%3C/svg%3E";
+
+  function manifest(){
+    try{
+      const m = {
+        name:'Notas', short_name:'Notas', description:'Notas',
+        start_url: location.pathname, scope: location.pathname,
+        display:'standalone', orientation:'portrait',
+        background_color:'#050405', theme_color:'#050405',
+        icons:[
+          { src:ICON, sizes:'192x192', type:'image/svg+xml', purpose:'any' },
+          { src:ICON, sizes:'512x512', type:'image/svg+xml', purpose:'any' },
+          { src:ICON, sizes:'512x512', type:'image/svg+xml', purpose:'maskable' }
+        ]
+      };
+      const url = URL.createObjectURL(new Blob([JSON.stringify(m)], { type:'application/manifest+json' }));
+      const link = $('#manifestLink');
+      if (link) link.href = url;
+    }catch(_){}
+  }
+
+  function standalone(){
+    return !!(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)
+        || navigator.standalone === true;
+  }
+
+  function bind(){
+    manifest();
+    const card = $('#installCard'), btn = $('#installBtn'), hint = $('#installHint');
+    if (!card) return;
+
+    if (standalone()) return;   // ya está instalada: no hay nada que ofrecer
+
+    addEventListener('beforeinstallprompt', e => {
+      e.preventDefault(); deferred = e;
+      card.style.display = 'block';
+    });
+    addEventListener('appinstalled', () => {
+      card.style.display = 'none';
+      toast('Instalada. Ábrela desde tu pantalla de inicio.');
+    });
+
+    /* iPhone no ofrece instalación automática: se explica el camino a mano. */
+    if (IS_IOS){
+      card.style.display = 'block';
+      btn.textContent = 'Cómo instalarla en iPhone';
+      btn.addEventListener('click', () => {
+        hint.style.display = 'block';
+        hint.innerHTML = 'Toca <b>Compartir</b> abajo en Safari (el cuadrado con la flecha) → <b>Añadir a pantalla de inicio</b> → <b>Añadir</b>. Va a aparecer como <b>Notas</b>.';
+        buzz(14);
+      });
+      return;
+    }
+
+    btn.addEventListener('click', async () => {
+      if (!deferred){
+        hint.style.display = 'block';
+        hint.innerHTML = 'Usa el menú del navegador (⋮) → <b>Instalar aplicación</b> o <b>Añadir a pantalla de inicio</b>.';
+        return;
+      }
+      deferred.prompt();
+      try{ await deferred.userChoice; }catch(_){}
+      deferred = null;
+      card.style.display = 'none';
+    });
+  }
+  return { bind, standalone };
+})();
+
 (async function boot(){
   Gate.build();
   Gate.bind();
+  Pacto.bind();
+  await Pacto.require();          // nadie pasa de aquí sin declarar las tres cosas
   await DB.init();
   META = await DB.get('meta');
 
@@ -5226,8 +6437,32 @@ window.Onboard = Onboard;
     document.title = META.ui.discreet === false ? 'Sensia' : 'Notas';
   }
   if (!SECURE){
+    document.body.classList.add('insecure');
+    const bar = $('#insecureBar');
+    bar.addEventListener('click', () => {
+      const local = location.protocol === 'content:' || location.protocol === 'file:';
+      openSheet(
+        '<h3 style="color:var(--alert)">Falta la conexión segura</h3>' +
+        '<p class="muted" style="margin:0 0 12px">' + insecureWhy() + '</p>' +
+        '<p class="muted" style="margin:0 0 12px">Lo que <b>sí</b> funciona así: el Diario, los dados, las preguntas, el Lienzo. ' +
+        'Lo que <b>no</b>: la cámara, el micrófono, el latido, la Bóveda y el túnel — y tu gesto se guarda ' +
+        '<b style="color:var(--alert)">sin cifrar</b>.</p>' +
+        (local
+          ? '<p class="muted">Un archivo <b>.html</b> guardado en el teléfono nunca va a ser un origen seguro, por más que lo abras en Chrome. Tiene que estar servido: sube el archivo a tu dirección de siempre y ábrela desde ahí.</p>'
+          : '<p class="muted">Escribe la misma dirección con <b>https://</b> adelante. Si el sitio no tiene certificado, no hay forma de que la cámara funcione.</p>') +
+        '<button class="btn primary fld-gap" id="inClose" style="width:100%;margin-top:16px">Entendido</button>');
+      const b = $('#inClose'); if (b) b.addEventListener('click', closeSheet);
+    });
     $('#insecureWarn').classList.add('on');
     $('#chipE2EE').style.display = 'none';
+    /* El Umbral promete "todo lo que hay adentro está cifrado con él". Sin
+       origen seguro eso es falso: el gesto se guarda tal cual. Y el aviso
+       vivía en la pantalla de En Vivo, o sea DESPUÉS de haber trazado el
+       gesto y confiado. Se dice antes, donde se toma la decisión. */
+    const pr = document.querySelector('#umbral .principio');
+    if (pr) pr.innerHTML = '<b style="color:var(--alert)">Sin HTTPS no hay cifrado.</b> ' +
+      'Tu gesto se guarda tal cual y lo de adentro queda sin proteger. ' +
+      'Ábrela desde una dirección <b>https://</b> antes de confiarle nada.';
   }
   if (CAN_E2EE && SECURE) $('#chipE2EE').style.display = 'inline-flex';
 
@@ -5246,6 +6481,8 @@ window.Onboard = Onboard;
   $('#iosDismiss').addEventListener('click', () => $('#iosGate').classList.remove('on'));
   if (IS_IOS) $('#heartStatus').textContent = PPG_IDLE_MSG;
 
+  Invite.read();            // lee y limpia el #s= antes de que nadie lo vea
+  Install.bind();
   Gate.refresh();
   Embers.on();
   $('#die1').innerHTML = '<small>acción</small><span>—</span>';
@@ -5276,7 +6513,7 @@ window.Onboard = Onboard;
   // es barato porque solo actúa cuando el elemento está en pausa con una señal viva.
   document.addEventListener('pointerdown', () => {
     const rv = $('#remoteVideo');
-    if (rv && rv.srcObject && rv.paused) rv.play().catch(() => {});
+    if (rv && rv.srcObject && rv.paused) Live.playRemote();
   }, { passive:true });
 
   // Compartir pantalla no existe en Safari iOS: se deshabilita con un rótulo honesto en vez de fallar al tocar.
@@ -5287,6 +6524,22 @@ window.Onboard = Onboard;
 })();
 
 addEventListener('beforeunload', () => { try{ Live.hardStop(true); }catch(_){} });
+
+/* Última red. Un error no previsto no debe dejar a alguien mirando una pantalla
+   congelada sin saber si sigue conectado o si lo están viendo. Se avisa una vez
+   por minuto —no más— y se escribe en consola para poder repararlo después. */
+(function guard(){
+  let last = 0;
+  const say = err => {
+    try{ console.error('[sensia]', err); }catch(_){}
+    const now = Date.now();
+    if (now - last < 60000) return;
+    last = now;
+    try{ toast('Algo falló por dentro. Si algo dejó de responder, cierra la sesión y vuelve a entrar.'); }catch(_){}
+  };
+  addEventListener('error', e => say(e && (e.error || e.message)));
+  addEventListener('unhandledrejection', e => say(e && e.reason));
+})();
 
 </script>
 </body>
