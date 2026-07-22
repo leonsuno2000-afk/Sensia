@@ -999,6 +999,7 @@ body.reduce #tour .tour-ring::after{animation:none}
         <button class="btn ghost sm" id="heartTap" style="flex:0 0 auto">Marcar a mano</button>
       </div>
       <p class="dim" id="heartStatus" style="text-align:center;margin-top:10px">Necesita unos 10 segundos con el dedo quieto.</p>
+      <button class="ghost-link" id="heartWhy" style="display:none;width:100%;margin-top:6px;font-size:12px">¿por qué no lee mi pulso?</button>
       <video id="ppgVideo" playsinline muted></video><canvas id="ppgCanvas" width="40" height="40"></canvas>
     </div>
 
@@ -2956,6 +2957,7 @@ const Heart = (() => {
   let on = false, stream = null, track = null, raf = 0;
   let vals = [], last = 0, peaks = [], bpm = 0, t0 = 0, sendT = null;
   let theirs = 0, resT = 0, tapTimes = [], hasTorch = false, ppgGreen = false;
+  let diag = {}, fpsN = 0, fpsT = 0;
 
   function ui(msg){ $('#heartStatus').textContent = msg; }
   function beatMine(){
@@ -3002,22 +3004,102 @@ const Heart = (() => {
      el segundo, medio segundo después, funciona. */
   async function enableTorch(tr){
     for (let i = 0; i < 4; i++){
-      if (!tr || tr.readyState !== 'live') return false;
+      if (!tr || tr.readyState !== 'live'){ diag.err = 'track ' + (tr ? tr.readyState : 'nulo'); return false; }
       let caps = {};
-      try{ caps = (tr.getCapabilities && tr.getCapabilities()) || {}; }catch(_){}
-      if ('torch' in caps && !caps.torch) return false;   // el teléfono dice que no tiene
+      try{ caps = (tr.getCapabilities && tr.getCapabilities()) || {}; }catch(e){ diag.err = 'getCapabilities: ' + e.name; }
+      diag.caps = Object.keys(caps).join(',') || '(vacío)';
+      diag.torchCap = ('torch' in caps) ? String(caps.torch) : '(no reportado)';
+      if ('torch' in caps && !caps.torch){ diag.err = 'el teléfono declara que esta cámara no tiene linterna'; return false; }
       if (('torch' in caps) || i > 0){
         try{
           await tr.applyConstraints({ advanced:[{ torch:true }] });
           let st = {};
           try{ st = (tr.getSettings && tr.getSettings()) || {}; }catch(_){}
+          diag.torchSet = ('torch' in st) ? String(st.torch) : '(no reportado)';
+          diag.tries = i + 1;
           if (st.torch === true) return true;              // confirmado por el navegador
           if (!('torch' in st) && !IS_IOS) return true;    // no lo reporta, pero no lanzó
-        }catch(_){}
+        }catch(e){ diag.err = 'applyConstraints: ' + (e.name || e.message); }
       }
       await sleep(300);
     }
+    diag.tries = 4;
     return false;
+  }
+
+  /* El S23 tiene varias cámaras traseras y la que elige "environment" puede ser
+     la gran angular, que no controla el flash. Si la primera no da linterna, se
+     prueban las otras traseras una por una y nos quedamos con la que sí. */
+  async function tryOtherRearCams(){
+    let devs = [];
+    try{ devs = await navigator.mediaDevices.enumerateDevices(); }catch(_){ return false; }
+    const cams = devs.filter(d => d.kind === 'videoinput');
+    diag.cams = cams.length;
+    const cur = (track && track.getSettings && track.getSettings().deviceId) || '';
+    const rear = cams.filter(d => d.deviceId && d.deviceId !== cur &&
+      (!d.label || /back|rear|trasera|environment/i.test(d.label)));
+    for (const d of rear){
+      if (!on) return false;
+      let st2 = null;
+      try{
+        st2 = await navigator.mediaDevices.getUserMedia({
+          video:{ deviceId:{ exact:d.deviceId }, width:{ideal:320}, height:{ideal:240}, frameRate:{ideal:30} },
+          audio:false
+        });
+      }catch(_){ continue; }
+      const tr2 = st2.getVideoTracks()[0];
+      const v = $('#ppgVideo');
+      v.srcObject = st2;
+      try{ await v.play(); }catch(_){}
+      await firstFrame(v, 1200);
+      if (await enableTorch(tr2)){
+        try{ stream.getTracks().forEach(t => t.stop()); }catch(_){}
+        stream = st2; track = tr2;
+        diag.cam = d.label || d.deviceId.slice(0, 8);
+        return true;
+      }
+      try{ st2.getTracks().forEach(t => t.stop()); }catch(_){}
+    }
+    // volver a la original
+    try{ const v = $('#ppgVideo'); v.srcObject = stream; await v.play(); }catch(_){}
+    return false;
+  }
+
+  /* El informe que convierte "no funciona" en un dato. */
+  function report(){
+    let st = {};
+    try{ st = (track && track.getSettings && track.getSettings()) || {}; }catch(_){}
+    const rows = [
+      ['Cámara en uso',      diag.cam || st.label || '(sin etiqueta)'],
+      ['Cámaras traseras',   diag.cams != null ? String(diag.cams) : '(no consultadas)'],
+      ['Estado del track',   track ? track.readyState : '(cerrado)'],
+      ['Resolución',         (st.width || '?') + '×' + (st.height || '?') + ' @ ' + (st.frameRate ? Math.round(st.frameRate) : '?') + ' fps'],
+      ['Capacidades',        diag.caps || '(no leídas)'],
+      ['¿Tiene linterna?',   diag.torchCap || '(no leído)'],
+      ['¿Quedó encendida?',  diag.torchSet || '(no reportado)'],
+      ['Intentos',           String(diag.tries || 0)],
+      ['Último error',       diag.err || '(ninguno)'],
+      ['Canal en uso',       ppgGreen ? 'verde (el rojo se saturó)' : 'rojo'],
+      ['Amplitud de señal',  diag.amp != null ? diag.amp.toFixed(2) : '—'],
+      ['Cuadros por segundo',diag.fps != null ? String(Math.round(diag.fps)) : '—'],
+      ['Muestras',           String(vals.length)]
+    ];
+    openSheet('<h3>El Latido · informe</h3>' +
+      '<p class="muted" style="margin:0 0 12px">Esto es lo que reporta tu navegador, tal cual. Si el flash no enciende, la línea que importa es <b>¿Tiene linterna?</b>.</p>' +
+      '<div style="font-family:var(--font-m);font-size:11px;line-height:1.9">' +
+      rows.map(r => '<div style="display:flex;gap:10px;border-bottom:1px solid var(--line-3);padding:5px 0">' +
+        '<span style="flex:0 0 44%;color:var(--ash-dim)">' + esc(r[0]) + '</span>' +
+        '<span style="flex:1;color:var(--mist);word-break:break-word">' + esc(String(r[1])) + '</span></div>').join('') +
+      '</div>' +
+      '<div class="row fld-gap" style="margin-top:16px">' +
+      '<button class="btn ghost sm" id="hwCopy" style="flex:1">Copiar</button>' +
+      '<button class="btn primary sm" id="hwClose" style="flex:1">Cerrar</button></div>');
+    const c = $('#hwCopy');
+    if (c) c.addEventListener('click', async () => {
+      try{ await navigator.clipboard.writeText(rows.map(r => r[0] + ': ' + r[1]).join('\n')); toast('Informe copiado'); }
+      catch(_){ toast('No se pudo copiar'); }
+    });
+    const x = $('#hwClose'); if (x) x.addEventListener('click', closeSheet);
   }
   async function start(){
     if (Live.cam){ toast('Apaga la cámara de la sesión primero'); return; }
@@ -3045,13 +3127,29 @@ const Heart = (() => {
     try{ await v.play(); }catch(_){}
 
     on = true; vals = []; peaks = []; last = 0; t0 = performance.now(); ppgGreen = false;
+    diag = {}; fpsN = 0; fpsT = performance.now();
+    try{ diag.cam = track.label || ''; }catch(_){}
     $('#heartBtn').textContent = 'Detener';
+    $('#heartWhy').style.display = 'block';
     ui('Encendiendo el flash…');
     loop();
     sendT = setInterval(() => { if (bpm > 40) Net.send({ t:'heart', bpm:Math.round(bpm) }); }, 2200);
 
-    await firstFrame(v, 1600);
-    hasTorch = await enableTorch(track);
+    /* Toda la fase del flash va dentro de un try: si algo aquí falla —una cámara
+       que no acepta deviceId, un applyConstraints que lanza raro, lo que sea— el
+       lector NO muere. Sigue sin linterna, que es un modo válido, en vez de
+       reventar y dejar el corazón sin latir y al usuario sin saber por qué. */
+    try{
+      await firstFrame(v, 1600);
+      hasTorch = await enableTorch(track);
+      if (!hasTorch && !IS_IOS && on){
+        ui('Buscando la cámara que controla el flash…');
+        hasTorch = await tryOtherRearCams();
+      }
+    }catch(e){
+      hasTorch = false;
+      try{ diag.err = 'flash: ' + (e && (e.name || e.message)); }catch(_){}
+    }
     if (!on) return;                       // lo detuvo mientras encendíamos
     /* Encender la linterna cambia el brillo de golpe: lo medido antes es basura. */
     vals = []; peaks = []; last = 0; t0 = performance.now();
@@ -3070,6 +3168,7 @@ const Heart = (() => {
     stream = null; track = null;
     $('#ppgVideo').srcObject = null;
     $('#heartBtn').textContent = 'Leer mi pulso';
+    $('#heartWhy').style.display = 'none';
     ui(PPG_IDLE_MSG);
     setBpm(0);
     Net.send({ t:'heart', bpm:0 });
@@ -3078,6 +3177,7 @@ const Heart = (() => {
     if (!on) return;
     const v = $('#ppgVideo'), c = $('#ppgCanvas');
     if (v.videoWidth){
+     try{
       const ctx = c.getContext('2d', { willReadFrequently:true });
       ctx.drawImage(v, 0, 0, 40, 40);
       const d = ctx.getImageData(13, 13, 14, 14).data;
@@ -3091,7 +3191,11 @@ const Heart = (() => {
       const g0 = r > 245;
       if (g0 !== ppgGreen){ ppgGreen = g0; vals = []; peaks = []; last = 0; }
       sample(ppgGreen ? g : r, performance.now());
+     }catch(e){ try{ diag.err = 'lectura: ' + (e && (e.name || e.message)); }catch(_){} }
     }
+    fpsN++;
+    const now = performance.now();
+    if (now - fpsT > 1000){ diag.fps = fpsN * 1000 / (now - fpsT); fpsN = 0; fpsT = now; }
     raf = requestAnimationFrame(loop);
   }
   function sample(val, t){
@@ -3116,6 +3220,7 @@ const Heart = (() => {
     const recent = vals.slice(-120).map(x => x.s);
     const mx = Math.max.apply(null, recent), mn = Math.min.apply(null, recent);
     const amp = mx - mn;
+    diag.amp = amp;
 
     if (amp < 0.6){ ui(hasTorch ? 'No detecto pulso. Tapa bien la cámara con el dedo.' : 'No detecto pulso. Sin linterna hace falta más luz: acércate a una lámpara y tapa bien la cámara.'); return; }
 
@@ -3161,13 +3266,25 @@ const Heart = (() => {
     ui('Marcando a mano · toca al ritmo de tu pulso');
   }
   return {
-    toggle(){ on ? stop() : start(); },
-    stop, tap, remoteBpm, beatTheirs,
+    toggle(){
+      if (on){ stop(); return; }
+      /* start() es async: sin este catch, cualquier rechazo suyo se vuelve un
+         "unhandledrejection" que dispara el guardia global con su mensaje de
+         pánico. Aquí se atrapa, se apaga limpio y se dice algo útil. */
+      start().catch(e => {
+        try{ diag.err = 'start: ' + (e && (e.name || e.message)); }catch(_){}
+        try{ stop(); }catch(_){}
+        toast('No se pudo iniciar la lectura. Prueba <b>Marcar a mano</b>, o toca “¿por qué?” para ver el detalle.');
+        $('#heartWhy').style.display = 'block';
+      });
+    },
+    stop, tap, remoteBpm, beatTheirs, report,
     get active(){ return on; }
   };
 })();
 $('#heartBtn').addEventListener('click', () => Heart.toggle());
 $('#heartTap').addEventListener('click', () => Heart.tap());
+$('#heartWhy').addEventListener('click', () => Heart.report());
 
 /* ───────────────────────── 11 · EL RITMO ───────────────────────── */
 const Breath = (() => {
