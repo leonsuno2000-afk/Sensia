@@ -3090,7 +3090,7 @@ const Heart = (() => {
     const rows = [
       ['Cámara en uso',      diag.cam || st.label || '(sin etiqueta)'],
       ['Cámaras traseras',   diag.cams != null ? String(diag.cams) : '(no consultadas)'],
-      ['Estado del track',   track ? track.readyState : '(cerrado)'],
+      ['Estado del track',   track ? track.readyState : '(detenido — el lector no está corriendo)'],
       ['Resolución',         (st.width || '?') + '×' + (st.height || '?') + ' @ ' + (st.frameRate ? Math.round(st.frameRate) : '?') + ' fps'],
       ['Capacidades',        diag.caps || '(no leídas)'],
       ['¿Tiene linterna?',   diag.torchCap || '(no leído)'],
@@ -3106,7 +3106,9 @@ const Heart = (() => {
     /* Si el guardia global atrapó algo, va primero: es lo que de verdad importa. */
     try{
       if (window.__lastError){
-        rows.unshift(['⚠ Error interno', window.__lastError.msg + (window.__lastError.stack ? '\n' + window.__lastError.stack : '')]);
+        rows.unshift(['⚠ Error interno', window.__lastError.msg
+          + (window.__lastError.when ? ' · ' + window.__lastError.when : '')
+          + (window.__lastError.stack ? '\n' + window.__lastError.stack : '')]);
       }
     }catch(_){}
     openSheet('<h3>El Latido · informe</h3>' +
@@ -3228,7 +3230,16 @@ const Heart = (() => {
     on = false;
     cancelAnimationFrame(raf);
     clearInterval(sendT);
-    if (track){ try{ track.applyConstraints({advanced:[{torch:false}]}); }catch(_){} }
+    /* Apagar la linterna SOLO si alguna vez se encendió — y atrapando el rechazo
+       de la promesa: applyConstraints rechaza (no lanza) cuando torch no existe,
+       y ese rechazo sin dueño era el "Unsupported constraint" que disparaba el
+       guardia justo al tocar Detener. El try de afuera solo caza lo síncrono. */
+    if (track && hasTorch){
+      try{
+        const p = track.applyConstraints({ advanced:[{ torch:false }] });
+        if (p && p.catch) p.catch(() => {});
+      }catch(_){}
+    }
     if (stream) stream.getTracks().forEach(t => t.stop());
     stream = null; track = null;
     $('#ppgVideo').srcObject = null;
@@ -3257,7 +3268,7 @@ const Heart = (() => {
         const rr = d[i], gg = d[i+1], bb = d[i+2];
         const lum = rr*0.3 + gg*0.59 + bb*0.11;
         if (lum > 250){ bright++; continue; }
-        if (lum < 8){ dark++; continue; }
+        if (lum < 2){ dark++; continue; }
         r += rr; g += gg; b += bb; n++;
       }
       const total = d.length / 4;
@@ -3272,9 +3283,11 @@ const Heart = (() => {
         sample(ppgGreen ? g : r, performance.now());
         diag.cover = Math.round(n / total * 100);
       } else {
-        /* Menos del 20% del área es piel útil: el dedo no está tapando bien, o
-           está tan pegado a una luz que quema todo. Se guía en vez de callar. */
+        /* Menos del 20% del área es útil. Tres causas, tres guías distintas:
+           todo quemado (luz directa encima), todo negro (no pasa luz por el
+           dedo), o mezcla rara (el dedo no tapa). Decir la que corresponde. */
         if (bright > total * 0.5) ui('Demasiada luz directa. Aleja un poco la cámara de la lámpara.');
+        else if (dark > total * 0.6) ui('Muy oscuro para leer sin flash. Enciende una luz cerca y vuelve a apoyar la yema.');
         else ui('Tapa toda la cámara con la yema, apoyada pero sin apretar.');
         diag.cover = Math.round(n / total * 100);
       }
@@ -4274,8 +4287,8 @@ const Live = {
   stopMedia(){
     [this.cam, this.mic, this.share].forEach(s => { if (s) s.getTracks().forEach(t => t.stop()); });
     this.cam = this.mic = this.share = null;
-    if (Net.tcV && Net.tcV.sender) try{ Net.tcV.sender.replaceTrack(null); }catch(_){}
-    if (Net.tcA && Net.tcA.sender) try{ Net.tcA.sender.replaceTrack(null); }catch(_){}
+    if (Net.tcV && Net.tcV.sender) try{ const p = Net.tcV.sender.replaceTrack(null); if (p && p.catch) p.catch(() => {}); }catch(_){}
+    if (Net.tcA && Net.tcA.sender) try{ const p = Net.tcA.sender.replaceTrack(null); if (p && p.catch) p.catch(() => {}); }catch(_){}
     $('#localVideo').srcObject = null;
     $('#remoteVideo').srcObject = null;
     this.needTap(false);
