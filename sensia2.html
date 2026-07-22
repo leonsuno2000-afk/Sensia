@@ -1000,7 +1000,7 @@ body.reduce #tour .tour-ring::after{animation:none}
       </div>
       <p class="dim" id="heartStatus" style="text-align:center;margin-top:10px">Necesita unos 10 segundos con el dedo quieto.</p>
       <button class="ghost-link" id="heartWhy" style="display:none;width:100%;margin-top:6px;font-size:12px">¿por qué no lee mi pulso?</button>
-      <video id="ppgVideo" playsinline muted></video><canvas id="ppgCanvas" width="40" height="40"></canvas>
+      <video id="ppgVideo" playsinline muted></video><canvas id="ppgCanvas" width="64" height="64"></canvas>
     </div>
 
     <div class="card">
@@ -3087,7 +3087,8 @@ const Heart = (() => {
       ['¿Quedó encendida?',  diag.torchSet || '(no reportado)'],
       ['Intentos',           String(diag.tries || 0)],
       ['Último error',       diag.err || '(ninguno)'],
-      ['Canal en uso',       ppgGreen ? 'verde (el rojo se saturó)' : 'rojo'],
+      ['Canal en uso',       ppgGreen ? 'verde' : 'rojo'],
+      ['Cobertura del dedo',  diag.cover != null ? diag.cover + '%' : '—'],
       ['Amplitud de señal',  diag.amp != null ? diag.amp.toFixed(2) : '—'],
       ['Cuadros por segundo',diag.fps != null ? String(Math.round(diag.fps)) : '—'],
       ['Muestras',           String(vals.length)]
@@ -3185,18 +3186,39 @@ const Heart = (() => {
     if (v.videoWidth){
      try{
       const ctx = c.getContext('2d', { willReadFrequently:true });
-      ctx.drawImage(v, 0, 0, 40, 40);
-      const d = ctx.getImageData(13, 13, 14, 14).data;
-      let r = 0, g = 0, n = 0;
-      for (let i=0;i<d.length;i+=4){ r += d[i]; g += d[i+1]; n++; }
-      r /= n; g /= n;
-      /* Con la yema pegada al flash el canal rojo se satura en 255 y la onda del
-         pulso se aplana justo cuando la señal debería ser mejor. El verde sigue
-         teniendo variación ahí. Se elige uno y, si cambia, se empieza de cero:
-         mezclar canales inventa picos que no existen. */
-      const g0 = r > 245;
-      if (g0 !== ppgGreen){ ppgGreen = g0; vals = []; peaks = []; last = 0; }
-      sample(ppgGreen ? g : r, performance.now());
+      ctx.drawImage(v, 0, 0, 64, 64);
+      /* Antes se medía un recorte de 14×14 en el centro: 196 píxeles. Sin flash y
+         con luz despareja, ese cuadrito puede caer en una sombra o un brillo y
+         perder la onda que sí está en el resto del dedo. Ahora se promedia un área
+         central de 40×40 —1600 píxeles— y se descartan los píxeles quemados (>250)
+         y los muertos (<8): esos no llevan pulso, solo ensucian el promedio. */
+      const d = ctx.getImageData(12, 12, 40, 40).data;
+      let r = 0, g = 0, b = 0, n = 0, bright = 0, dark = 0;
+      for (let i=0;i<d.length;i+=4){
+        const rr = d[i], gg = d[i+1], bb = d[i+2];
+        const lum = rr*0.3 + gg*0.59 + bb*0.11;
+        if (lum > 250){ bright++; continue; }
+        if (lum < 8){ dark++; continue; }
+        r += rr; g += gg; b += bb; n++;
+      }
+      const total = d.length / 4;
+      if (n > total * 0.2){
+        r /= n; g /= n; b /= n;
+        /* Elegir canal por dónde está la señal, no por una regla fija:
+           - dedo bien tapado con luz cálida → el rojo domina y lleva el pulso
+           - rojo saturado (dedo sobre una luz fuerte) → el verde conserva la onda
+           - poca luz roja → el verde suele tener mejor relación señal/ruido */
+        const wantGreen = (r > 245) || (r < 40 && g > r);
+        if (wantGreen !== ppgGreen){ ppgGreen = wantGreen; vals = []; peaks = []; last = 0; }
+        sample(ppgGreen ? g : r, performance.now());
+        diag.cover = Math.round(n / total * 100);
+      } else {
+        /* Menos del 20% del área es piel útil: el dedo no está tapando bien, o
+           está tan pegado a una luz que quema todo. Se guía en vez de callar. */
+        if (bright > total * 0.5) ui('Demasiada luz directa. Aleja un poco la cámara de la lámpara.');
+        else ui('Tapa toda la cámara con la yema, apoyada pero sin apretar.');
+        diag.cover = Math.round(n / total * 100);
+      }
      }catch(e){ try{ diag.err = 'lectura: ' + (e && (e.name || e.message)); }catch(_){} }
     }
     fpsN++;
