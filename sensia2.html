@@ -3003,27 +3003,35 @@ const Heart = (() => {
      por la plataforma. Reintenta: en Samsung el primer intento suele fallar y
      el segundo, medio segundo después, funciona. */
   async function enableTorch(tr){
-    for (let i = 0; i < 4; i++){
+    for (let i = 0; i < 3; i++){
       if (!tr || tr.readyState !== 'live'){ diag.err = 'track ' + (tr ? tr.readyState : 'nulo'); return false; }
       let caps = {};
       try{ caps = (tr.getCapabilities && tr.getCapabilities()) || {}; }catch(e){ diag.err = 'getCapabilities: ' + e.name; }
-      diag.caps = Object.keys(caps).join(',') || '(vacío)';
+      const known = Object.keys(caps);
+      diag.caps = known.join(',') || '(vacío)';
       diag.torchCap = ('torch' in caps) ? String(caps.torch) : '(no reportado)';
-      if ('torch' in caps && !caps.torch){ diag.err = 'el teléfono declara que esta cámara no tiene linterna'; return false; }
-      if (('torch' in caps) || i > 0){
-        try{
-          await tr.applyConstraints({ advanced:[{ torch:true }] });
-          let st = {};
-          try{ st = (tr.getSettings && tr.getSettings()) || {}; }catch(_){}
-          diag.torchSet = ('torch' in st) ? String(st.torch) : '(no reportado)';
-          diag.tries = i + 1;
-          if (st.torch === true) return true;              // confirmado por el navegador
-          if (!('torch' in st) && !IS_IOS) return true;    // no lo reporta, pero no lanzó
-        }catch(e){ diag.err = 'applyConstraints: ' + (e.name || e.message); }
+      /* Si la cámara reporta sus capacidades y torch NO está entre ellas, este
+         navegador no controla el flash aquí. Insistir sólo produce
+         OverconstrainedError, uno por intento. Nos rendimos con dignidad: leer
+         sin flash es un modo legítimo, no un fallo. */
+      if (known.length && !('torch' in caps)){
+        diag.err = 'este navegador no expone el flash en esta cámara';
+        diag.tries = i;
+        return false;
       }
-      await sleep(300);
+      if ('torch' in caps && !caps.torch){ diag.err = 'la cámara declara que no tiene linterna'; diag.tries = i; return false; }
+      try{
+        await tr.applyConstraints({ advanced:[{ torch:true }] });
+        let st = {};
+        try{ st = (tr.getSettings && tr.getSettings()) || {}; }catch(_){}
+        diag.torchSet = ('torch' in st) ? String(st.torch) : '(no reportado)';
+        diag.tries = i + 1;
+        if (st.torch === true) return true;
+        if (!('torch' in st) && !IS_IOS) return true;
+      }catch(e){ diag.err = 'applyConstraints: ' + (e.name || e.message); }
+      await sleep(280);
     }
-    diag.tries = 4;
+    diag.tries = 3;
     return false;
   }
 
@@ -3155,9 +3163,7 @@ const Heart = (() => {
     vals = []; peaks = []; last = 0; t0 = performance.now();
     ui(hasTorch
       ? 'Apoya la yema sobre la cámara y el flash. Quieto…'
-      : (IS_IOS
-          ? 'El iPhone no puede encender la linterna. Ponte bajo una luz fuerte y apoya la yema tapando la cámara. Quieto…'
-          : 'Este teléfono no encendió el flash. Busca una luz fuerte y apoya la yema tapando la cámara. Quieto…'));
+      : 'Sin flash, pero se puede: ponte bajo una luz y apoya la yema tapando la cámara, sin apretar. Quieto…');
   }
   function stop(){
     on = false;
@@ -3222,28 +3228,50 @@ const Heart = (() => {
     const amp = mx - mn;
     diag.amp = amp;
 
-    if (amp < 0.6){ ui(hasTorch ? 'No detecto pulso. Tapa bien la cámara con el dedo.' : 'No detecto pulso. Sin linterna hace falta más luz: acércate a una lámpara y tapa bien la cámara.'); return; }
+    /* Piso de amplitud según haya flash o no. Sin flash la onda es más chica pero
+       igual de real; exigirle lo mismo que con flash la descartaría entera. */
+    const floor = hasTorch ? 0.6 : 0.28;
+    if (amp < floor){ ui(hasTorch ? 'No detecto pulso. Tapa bien la cámara con el dedo.' : 'No detecto pulso. Acércate a una luz y tapa la cámara con la yema, sin apretar.'); return; }
 
     const n = vals.length;
     const a = vals[n-3], b = vals[n-2], cc = vals[n-1];
     if (!a || !b) return;
-    const isPeak = b.s > a.s && b.s >= cc.s && (b.s - mean) > amp * 0.24;
+    /* La prominencia mínima del pico también se afloja sin flash: la señal débil
+       tiene picos menos marcados, pero periódicos, que es lo que importa. */
+    const prom = hasTorch ? 0.24 : 0.14;
+    const isPeak = b.s > a.s && b.s >= cc.s && (b.s - mean) > amp * prom;
     const dt = b.t - last;
     if (isPeak && dt > 330 && dt < 2200){
       if (last) peaks.push(dt);
       last = b.t;
       if (peaks.length > 8) peaks.shift();
-      if (peaks.length >= 3){
+      /* Cuántos latidos coherentes exigimos antes de creer el número. Con flash,
+         la señal es limpia y basta con pocos. Sin flash bajamos la prominencia
+         para no perder latidos reales, y el precio es que el ruido cuela picos;
+         lo compensamos pidiendo MÁS latidos seguidos y que sean más parejos
+         entre sí. Un pulso real es regular; el ruido, no. */
+      const needN = hasTorch ? 3 : 5;
+      const tol = hasTorch ? 0.22 : 0.14;
+      if (peaks.length >= needN){
         const s = peaks.slice().sort((x,y) => x-y);
         const med = s[Math.floor(s.length/2)];
-        const good = peaks.filter(p => Math.abs(p-med) < med*0.22).length;
-        if (good >= Math.min(3, peaks.length)){
+        const good = peaks.filter(p => Math.abs(p-med) < med*tol).length;
+        /* Coeficiente de variación: desviación relativa de los intervalos. Un
+           corazón ronda 0.05–0.12; el ruido se dispara muy por encima. */
+        const avg = peaks.reduce((x,y) => x+y, 0) / peaks.length;
+        const sd = Math.sqrt(peaks.reduce((x,y) => x + (y-avg)*(y-avg), 0) / peaks.length);
+        const cv = sd / avg;
+        const cvMax = hasTorch ? 0.28 : 0.18;
+        if (good >= needN - 1 && cv < cvMax){
           const v = 60000 / med;
           if (v > 40 && v < 190){
             setBpm(bpm ? bpm*0.72 + v*0.28 : v);
             beatMine();
-            ui('Leyendo tu pulso · señal ' + (amp > 2 ? 'buena' : 'débil'));
+            const strong = amp > (hasTorch ? 2 : 0.8);
+            ui('Leyendo tu pulso · señal ' + (strong ? 'buena' : 'débil'));
           }
+        } else if (performance.now() - t0 > 6000){
+          ui('Señal inestable. Menos presión, más quieto, y busca luz pareja.');
         }
       } else if (performance.now() - t0 > 4000){
         ui('Ajustando… mantén el dedo quieto.');
