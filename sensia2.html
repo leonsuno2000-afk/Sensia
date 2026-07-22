@@ -3041,9 +3041,11 @@ const Heart = (() => {
   async function tryOtherRearCams(){
     let devs = [];
     try{ devs = await navigator.mediaDevices.enumerateDevices(); }catch(_){ return false; }
-    const cams = devs.filter(d => d.kind === 'videoinput');
+    let cams = [];
+    try{ cams = devs.filter(d => d && d.kind === 'videoinput'); }catch(_){ return false; }
     diag.cams = cams.length;
-    const cur = (track && track.getSettings && track.getSettings().deviceId) || '';
+    let cur = '';
+    try{ cur = (track && track.getSettings && track.getSettings().deviceId) || ''; }catch(_){}
     const rear = cams.filter(d => d.deviceId && d.deviceId !== cur &&
       (!d.label || /back|rear|trasera|environment/i.test(d.label)));
     for (const d of rear){
@@ -3055,21 +3057,25 @@ const Heart = (() => {
           audio:false
         });
       }catch(_){ continue; }
-      const tr2 = st2.getVideoTracks()[0];
-      const v = $('#ppgVideo');
-      v.srcObject = st2;
-      try{ await v.play(); }catch(_){}
-      await firstFrame(v, 1200);
-      if (await enableTorch(tr2)){
-        try{ stream.getTracks().forEach(t => t.stop()); }catch(_){}
-        stream = st2; track = tr2;
-        diag.cam = d.label || d.deviceId.slice(0, 8);
-        return true;
+      try{
+        const tr2 = st2.getVideoTracks()[0];
+        if (!tr2){ st2.getTracks().forEach(t => t.stop()); continue; }
+        const v = $('#ppgVideo');
+        if (v){ v.srcObject = st2; try{ await v.play(); }catch(_){} }
+        await firstFrame(v, 1200);
+        if (await enableTorch(tr2)){
+          try{ if (stream) stream.getTracks().forEach(t => t.stop()); }catch(_){}
+          stream = st2; track = tr2;
+          diag.cam = d.label || d.deviceId.slice(0, 8);
+          return true;
+        }
+        st2.getTracks().forEach(t => t.stop());
+      }catch(_){
+        try{ st2 && st2.getTracks().forEach(t => t.stop()); }catch(__){}
       }
-      try{ st2.getTracks().forEach(t => t.stop()); }catch(_){}
     }
-    // volver a la original
-    try{ const v = $('#ppgVideo'); v.srcObject = stream; await v.play(); }catch(_){}
+    /* Volver a la cámara original, con cuidado: si ya la cerramos, no forzar. */
+    try{ const v = $('#ppgVideo'); if (v && stream){ v.srcObject = stream; await v.play(); } }catch(_){}
     return false;
   }
 
@@ -3093,6 +3099,12 @@ const Heart = (() => {
       ['Cuadros por segundo',diag.fps != null ? String(Math.round(diag.fps)) : '—'],
       ['Muestras',           String(vals.length)]
     ];
+    /* Si el guardia global atrapó algo, va primero: es lo que de verdad importa. */
+    try{
+      if (window.__lastError){
+        rows.unshift(['⚠ Error interno', window.__lastError.msg + (window.__lastError.stack ? '\n' + window.__lastError.stack : '')]);
+      }
+    }catch(_){}
     openSheet('<h3>El Latido · informe</h3>' +
       '<p class="muted" style="margin:0 0 12px">Esto es lo que reporta tu navegador, tal cual. Si el flash no enciende, la línea que importa es <b>¿Tiene linterna?</b>.</p>' +
       '<div style="font-family:var(--font-m);font-size:11px;line-height:1.9">' +
@@ -3111,6 +3123,20 @@ const Heart = (() => {
     const x = $('#hwClose'); if (x) x.addEventListener('click', closeSheet);
   }
   async function start(){
+    try{
+      await startInner();
+    }catch(e){
+      /* Cinturón final. startInner ya atrapa por dentro, pero si algo se escapa
+         —una API del navegador que lanza de forma no prevista— aquí muere el
+         error, no la app. Se apaga limpio y se deja rastro para el informe. */
+      try{ window.__lastError = { msg:'Latido: ' + (e && (e.message || e)), stack:(e && e.stack) ? String(e.stack).split('\n').slice(0,4).join(' · ') : '', when:new Date().toLocaleTimeString('es') }; }catch(_){}
+      try{ diag.err = 'start: ' + (e && (e.name || e.message)); }catch(_){}
+      try{ stop(); }catch(_){}
+      toast('No se pudo iniciar la lectura. Toca “¿por qué?” para ver el detalle, o usa <b>Marcar a mano</b>.');
+      try{ $('#heartWhy').style.display = 'block'; }catch(_){}
+    }
+  }
+  async function startInner(){
     if (Live.cam){ toast('Apaga la cámara de la sesión primero'); return; }
     /* Antes esto decía "no se pudo abrir la cámara trasera" y ahí moría: la causa
        más común —estar en un archivo local, no en una página https— quedaba sin
@@ -3175,7 +3201,8 @@ const Heart = (() => {
     stream = null; track = null;
     $('#ppgVideo').srcObject = null;
     $('#heartBtn').textContent = 'Leer mi pulso';
-    $('#heartWhy').style.display = 'none';
+    /* No se oculta el enlace al parar: si algo falló, el informe es justo lo que
+       hace falta ver DESPUÉS de que el lector se detuvo. */
     ui(PPG_IDLE_MSG);
     setBpm(0);
     Net.send({ t:'heart', bpm:0 });
@@ -6752,10 +6779,20 @@ addEventListener('beforeunload', () => { try{ Live.hardStop(true); }catch(_){} }
   let last = 0;
   const say = err => {
     try{ console.error('[sensia]', err); }catch(_){}
+    /* Guardar el último error donde el informe del Latido pueda mostrarlo. En un
+       teléfono ajeno no hay consola abierta: sin esto, "algo falló" no lleva a
+       ninguna parte. Con esto, la captura del usuario trae la línea exacta. */
+    try{
+      window.__lastError = {
+        msg: (err && (err.message || String(err))) || 'desconocido',
+        stack: (err && err.stack) ? String(err.stack).split('\n').slice(0,4).join(' · ') : '',
+        when: new Date().toLocaleTimeString('es')
+      };
+    }catch(_){}
     const now = Date.now();
     if (now - last < 60000) return;
     last = now;
-    try{ toast('Algo falló por dentro. Si algo dejó de responder, cierra la sesión y vuelve a entrar.'); }catch(_){}
+    try{ toast('Algo falló por dentro. Abre El Toque → “¿por qué?” para ver el detalle.'); }catch(_){}
   };
   addEventListener('error', e => say(e && (e.error || e.message)));
   addEventListener('unhandledrejection', e => say(e && e.reason));
