@@ -2957,7 +2957,7 @@ const Heart = (() => {
   let on = false, stream = null, track = null, raf = 0;
   let vals = [], last = 0, peaks = [], bpm = 0, t0 = 0, sendT = null;
   let theirs = 0, resT = 0, tapTimes = [], hasTorch = false, ppgGreen = false;
-  let diag = {}, fpsN = 0, fpsT = 0;
+  let diag = {}, fpsN = 0, fpsT = 0, stable = 0;
 
   function ui(msg){ $('#heartStatus').textContent = msg; }
   function beatMine(){
@@ -2973,7 +2973,11 @@ const Heart = (() => {
   }
   function setBpm(v){
     bpm = v;
-    $('#bpmMine').innerHTML = (v ? Math.round(v) : '—') + '<small>lpm</small>';
+    const el = $('#bpmMine');
+    el.innerHTML = (v ? Math.round(v) : '—') + '<small>lpm</small>';
+    /* Mientras es "probable", el número se muestra tenue: presente, pero sin
+       afirmar. Al confirmarse (stable>=4) se enciende del todo. */
+    el.style.opacity = (v && !hasTorch && stable < 4) ? '0.5' : '1';
     checkRes();
   }
   function remoteBpm(v){
@@ -3162,13 +3166,13 @@ const Heart = (() => {
     try{ await v.play(); }catch(_){}
 
     on = true; vals = []; peaks = []; last = 0; t0 = performance.now(); ppgGreen = false;
-    diag = {}; fpsN = 0; fpsT = performance.now();
+    diag = {}; fpsN = 0; fpsT = performance.now(); stable = 0;
     try{ diag.cam = track.label || ''; }catch(_){}
     $('#heartBtn').textContent = 'Detener';
     $('#heartWhy').style.display = 'block';
     ui('Encendiendo el flash…');
     loop();
-    sendT = setInterval(() => { if (bpm > 40) Net.send({ t:'heart', bpm:Math.round(bpm) }); }, 2200);
+    sendT = setInterval(() => { if (bpm > 40 && (hasTorch || stable >= 4)) Net.send({ t:'heart', bpm:Math.round(bpm) }); }, 2200);
 
     /* Toda la fase del flash va dentro de un try: si algo aquí falla —una cámara
        que no acepta deviceId, un applyConstraints que lanza raro, lo que sea— el
@@ -3177,13 +3181,41 @@ const Heart = (() => {
     try{
       await firstFrame(v, 1600);
       hasTorch = await enableTorch(track);
-      if (!hasTorch && !IS_IOS && on){
+      /* Solo buscar el flash en otras cámaras si la actual DEJÓ la puerta abierta:
+         es decir, si falló por un error de intento (applyConstraints) y no porque
+         el navegador declara que no hay flash. En el S23 ninguna cámara expone
+         torch, y abrir cámaras nuevas para buscarlo hace que Android CIERRE la
+         que estaba funcionando —dejando el track muerto y la señal en cero—. Leer
+         sin flash con la cámara viva es infinitamente mejor que perderla. */
+      const worthSearching = !hasTorch && !IS_IOS && on
+        && diag.torchCap !== '(no reportado)'    // la cámara sí habla de torch
+        && /applyConstraints|OverconstrainedError/.test(diag.err || '');  // falló al intentar, no por ausencia
+      if (worthSearching){
         ui('Buscando la cámara que controla el flash…');
         hasTorch = await tryOtherRearCams();
       }
     }catch(e){
       hasTorch = false;
       try{ diag.err = 'flash: ' + (e && (e.name || e.message)); }catch(_){}
+    }
+    /* Pase lo que pase con el flash, el track de video tiene que seguir vivo.
+       Si la fase anterior lo dejó cerrado, se reabre la cámara —sin tocar el
+       flash esta vez— para poder leer el pulso con luz ambiente. */
+    if (on && (!track || track.readyState !== 'live')){
+      try{
+        if (stream){ try{ stream.getTracks().forEach(t => t.stop()); }catch(_){} }
+        stream = await navigator.mediaDevices.getUserMedia({
+          video:{ facingMode:{ideal:'environment'}, width:{ideal:320}, height:{ideal:240}, frameRate:{ideal:30} },
+          audio:false
+        });
+        track = stream.getVideoTracks()[0];
+        const v2 = $('#ppgVideo');
+        if (v2){ v2.srcObject = stream; try{ await v2.play(); }catch(_){} }
+        await firstFrame(v2, 1200);
+        try{ diag.err = (diag.err || '') + ' · cámara reabierta sin flash'; }catch(_){}
+      }catch(e){
+        try{ diag.err = 'reabrir: ' + (e && (e.name || e.message)); }catch(_){}
+      }
     }
     if (!on) return;                       // lo detuvo mientras encendíamos
     /* Encender la linterna cambia el brillo de golpe: lo medido antes es basura. */
@@ -3277,9 +3309,11 @@ const Heart = (() => {
     const amp = mx - mn;
     diag.amp = amp;
 
-    /* Piso de amplitud según haya flash o no. Sin flash la onda es más chica pero
-       igual de real; exigirle lo mismo que con flash la descartaría entera. */
-    const floor = hasTorch ? 0.6 : 0.28;
+    /* Piso de amplitud mínimo, muy bajo sin flash: una onda de 1.2 es señal real
+       aunque parezca poca. El trabajo de separar pulso de ruido NO lo hace este
+       umbral —lo hace el coeficiente de variación más abajo, que exige que los
+       latidos sean regulares—. Aquí solo se descarta lo que es plano de verdad. */
+    const floor = hasTorch ? 0.6 : 0.12;
     if (amp < floor){ ui(hasTorch ? 'No detecto pulso. Tapa bien la cámara con el dedo.' : 'No detecto pulso. Acércate a una luz y tapa la cámara con la yema, sin apretar.'); return; }
 
     const n = vals.length;
@@ -3299,25 +3333,40 @@ const Heart = (() => {
          para no perder latidos reales, y el precio es que el ruido cuela picos;
          lo compensamos pidiendo MÁS latidos seguidos y que sean más parejos
          entre sí. Un pulso real es regular; el ruido, no. */
-      const needN = hasTorch ? 3 : 5;
-      const tol = hasTorch ? 0.22 : 0.14;
+      const needN = hasTorch ? 3 : 6;
+      const tol = hasTorch ? 0.22 : 0.13;
       if (peaks.length >= needN){
         const s = peaks.slice().sort((x,y) => x-y);
         const med = s[Math.floor(s.length/2)];
         const good = peaks.filter(p => Math.abs(p-med) < med*tol).length;
         /* Coeficiente de variación: desviación relativa de los intervalos. Un
-           corazón ronda 0.05–0.12; el ruido se dispara muy por encima. */
+           corazón ronda 0.05–0.12; el ruido se dispara por encima. Con el piso de
+           amplitud bajo, este es el guardián principal contra falsos positivos,
+           así que sin flash se exige estricto: 6 latidos coherentes y CV < 0.14.
+           Una señal periódica real lo pasa; una racha casual de ruido no alcanza
+           a encadenar seis intervalos regulares seguidos. */
         const avg = peaks.reduce((x,y) => x+y, 0) / peaks.length;
         const sd = Math.sqrt(peaks.reduce((x,y) => x + (y-avg)*(y-avg), 0) / peaks.length);
         const cv = sd / avg;
-        const cvMax = hasTorch ? 0.28 : 0.18;
+        const cvMax = hasTorch ? 0.28 : 0.14;
         if (good >= needN - 1 && cv < cvMax){
           const v = 60000 / med;
           if (v > 40 && v < 190){
+            const prev = bpm;
             setBpm(bpm ? bpm*0.72 + v*0.28 : v);
             beatMine();
-            const strong = amp > (hasTorch ? 2 : 0.8);
-            ui('Leyendo tu pulso · señal ' + (strong ? 'buena' : 'débil'));
+            /* Confirmación por estabilidad. Sin flash, una lectura sola no basta:
+               el ruido puede fingir un pulso por un instante, pero no sostener el
+               mismo BPM. Se cuenta cuántas lecturas seguidas caen cerca de la
+               anterior; hasta llegar a 4, la cifra se muestra como "probable". Un
+               pulso real llega a firme en pocos segundos; un espejismo de ruido
+               se deshace antes. Con flash la señal es limpia y se confirma sola. */
+            if (!hasTorch){
+              stable = (prev && Math.abs(v - prev) < prev*0.12) ? stable + 1 : 1;
+            } else stable = 4;
+            const strong = amp > (hasTorch ? 2 : 0.6);
+            if (stable >= 4) ui('Leyendo tu pulso · señal ' + (strong ? 'buena' : 'débil'));
+            else ui('Pulso probable · mantén el dedo quieto para confirmar…');
           }
         } else if (performance.now() - t0 > 6000){
           ui('Señal inestable. Menos presión, más quieto, y busca luz pareja.');
