@@ -2957,7 +2957,7 @@ const Heart = (() => {
   let on = false, stream = null, track = null, raf = 0;
   let vals = [], last = 0, peaks = [], bpm = 0, t0 = 0, sendT = null;
   let theirs = 0, resT = 0, tapTimes = [], hasTorch = false, ppgGreen = false;
-  let diag = {}, fpsN = 0, fpsT = 0, stable = 0;
+  let diag = {}, fpsN = 0, fpsT = 0, stable = 0, det = [], lastDT = 0, wave = [], lastDT2 = 0;
 
   function ui(msg){ $('#heartStatus').textContent = msg; }
   function beatMine(){
@@ -3099,7 +3099,9 @@ const Heart = (() => {
       ['Último error',       diag.err || '(ninguno)'],
       ['Canal en uso',       ppgGreen ? 'verde' : 'rojo'],
       ['Cobertura del dedo',  diag.cover != null ? diag.cover + '%' : '—'],
-      ['Amplitud de señal',  diag.amp != null ? diag.amp.toFixed(2) : '—'],
+      ['Amplitud del pulso', diag.amp != null ? diag.amp.toFixed(2) : '—'],
+      ['Deriva de fondo',    diag.drift != null ? diag.drift.toFixed(2) : '—'],
+      ['Pulso leído',        bpm > 0 ? (Math.round(bpm) + ' lpm · ' + ((hasTorch || stable >= 4) ? 'firme' : 'probable')) : '(ninguno)'],
       ['Cuadros por segundo',diag.fps != null ? String(Math.round(diag.fps)) : '—'],
       ['Muestras',           String(vals.length)]
     ];
@@ -3167,7 +3169,7 @@ const Heart = (() => {
     v.srcObject = stream;
     try{ await v.play(); }catch(_){}
 
-    on = true; vals = []; peaks = []; last = 0; t0 = performance.now(); ppgGreen = false;
+    on = true; vals = []; peaks = []; last = 0; det = []; lastDT = 0; wave = []; lastDT2 = 0; t0 = performance.now(); ppgGreen = false;
     diag = {}; fpsN = 0; fpsT = performance.now(); stable = 0;
     try{ diag.cam = track.label || ''; }catch(_){}
     $('#heartBtn').textContent = 'Detener';
@@ -3221,7 +3223,7 @@ const Heart = (() => {
     }
     if (!on) return;                       // lo detuvo mientras encendíamos
     /* Encender la linterna cambia el brillo de golpe: lo medido antes es basura. */
-    vals = []; peaks = []; last = 0; t0 = performance.now();
+    vals = []; peaks = []; last = 0; det = []; lastDT = 0; wave = []; lastDT2 = 0; t0 = performance.now();
     ui(hasTorch
       ? 'Apoya la yema sobre la cámara y el flash. Quieto…'
       : 'Sin flash, pero se puede: ponte bajo una luz y apoya la yema tapando la cámara, sin apretar. Quieto…');
@@ -3279,7 +3281,7 @@ const Heart = (() => {
            - rojo saturado (dedo sobre una luz fuerte) → el verde conserva la onda
            - poca luz roja → el verde suele tener mejor relación señal/ruido */
         const wantGreen = (r > 245) || (r < 40 && g > r);
-        if (wantGreen !== ppgGreen){ ppgGreen = wantGreen; vals = []; peaks = []; last = 0; }
+        if (wantGreen !== ppgGreen){ ppgGreen = wantGreen; vals = []; peaks = []; last = 0; det = []; lastDT = 0; wave = []; lastDT2 = 0; }
         sample(ppgGreen ? g : r, performance.now());
         diag.cover = Math.round(n / total * 100);
       } else {
@@ -3299,9 +3301,7 @@ const Heart = (() => {
     raf = requestAnimationFrame(loop);
   }
   function sample(val, t){
-    /* Media móvil corta. El sensor mete ruido de un cuadro que la detección de
-       picos leía como latido: de ahí lecturas erráticas o ninguna. Se guarda el
-       valor crudo y el suavizado; los picos se buscan sobre el suavizado. */
+    /* Suavizado corto: quita el ruido de un solo cuadro. */
     const e = { v:val, t:t, s:val };
     vals.push(e);
     const K = 5, n0 = vals.length;
@@ -3315,27 +3315,74 @@ const Heart = (() => {
     if (vals.length > 320) vals.shift();
     if (vals.length < 40) return;
 
-    const win = vals.slice(-45);
-    const mean = win.reduce((a,x) => a + x.s, 0) / win.length;
-    const recent = vals.slice(-120).map(x => x.s);
-    const mx = Math.max.apply(null, recent), mn = Math.min.apply(null, recent);
-    const amp = mx - mn;
+    /* Quitar la deriva. El informe real lo mostró: "amplitud" 19 y ni un latido.
+       Eso no era pulso — era la exposición automática moviendo TODO el brillo en
+       olas lentas y grandes; el pulso, chico y rápido, viajaba montado encima y
+       el umbral, escalado a la ola, no lo veía nunca. Se resta una media
+       CENTRADA de ±1 s (sin desfase: una media solo-pasado persigue la ola con
+       retraso y no la quita), y se detecta sobre lo que queda, con 1 s de
+       retraso fijo. Un retraso constante no altera los intervalos entre picos —
+       lo único que define los lpm. */
+    const HALF = 1000;
+    for (let i = 0; i < vals.length; i++){
+      const c0 = vals[i];
+      if (c0.t <= lastDT) continue;
+      if (t - c0.t < HALF) break;
+      let bs = 0, bn = 0;
+      for (let j = 0; j < vals.length; j++){
+        const x = vals[j];
+        if (Math.abs(x.t - c0.t) <= HALF){ bs += x.s; bn++; }
+      }
+      lastDT = c0.t;
+      det.push({ d: c0.s - (bn ? bs / bn : c0.s), t: c0.t });
+      if (det.length > 320) det.shift();
+      /* Segunda pasada del mismo filtro. Una sola etapa deja ~13% de la ola —
+         que con deriva 19 son 2.5, todavía más grande que un pulso de 1.5. Dos
+         etapas en cascada dejan el 1.7%: la ola muere, la onda del pulso pasa
+         casi entera. Un segundo más de retraso fijo; los intervalos, intactos. */
+      for (let k = 0; k < det.length; k++){
+        const c1 = det[k];
+        if (c1.t <= lastDT2) continue;
+        if (t - c1.t < HALF * 2) break;
+        let ws = 0, wn = 0;
+        for (let m = 0; m < det.length; m++){
+          const y = det[m];
+          if (Math.abs(y.t - c1.t) <= HALF){ ws += y.d; wn++; }
+        }
+        lastDT2 = c1.t;
+        wave.push({ d: c1.d - (wn ? ws / wn : c1.d), t: c1.t });
+        if (wave.length > 320) wave.shift();
+        beatStep();
+      }
+    }
+  }
+
+  /* La detección corre sobre la onda ya sin deriva, una muestra por vez. */
+  function beatStep(){
+    const n = wave.length;
+    if (n < 40) return;
+    const win = wave.slice(-45);
+    const mean = win.reduce((a,x) => a + x.d, 0) / win.length;
+    let mx = -1e9, mn = 1e9;
+    for (const x of wave.slice(-120)){ if (x.d > mx) mx = x.d; if (x.d < mn) mn = x.d; }
+    const amp = mx - mn;            // amplitud del PULSO, ya sin deriva
     diag.amp = amp;
+    let rmx = -1e9, rmn = 1e9;
+    for (const x of vals.slice(-120)){ if (x.s > rmx) rmx = x.s; if (x.s < rmn) rmn = x.s; }
+    diag.drift = rmx - rmn;         // cuánto se movió el brillo de fondo
 
     /* Piso de amplitud mínimo, muy bajo sin flash: una onda de 1.2 es señal real
-       aunque parezca poca. El trabajo de separar pulso de ruido NO lo hace este
-       umbral —lo hace el coeficiente de variación más abajo, que exige que los
-       latidos sean regulares—. Aquí solo se descarta lo que es plano de verdad. */
+       aunque parezca poca. Separar pulso de ruido es trabajo del coeficiente de
+       variación de abajo; aquí solo se descarta lo plano de verdad. */
     const floor = hasTorch ? 0.6 : 0.12;
     if (amp < floor){ ui(hasTorch ? 'No detecto pulso. Tapa bien la cámara con el dedo.' : 'No detecto pulso. Acércate a una luz y tapa la cámara con la yema, sin apretar.'); return; }
 
-    const n = vals.length;
-    const a = vals[n-3], b = vals[n-2], cc = vals[n-1];
+    const a = wave[n-3], b = wave[n-2], cc = wave[n-1];
     if (!a || !b) return;
     /* La prominencia mínima del pico también se afloja sin flash: la señal débil
        tiene picos menos marcados, pero periódicos, que es lo que importa. */
     const prom = hasTorch ? 0.24 : 0.14;
-    const isPeak = b.s > a.s && b.s >= cc.s && (b.s - mean) > amp * prom;
+    const isPeak = b.d > a.d && b.d >= cc.d && (b.d - mean) > amp * prom;
     const dt = b.t - last;
     if (isPeak && dt > 330 && dt < 2200){
       if (last) peaks.push(dt);
@@ -3370,10 +3417,9 @@ const Heart = (() => {
             beatMine();
             /* Confirmación por estabilidad. Sin flash, una lectura sola no basta:
                el ruido puede fingir un pulso por un instante, pero no sostener el
-               mismo BPM. Se cuenta cuántas lecturas seguidas caen cerca de la
-               anterior; hasta llegar a 4, la cifra se muestra como "probable". Un
-               pulso real llega a firme en pocos segundos; un espejismo de ruido
-               se deshace antes. Con flash la señal es limpia y se confirma sola. */
+               mismo BPM. Hasta llegar a 4 lecturas seguidas parecidas, la cifra se
+               muestra como "probable". Un pulso real confirma en segundos; un
+               espejismo de ruido se deshace antes. */
             if (!hasTorch){
               stable = (prev && Math.abs(v - prev) < prev*0.12) ? stable + 1 : 1;
             } else stable = 4;
