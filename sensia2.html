@@ -967,14 +967,14 @@ body.reduce #tour .tour-ring::after{animation:none}
     <p class="orb-hint">Mantén presionada la brasa. El ritmo que hagas viaja tal cual.<br>Agita el teléfono para un pulso sorpresa.</p>
 
     <div class="card" style="margin-top:18px">
-      <p class="eyebrow">El Lienzo</p>
-      <h3 style="margin-bottom:4px">Escribe sobre su piel</h3>
-      <p class="lead">El cuerpo empieza a oscuras. Aparece solo donde lo tocas, y se apaga después. Su teléfono vibra donde tu dedo pasa. Y al revés.</p>
+      <p class="eyebrow">El Cuerpo</p>
+      <h3 style="margin-bottom:4px">Míralo respirar</h3>
+      <p class="lead">No se dibuja: se mira. El pecho sube y baja con su respiración real, el corazón destella en cada latido, y la figura se enciende entera con su excitación.<br><br>Si está acostada, la figura se acuesta. Nadie escribió nada.</p>
       <div class="lienzo-wrap" id="lienzoWrap">
         <canvas id="lienzo"></canvas>
-        <div class="hint">a oscuras.<br>toca para que aparezca</div>
+
       </div>
-      <div class="lienzo-legend"><span><i style="background:var(--ember-core)"></i>tu luz</span><span><i style="background:var(--rose)"></i>la suya</span></div>
+      <div id="cuerpoQuien" style="text-align:center;margin-top:8px;font-size:11px;color:var(--ash-dim);letter-spacing:.1em;text-transform:uppercase">nadie todavía</div>
     </div>
 
     <div class="card">
@@ -995,19 +995,11 @@ body.reduce #tour .tour-ring::after{animation:none}
         </div>
       </div>
       <div class="resonance" id="resonance"><b>Resonancia</b><span>sus corazones están en el mismo ritmo</span></div>
-      <canvas id="pechoOndaB" style="width:100%;height:104px;display:block;margin-top:12px;border-radius:12px;background:var(--noir-1)"></canvas>
-      <div style="display:flex;gap:10px;justify-content:space-around;margin:10px 0">
-        <div style="text-align:center"><div style="font-size:22px;font-family:var(--font-d);color:var(--ember-core)" id="pechoBpmB">—</div><div style="font-size:9px;color:var(--ash-dim);letter-spacing:.12em">LPM</div></div>
-        <div style="text-align:center"><div style="font-size:22px;font-family:var(--font-d);color:var(--rose)" id="pechoRpmB">—</div><div style="font-size:9px;color:var(--ash-dim);letter-spacing:.12em">RESP/MIN</div></div>
-        <div style="text-align:center"><div style="font-size:22px;font-family:var(--font-d);color:var(--champagne)" id="pechoFaseB">—</div><div style="font-size:9px;color:var(--ash-dim);letter-spacing:.12em">FASE</div></div>
+      <div class="row" style="margin-top:14px">
+        <button class="btn ghost sm" id="heartTap" style="flex:1">Marcar a mano</button>
+        <button class="btn ghost sm" id="heartBtn" style="flex:1">Con la cámara</button>
       </div>
-      <div class="row" style="margin-top:10px">
-        <button class="btn primary sm" id="heartChest" style="flex:1">Apoyar en el pecho</button>
-        <button class="btn ghost sm" id="heartTap" style="flex:0 0 auto">A mano</button>
-      </div>
-      <div class="row" style="margin-top:8px">
-        <button class="btn ghost sm" id="heartBtn" style="flex:1">Con la cámara y el dedo</button>
-      </div>
+      <p class="foot-note" style="margin-top:10px">Para leerlo del pecho, sin manos: <b>El Ritmo → El Fuelle</b>.</p>
       <p class="dim" id="heartStatus" style="text-align:center;margin-top:10px">Boca arriba sobre el pecho. Quédate quieto unos segundos.</p>
       <button class="ghost-link" id="heartWhy" style="display:none;width:100%;margin-top:6px;font-size:12px">¿por qué no lee mi pulso?</button>
       <video id="ppgVideo" playsinline muted></video><canvas id="ppgCanvas" width="64" height="64"></canvas>
@@ -1034,7 +1026,9 @@ body.reduce #tour .tour-ring::after{animation:none}
   </header>
   <div class="pane">
     <div class="card" style="text-align:center;padding:22px 18px">
-      <p class="eyebrow">El Aliento</p>
+      <p class="eyebrow">El Fuelle</p>
+      <h3 style="margin-bottom:4px">Lo que mueve el aire</h3>
+      <p class="lead">Arriba, el compás que proponen los dos teléfonos. Abajo, tu respiración real. Entre medio, si de verdad lo estás siguiendo.</p>
       <div class="breath-stage">
         <div class="breath-guide"><div class="ring" id="breathRing"></div><div class="orb" id="breathOrb"></div></div>
         <div class="breath-label" id="breathLabel">Respirar juntos</div>
@@ -1047,24 +1041,30 @@ body.reduce #tour .tour-ring::after{animation:none}
         <button class="chip sm" data-pat="coherencia">Coherencia 5·5</button>
       </div>
       <button class="btn primary" id="breathBtn">Empezar a respirar juntos</button>
+
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line)">
+        <p class="eyebrow" style="margin-bottom:8px">Tu cuerpo, mientras tanto</p>
+        <canvas id="pechoOndaA" style="width:100%;height:104px;display:block;border-radius:12px;background:var(--noir-1)"></canvas>
+        <div style="display:flex;gap:10px;justify-content:space-around;margin:10px 0">
+          <div style="text-align:center"><div style="font-size:26px;font-family:var(--font-d);color:var(--ember-core)" id="pechoBpmA">&mdash;</div><div style="font-size:9px;color:var(--ash-dim);letter-spacing:.12em">LPM</div></div>
+          <div style="text-align:center"><div style="font-size:26px;font-family:var(--font-d);color:var(--rose)" id="pechoRpmA">&mdash;</div><div style="font-size:9px;color:var(--ash-dim);letter-spacing:.12em">RESP/MIN</div></div>
+          <div style="text-align:center"><div style="font-size:26px;font-family:var(--font-d);color:var(--champagne)" id="pechoFaseA">&mdash;</div><div style="font-size:9px;color:var(--ash-dim);letter-spacing:.12em">FASE</div></div>
+        </div>
+        <div id="compasCaja" style="display:none;margin:12px 0 4px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
+            <span style="font-size:10px;color:var(--ash-dim);letter-spacing:.12em">VAS CON EL COMP&Aacute;S</span>
+            <span style="font-family:var(--font-m);font-size:14px;color:var(--champagne)" id="compasPct">&mdash;</span>
+          </div>
+          <div style="background:var(--noir-1);border-radius:8px;height:9px;overflow:hidden">
+            <div id="compasBarra" style="width:0%;height:100%;background:var(--champagne);border-radius:8px;transition:width .5s var(--ease)"></div>
+          </div>
+          <div id="compasNota" style="font-size:11px;color:var(--ash-dim);margin-top:6px;font-family:var(--font-d);font-style:italic"></div>
+        </div>
+        <div id="sillaStatus" style="text-align:center;padding:6px 0 10px;color:var(--ash);font-family:var(--font-d);font-style:italic;font-size:13px">Boca arriba sobre el pecho. Qu&eacute;date quieto unos segundos.</div>
+        <div class="row"><button class="btn primary sm" id="sillaToggle" style="flex:1">Apoyar en el pecho</button></div>
+      </div>
     </div>
 
-
-
-<!-- ══════════════ EL PECHO ══════════════ -->
-<div class="card" id="cardSilla" style="margin-top:14px">
-<p class="eyebrow">El Pecho</p>
-<h3 style="margin-bottom:4px">Un gesto, dos signos</h3>
-<p class="lead">Apoya el teléfono <b>boca arriba sobre tu pecho</b>: la pantalla te mira a ti. De la misma lectura salen tu <b>aliento</b> y tu <b>latido</b>, en vivo.</p>
-<canvas id="pechoOndaA" style="width:100%;height:104px;display:block;margin-top:10px;border-radius:12px;background:var(--noir-1)"></canvas>
-<div style="display:flex;gap:10px;justify-content:space-around;margin:10px 0">
-<div style="text-align:center"><div style="font-size:26px;font-family:var(--font-d);color:var(--ember-core)" id="pechoBpmA">—</div><div style="font-size:9px;color:var(--ash-dim);letter-spacing:.12em">LPM</div></div>
-<div style="text-align:center"><div style="font-size:26px;font-family:var(--font-d);color:var(--rose)" id="pechoRpmA">—</div><div style="font-size:9px;color:var(--ash-dim);letter-spacing:.12em">RESP/MIN</div></div>
-<div style="text-align:center"><div style="font-size:26px;font-family:var(--font-d);color:var(--champagne)" id="pechoFaseA">—</div><div style="font-size:9px;color:var(--ash-dim);letter-spacing:.12em">FASE</div></div>
-</div>
-<div id="sillaStatus" style="text-align:center;padding:4px 0 10px;color:var(--ash);font-family:var(--font-d);font-style:italic;font-size:13px">Boca arriba sobre el pecho. Quédate quieto unos segundos.</div>
-<div class="row"><button class="btn primary sm" id="sillaToggle" style="flex:1">Apoyar en el pecho</button></div>
-</div>
 
 <!-- ══════════════ TERMÓMETRO ══════════════ -->
 <div class="card" id="cardTermometro" style="margin-top:12px">
@@ -2262,9 +2262,9 @@ const TermometroExcitacion=(()=>{let on=false,conMarea=false,nivel=0,ns=0,subs=[
 
 const EcoFisico=(()=>{let on=false,int=70;let can={corazon:true,temblor:true,movimiento:true,sonido:true,tacto:true};return{activar(){on=true},desactivar(){on=false;Haptics.stopAll()},setIntensidad(v){int=clamp(v,10,100)},get activo(){return on},get canales(){return can},toggleCanal(c){can[c]=!can[c]},recibirRemoto(d){if(!on)return;const i=int/100;if(d.type==='movimiento'&&can.movimiento){if(d.movTipo==='contracciones')Haptics.buzz([30,20,30,20,Math.round(60*i)]);else if(d.temblor>30)Haptics.wave(Math.round(d.temblor*i*.7))}if(d.type==='respiracion'&&can.temblor){if(d.fase==='inhalando')Haptics.wave(Math.round(d.profundidad*i*.5));else Haptics.wave(Math.round(d.profundidad*i*.2))}}}})();
 
-console.log('[SENSIA·parche v2.8] sistemas sensoriales OK');
+console.log('[SENSIA·parche v3.1] sistemas sensoriales OK');
 
-function handleBodyEvent(d){if(!d||!d.type)return;EcoFisico.recibirRemoto(d);if(d.type==='termometro'){const el=document.getElementById('termometroRemoto');if(el)el.style.width=d.nivel+'%';const et=document.getElementById('termometroRemotoTexto');if(et)et.textContent=d.nivel+'%'}if(d.type==='posicion'){if(d.posicion==='boca_abajo')toast('🛏️ Está boca abajo');else if(d.posicion==='de_costado')toast('🛏️ Está de costado')}if(d.type==='movimiento'&&d.movTipo==='contracciones'&&d.temblor>80){Haptics.buzz([40,30,60,30,100]);toast('✨ Clímax detectado')}}
+function handleBodyEvent(d){if(!d||!d.type)return;EcoFisico.recibirRemoto(d);ElCuerpo.suyoDato(d);if(d.type==='termometro'){const el=document.getElementById('termometroRemoto');if(el)el.style.width=d.nivel+'%';const et=document.getElementById('termometroRemotoTexto');if(et)et.textContent=d.nivel+'%'}if(d.type==='posicion'){if(d.posicion==='boca_abajo')toast('🛏️ Está boca abajo');else if(d.posicion==='de_costado')toast('🛏️ Está de costado')}if(d.type==='movimiento'&&d.movTipo==='contracciones'&&d.temblor>80){Haptics.buzz([40,30,60,30,100]);toast('✨ Clímax detectado')}}
 
 
 /* ───────────────────────── 4 · UI BÁSICA ───────────────────────── */
@@ -3230,146 +3230,199 @@ $('#addVocab').addEventListener('click', () => Vocab.creator());
   }, true);
 })();
 
-/* Cuerpo Ω · silueta original en un unico trazo cerrado.
-   Espacio de diseno 100x190; se ajusta y centra sin deformarse. */
+/* Cuerpo Ω · silueta en curva S con ambos brazos alzados, trazo unico cerrado.
+   Los brazos arriba dejan el torso a la vista: cintura y cadera, que es donde
+   esta la linea. Asimetrica a proposito. Girada, se lee como alguien tendido
+   con los brazos sobre la cabeza. Espacio de diseno 100x190, se ajusta y centra. */
 const Cuerpo=(()=>{const AW=100,AH=190;
 function build(W,H){const s=Math.min(W/AW,H/AH),ox=(W-AW*s)/2,oy=(H-AH*s)/2,P=new Path2D();
 const M=(x,y)=>P.moveTo(ox+x*s,oy+y*s),L=(x,y)=>P.lineTo(ox+x*s,oy+y*s),C=(a,b,c,d,e,f)=>P.bezierCurveTo(ox+a*s,oy+b*s,ox+c*s,oy+d*s,ox+e*s,oy+f*s);
-M(50,2);C(57,2,62,8,62,15);C(62,21,59,26,56,28);L(56,33);C(61,35,66,37,71,41);C(76,49,80,61,82,75);C(82,89,83,101,84,111);C(84,116,82,119,79,119);C(76,119,75,116,75,111);C(74,101,72,89,70,76);C(68,65,66,57,65,52);C(63,62,61,72,60,80);C(60,88,64,94,66,101);C(64,116,61,131,59,144);C(58,158,57,171,57,181);C(57,185,56,187,53,187);C(51,187,50,185,50,181);C(50,168,51,152,51,136);C(51,123,51,113,50,108);C(49,113,49,123,49,136);C(49,152,50,168,50,181);C(50,185,49,187,47,187);C(44,187,43,185,43,181);C(43,171,42,158,41,144);C(39,131,36,116,34,101);C(36,94,40,88,40,80);C(39,72,37,62,35,52);C(34,57,32,65,30,76);C(28,89,26,101,25,111);C(25,116,24,119,21,119);C(18,119,16,116,16,111);C(17,101,18,89,20,75);C(20,61,24,49,29,41);C(34,37,39,35,43,33);L(44,28);C(41,26,38,21,38,15);C(38,8,43,2,50,2);P.closePath();return P}
+M(48,25);C(55,25,60,31,60,39);C(60,45,58,49,55,51);C(55,54,56,56,58,58);C(63,53,68,44,72,33);C(75,24,77,15,78,9);C(79,4,83,3,85,6);C(88,9,87,13,85,19);C(83,30,80,41,76,51);C(73,59,70,64,66,67);C(65,75,63,82,60,89);C(57,95,56,99,58,104);C(62,110,65,116,66,123);C(66,138,64,153,62,167);C(61,176,60,183,60,187);C(60,189,59,190,56,190);C(53,190,52,189,52,187);C(52,177,52,164,52,151);C(52,139,51,130,50,124);C(48,130,47,139,47,151);C(46,164,45,177,44,187);C(44,189,43,190,40,190);C(37,190,36,189,36,187);C(36,182,37,175,38,166);C(39,153,38,139,36,125);C(35,117,37,110,40,104);C(42,99,42,94,40,89);C(38,82,36,75,35,67);C(31,63,27,55,24,45);C(21,34,19,22,18,12);C(17,7,20,4,23,5);C(26,6,27,9,27,14);C(28,24,30,35,33,45);C(36,53,39,58,42,60);C(43,57,43,54,42,51);C(39,49,37,45,37,39);C(37,31,41,25,48,25);P.closePath();return P}
 return{build}})();
 
-/* El Lienzo · trazo compartido */
-const Lienzo = (() => {
-  const wrap = $('#lienzoWrap'), cv = $('#lienzo');
-  let ctx = null, W = 0, H = 0, dpr = 1;
-  let strokes = [];             // {pts:[{x,y,t}], mine:bool, born}
-  let cur = null, raf = 0;
-  let outBuf = [], sendT = null;
-  let cuerpo = null, revelado = 0;   // silueta y momento de entrada a la pantalla
+/* ══════════ EL CUERPO · lo que ya sabemos sentir ══════════
+   Deja de ser superficie de dibujo. Ahora la silueta MUESTRA lo que los
+   sensores miden de verdad:
 
-  function size(){
-    if (!wrap.clientWidth) return;
-    dpr = Math.min(devicePixelRatio || 1, 2);
-    W = cv.width = wrap.clientWidth * dpr;
-    H = cv.height = wrap.clientHeight * dpr;
+     · el pecho sube y baja con la respiracion real
+     · el corazon late en el instante real de cada latido
+     · toda la figura se enciende con el nivel del Termometro
+     · la figura adopta la postura real: acostada, de costado, sentada
+
+   Si hay senal del otro lado, el cuerpo que ves es el SUYO. Si no, el tuyo.
+
+   Aviso honesto: Posicion3D lee la orientacion del TELEFONO, no del cuerpo.
+   Solo significa algo cuando El Pecho tiene enganche, porque entonces se sabe
+   que el telefono esta sobre alguien. Sin enganche no se muestra postura. */
+
+const ElCuerpo = (() => {
+  const vacio = () => ({ bpm:0, rpm:0, fase:'quieto', prof:0, nivel:0, postura:null, tLatido:0, visto:0 });
+  const mio = vacio(), suyo = vacio();
+  let cv=null, cx=null, W=0, H=0, dpr=1, raf=0;
+  let angulo=0, angObj=0, respFase=0, brilloLat=0, nivelSuave=0;
+
+  const POSTURAS = {
+    boca_arriba: { ang: 90,  nombre:'acostada' },
+    boca_abajo:  { ang: 90,  nombre:'boca abajo' },
+    de_costado:  { ang: 90,  nombre:'de costado' },
+    sentado:     { ang: 18,  nombre:'sentada' },
+    reclinado:   { ang: 55,  nombre:'reclinada' },
+    variable:    { ang: 0,   nombre:null },
+    desconocida: { ang: 0,   nombre:null }
+  };
+
+  function fuente(){
+    const ahora = Date.now();
+    const hayRemoto = (ahora - suyo.visto) < 12000 && (suyo.rpm || suyo.bpm || suyo.nivel);
+    return hayRemoto ? { d:suyo, suyo:true } : { d:mio, suyo:false };
+  }
+
+  function medir(){
+    cv = document.getElementById('lienzo');
+    const wrap = document.getElementById('lienzoWrap');
+    if (!cv || !wrap || !wrap.clientWidth) return false;
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = cv.width  = Math.round(wrap.clientWidth  * dpr);
+    H = cv.height = Math.round(wrap.clientHeight * dpr);
     cv.style.width = wrap.clientWidth + 'px';
     cv.style.height = wrap.clientHeight + 'px';
-    ctx = cv.getContext('2d');
-    cuerpo = Cuerpo.build(W, H);
-    revelado = performance.now();
-    kick();
+    cx = cv.getContext('2d');
+    return true;
   }
-  function loop(){
-    if (!ctx){ raf = 0; return; }
-    const now = performance.now();
-    ctx.clearRect(0,0,W,H);
-    ctx.fillStyle = '#07060a';
-    ctx.fillRect(0,0,W,H);
-    if (!cuerpo) cuerpo = Cuerpo.build(W, H);
-    strokes = strokes.filter(s => now - s.born < 3200 || s === cur);
-    ctx.save();
-    ctx.clip(cuerpo);            // la luz solo existe dentro del cuerpo
-    for (const s of strokes){
-      const age = clamp((now - s.born) / 3200, 0, 1);
-      const a = s === cur ? 1 : (1 - age);
-      if (a <= 0) continue;
-      ctx.lineCap = ctx.lineJoin = 'round';
-      for (let i=1;i<s.pts.length;i++){
-        const p0 = s.pts[i-1], p1 = s.pts[i];
-        const sp = Math.hypot(p1.x-p0.x, p1.y-p0.y);
-        const w = clamp(16 - sp*W*0.05, 3, 16) * dpr;
-        ctx.strokeStyle = s.mine
-          ? 'rgba(232,112,79,' + (a*0.9) + ')'
-          : 'rgba(233,183,165,' + (a*0.9) + ')';
-        ctx.shadowBlur = 14 * dpr * a;
-        ctx.shadowColor = s.mine ? '#e8704f' : '#e9b7a5';
-        ctx.lineWidth = w;
-        ctx.beginPath();
-        ctx.moveTo(p0.x*W, p0.y*H);
-        ctx.lineTo(p1.x*W, p1.y*H);
-        ctx.stroke();
-      }
-    }
-    ctx.restore();
-    ctx.shadowBlur = 0;
-    // el contorno se muestra al entrar y se va apagando: orienta sin encender el cuerpo
-    const t = clamp((now - revelado) / 2600, 0, 1);
-    const alfa = 0.30 - (0.30 - 0.12) * (1 - Math.pow(1 - t, 3));
-    ctx.strokeStyle = 'rgba(233,183,165,' + alfa.toFixed(3) + ')';
-    ctx.lineWidth = Math.max(1, dpr);
-    ctx.stroke(cuerpo);
-    if (strokes.length || t < 1) raf = requestAnimationFrame(loop);
-    else raf = 0;
-  }
-  function kick(){ if (!raf) raf = requestAnimationFrame(loop); }
-  function norm(e){
-    const b = cv.getBoundingClientRect();
-    return { x: clamp((e.clientX-b.left)/b.width, 0, 1), y: clamp((e.clientY-b.top)/b.height, 0, 1) };
-  }
-  function flushOut(end){
-    if (!outBuf.length && !end) return;
-    Net.send({ t:'trace', p:outBuf, e:!!end });
-    outBuf = [];
-  }
-  function down(e){
-    e.preventDefault();
-    try{ cv.setPointerCapture(e.pointerId); }catch(_){}
-    wrap.classList.add('touched');
-    const p = norm(e);
-    if (strokes.length > 30) strokes.splice(0, strokes.length - 20);
-    cur = { pts:[p], mine:true, born:performance.now() };
-    strokes.push(cur);
-    outBuf = [[+p.x.toFixed(3), +p.y.toFixed(3)]];
-    clearInterval(sendT);
-    sendT = setInterval(() => flushOut(false), 60);
-    buzz(10); kick();
-  }
-  function move(e){
-    if (!cur) return;
-    const p = norm(e);
-    const last = cur.pts[cur.pts.length-1];
-    if (Math.hypot(p.x-last.x, p.y-last.y) < 0.006) return;
-    cur.pts.push(p);
-    cur.born = performance.now();
-    outBuf.push([+p.x.toFixed(3), +p.y.toFixed(3)]);
-    if (outBuf.length > 12) flushOut(false);
-    kick();
-  }
-  function up(){
-    if (!cur) return;
-    clearInterval(sendT); sendT = null;
-    flushOut(true);
-    cur.born = performance.now();
-    cur = null;
-  }
-  cv.addEventListener('pointerdown', down);
-  cv.addEventListener('pointermove', move, {passive:false});
-  ['pointerup','pointercancel','pointerleave'].forEach(ev => cv.addEventListener(ev, up));
-  addEventListener('resize', () => { size(); kick(); });
 
-  let rStroke = null, rStop = null;
-  function remote(pts, end){
-    wrap.classList.add('touched');
-    if (strokes.length > 30) strokes.splice(0, strokes.length - 20);
-    if (!rStroke){ rStroke = { pts:[], mine:false, born:performance.now() }; strokes.push(rStroke); }
-    let speed = 0;
-    for (const p of (pts||[])){
-      const q = { x:p[0], y:p[1] };
-      const l = rStroke.pts[rStroke.pts.length-1];
-      if (l) speed = Math.max(speed, Math.hypot(q.x-l.x, q.y-l.y));
-      rStroke.pts.push(q);
-    }
-    rStroke.born = performance.now();
-    kick();
-    const back = () => Haptics.wave(Live.active ? Math.min(Live.marea.mine, Live.marea.theirs) : 0);
-    const inten = clamp(Math.round(25 + speed*900), 20, 90);
-    Haptics.wave(inten);
-    clearTimeout(rStop);
-    rStop = setTimeout(back, 240);
-    if (end){ rStroke = null; clearTimeout(rStop); back(); }
+  /* punto del espacio de diseno (100x190) a pixeles, respetando el encuadre
+     que usa Cuerpo.build: se ajusta al lado mas corto y se centra */
+  function pt(x, y, ancho, alto){
+    const s = Math.min(ancho/100, alto/190);
+    return { x:(ancho-100*s)/2 + x*s, y:(alto-190*s)/2 + y*s, s };
   }
-  return { size, remote };
+
+  function pintar(){
+    if (!cx && !medir()) { raf = 0; return; }
+    const { d, suyo:esSuyo } = fuente();
+    const t = performance.now();
+
+    // postura: solo si hay cuerpo de verdad detras del sensor
+    const p = d.postura && POSTURAS[d.postura] ? POSTURAS[d.postura] : POSTURAS.desconocida;
+    angObj = p.ang;
+    angulo += (angObj - angulo) * 0.06;          // gira despacio, no salta
+
+    // respiracion: una onda propia guiada por la frecuencia real
+    if (d.rpm > 0){
+      respFase += (Math.PI * 2) * (d.rpm / 60) / 60;
+      if (d.fase === 'inhalando' && Math.sin(respFase) < 0) respFase = Math.PI * 0.25;
+      if (d.fase === 'exhalando' && Math.sin(respFase) > 0) respFase = Math.PI * 1.25;
+    }
+    const aliento = d.rpm > 0 ? (Math.sin(respFase) * 0.5 + 0.5) : 0;
+    const hondura = d.rpm > 0 ? (0.35 + (d.prof/100) * 0.65) : 0;
+
+    // latido: destello corto en el instante real
+    const desde = t - d.tLatido;
+    brilloLat = d.tLatido && desde < 420 ? Math.pow(1 - desde/420, 2.2) : 0;
+
+    nivelSuave += ((d.nivel||0) - nivelSuave) * 0.05;
+
+    cx.clearRect(0,0,W,H);
+    cx.fillStyle = '#07060a';
+    cx.fillRect(0,0,W,H);
+
+    cx.save();
+    cx.translate(W/2, H/2);
+    cx.rotate(angulo * Math.PI / 180);
+    // al acostarse, la figura necesita menos alto y mas ancho
+    const giro = Math.abs(Math.sin(angulo * Math.PI / 180));
+    const cajaW = W * (1 - giro) + H * giro;
+    const cajaH = H * (1 - giro) + W * giro;
+    const esc = 0.92 + aliento * hondura * 0.035;     // el cuerpo entero respira
+    cx.scale(esc, esc);
+    cx.translate(-cajaW/2, -cajaH/2);
+
+    const cuerpo = Cuerpo.build(cajaW, cajaH);
+
+    // relleno base, teñido por el Termometro
+    const calor = Math.max(0, Math.min(100, nivelSuave)) / 100;
+    cx.save();
+    cx.clip(cuerpo);
+    cx.fillStyle = 'rgba(41,28,34,.95)';
+    cx.fillRect(0,0,cajaW,cajaH);
+
+    // el pecho: resplandor que crece al inhalar
+    const pecho = pt(50, 80, cajaW, cajaH);   // caja toracica
+    if (aliento > 0){
+      const r = pecho.s * (19 + aliento * hondura * 19);
+      const g = cx.createRadialGradient(pecho.x, pecho.y, 0, pecho.x, pecho.y, r);
+      g.addColorStop(0, 'rgba(233,183,165,' + (0.20 + aliento*hondura*0.50).toFixed(3) + ')');
+      g.addColorStop(1, 'rgba(233,183,165,0)');
+      cx.fillStyle = g;
+      cx.fillRect(0,0,cajaW,cajaH);
+    }
+
+    // el calor del Termometro sube desde el vientre
+    if (calor > 0.02){
+      const v = pt(50, 112, cajaW, cajaH);      // vientre / pelvis
+      const g = cx.createRadialGradient(v.x, v.y, 0, v.x, v.y, pecho.s * (26 + calor*30));
+      g.addColorStop(0, 'rgba(232,112,79,' + (calor*0.70).toFixed(3) + ')');
+      g.addColorStop(1, 'rgba(232,112,79,0)');
+      cx.fillStyle = g;
+      cx.fillRect(0,0,cajaW,cajaH);
+    }
+
+    // el corazon, un poco a la izquierda del centro del pecho
+    if (d.bpm > 0){
+      const c = pt(46, 76, cajaW, cajaH);       // corazon, algo a la izquierda
+      const base = 0.20, r = c.s * (8 + brilloLat * 14);
+      const g = cx.createRadialGradient(c.x, c.y, 0, c.x, c.y, r);
+      g.addColorStop(0, 'rgba(255,150,110,' + Math.min(1,(base + brilloLat*0.80)).toFixed(3) + ')');
+      g.addColorStop(.5, 'rgba(232,112,79,' + (base*0.55 + brilloLat*0.40).toFixed(3) + ')');
+      g.addColorStop(1, 'rgba(232,112,79,0)');
+      cx.fillStyle = g;
+      cx.fillRect(0,0,cajaW,cajaH);
+    }
+    cx.restore();
+
+    // contorno
+    cx.strokeStyle = 'rgba(233,183,165,' + (0.30 + calor*0.22 + brilloLat*0.18).toFixed(3) + ')';
+    cx.lineWidth = Math.max(1, dpr);
+    cx.stroke(cuerpo);
+    cx.restore();
+
+    raf = requestAnimationFrame(pintar);
+  }
+
+  function arrancar(){ if (!raf) raf = requestAnimationFrame(pintar); }
+
+  return {
+    size(){ medir(); arrancar(); },
+    /* el trazo compartido ya no se dibuja: el cuerpo no es una pizarra */
+    remote(){},
+    mio(st){
+      mio.bpm = st.bpm|0; mio.rpm = st.rpm||0; mio.fase = st.fase||'quieto';
+      mio.prof = st.profundidad||0;
+      mio.postura = (st.bpm || st.rpm) ? (typeof Posicion3D!=='undefined' ? Posicion3D.get() : null) : null;
+      mio.visto = Date.now();
+      arrancar();
+    },
+    miLatido(){ mio.tLatido = performance.now(); },
+    miNivel(n){ mio.nivel = n|0; },
+    suyoDato(d){
+      if (!d) return;
+      if (d.type === 'respiracion'){ suyo.rpm = d.frecuencia||0; suyo.fase = d.fase||'quieto'; suyo.prof = d.profundidad||0; }
+      if (d.type === 'termometro') suyo.nivel = d.nivel|0;
+      if (d.type === 'posicion')   suyo.postura = d.posicion;
+      suyo.visto = Date.now();
+      arrancar();
+    },
+    suyoBpm(b){ suyo.bpm = b|0; suyo.visto = Date.now(); arrancar(); },
+    suyoLatido(){ suyo.tLatido = performance.now(); suyo.visto = Date.now(); arrancar(); },
+    get mirando(){ return fuente().suyo ? 'suyo' : 'mio'; },
+    get datos(){ return fuente().d; },
+    get postura(){ const d=fuente().d; const p=d.postura&&POSTURAS[d.postura]; return p?p.nombre:null; }
+  };
 })();
+
+
+/* El Lienzo ahora es El Cuerpo: se mira, no se dibuja. */
+const Lienzo = { size(){ ElCuerpo.size(); }, remote(){} };
 
 /* El Latido · fotopletismografía con la cámara */
 const Heart = (() => {
@@ -3966,7 +4019,9 @@ const Breath = (() => {
     toggle(){ on ? stop(false) : start(false, null); },
     remote(m){ if (m.on) start(true, m); else stop(true); },
     setPat(p){ pat = p; if (on) start(false, null); },
-    get on(){ return on; }
+    get on(){ return on; },
+    get fase(){ return on ? lastPh : -1; },
+    get patron(){ return pat; }
   };
 })();
 $('#breathBtn').addEventListener('click', () => Breath.toggle());
@@ -4607,8 +4662,8 @@ function handle(m){
       break;
     case 'vocab':      Vocab.remote(m.p, m.n); break;
     case 'trace':      Lienzo.remote(m.p, m.e); break;
-    case 'heart':      Heart.remoteBpm(m.bpm); break;
-    case 'beat':       Heart.beatTheirs(); break;
+    case 'heart':      Heart.remoteBpm(m.bpm); ElCuerpo.suyoBpm(m.bpm); break;
+    case 'beat':       Heart.beatTheirs(); ElCuerpo.suyoLatido(); break;
     case 'breath':     Breath.remote(m); break;
     case 'dice':       Dice.roll(true, m); break;
     case 'marea':      Live.remoteMarea(m.v); break;
@@ -6472,9 +6527,9 @@ const Onboard = (() => {
       cta:'Sigue' },
 
     { screen:'toque', target:'#lienzoWrap', pad:10, chapter:'El Toque',
-      eyebrow:'El Toque · El Lienzo',
-      title:'Un cuerpo a oscuras',
-      body:'Verás la silueta de un cuerpo, casi invisible.<br><br>Arrastra el dedo por encima: <b>el cuerpo se ilumina solo donde lo tocas</b> y se apaga a los pocos segundos. Al mismo tiempo, su teléfono vibra justo en ese punto. Y al revés.<br><br>No queda registro de nada. Solo la luz del momento.',
+      eyebrow:'El Toque · El Cuerpo',
+      title:'Míralo respirar',
+      body:'Aquí no se dibuja: se mira. La silueta muestra lo que los sensores están midiendo de verdad.<br><br>El pecho sube y baja con su respiración. El corazón destella en cada latido real. La figura entera se enciende con su excitación.<br><br>Y si ella se acuesta, la figura se acuesta. Nadie tuvo que escribirlo.',
       cta:'Sigue' },
 
     { screen:'toque', target:'.heart-grid', pad:10, chapter:'El Toque',
@@ -6485,15 +6540,15 @@ const Onboard = (() => {
 
     /* ── EL RITMO ── */
     { screen:'ritmo', target:'.breath-stage', pad:10, chapter:'El Ritmo',
-      eyebrow:'El Ritmo · El Aliento',
-      title:'Respiren al mismo compás',
+      eyebrow:'El Ritmo · El Fuelle',
+      title:'El compás que proponen',
       body:'Los dos teléfonos marcan el mismo ritmo, al mismo milisegundo. No es una animación: es el mismo reloj.<br><br>Elige el patrón —<b>Caja</b>, <b>Calma</b> o <b>Coherencia</b>— y respiren juntos aunque estén lejos.',
       cta:'Sigue' },
 
-    { screen:'ritmo', target:'#cardSilla', pad:10, chapter:'El Ritmo',
-      eyebrow:'El Ritmo · El Pecho',
-      title:'Un gesto, dos signos',
-      body:'Apoya el teléfono <b>boca arriba sobre tu pecho</b> y toca el botón. La pantalla te mira a ti: ves todo mientras te lee.<br><br>De esa única lectura salen <b>tu respiración y tu latido a la vez</b>. Dos ondas en vivo y dos números.<br><br>Quédate quieto unos segundos. Todo eso viaja a su teléfono.',
+    { screen:'ritmo', target:'#sillaToggle', pad:14, chapter:'El Ritmo',
+      eyebrow:'El Ritmo · El Fuelle',
+      title:'Y tu cuerpo, de verdad',
+      body:'Apoya el teléfono <b>boca arriba sobre tu pecho</b> y toca el botón. La pantalla te mira a ti: ves todo mientras te lee.<br><br>De esa única lectura salen <b>tu respiración y tu latido a la vez</b>.<br><br>Y si el guía está andando, aparece <b>el compás</b>: cuánto estás siguiendo de verdad el ritmo que propone.',
       cta:'Sigue' },
 
     { screen:'ritmo', target:'#cardTermometro', pad:10, chapter:'El Ritmo',
@@ -7232,12 +7287,51 @@ const Install = (() => {
 
 // ──── UI SISTEMAS ────
 $('#termometroToggle').addEventListener('click',function(){if(!TermometroExcitacion.activo){TermometroExcitacion.activar();this.textContent='Desactivar Termómetro';this.classList.add('on');this.classList.remove('primary');this.classList.add('ghost');toast('🔬 Termómetro activado');buzz(18)}else{TermometroExcitacion.desactivar();this.textContent='Activar Termómetro';this.classList.remove('on');this.classList.add('primary');this.classList.remove('ghost');document.getElementById('termometroBarra').style.width='0%';document.getElementById('termometroTexto').textContent='Reposo';toast('Termómetro desactivado')}});
-TermometroExcitacion.onChange((n)=>{const b=document.getElementById('termometroBarra'),t=document.getElementById('termometroTexto');if(b)b.style.width=n+'%';if(t){if(n<10)t.textContent='Reposo';else if(n<30)t.textContent='Despertando';else if(n<55)t.textContent='Excitado/a';else if(n<80)t.textContent='Muy excitado/a';else if(n<92)t.textContent='Al borde';else t.textContent='Clímax'}});
+TermometroExcitacion.onChange((n)=>{try{ElCuerpo.miNivel(n)}catch(_){}const b=document.getElementById('termometroBarra'),t=document.getElementById('termometroTexto');if(b)b.style.width=n+'%';if(t){if(n<10)t.textContent='Reposo';else if(n<30)t.textContent='Despertando';else if(n<55)t.textContent='Excitado/a';else if(n<80)t.textContent='Muy excitado/a';else if(n<92)t.textContent='Al borde';else t.textContent='Clímax'}});
 $('#toggleTermometroMarea').addEventListener('click',function(){const c=!TermometroExcitacion.conectadoAMarea;TermometroExcitacion.conectarMarea(c);this.classList.toggle('on',c);toast(c?'🔗 La Marea sigue tu excitación real':'🔓 La Marea vuelve a ser manual');buzz(14)});
 if(TermometroExcitacion.conectadoAMarea)$('#toggleTermometroMarea').classList.add('on');
 $('#toggleEcoFisico').addEventListener('click',function(){if(!EcoFisico.activo){EcoFisico.activar();this.classList.add('on');toast('🌊 Eco Físico activado')}else{EcoFisico.desactivar();this.classList.remove('on');toast('Eco Físico desactivado')}buzz(14)});
 $('#ecoIntensidad').addEventListener('input',function(){EcoFisico.setIntensidad(parseInt(this.value));document.getElementById('ecoIntensidadVal').textContent=this.value+'%'});
 
+
+// ──── EL COMPÁS · ¿de verdad estás siguiendo al guía? ────
+(function(){
+  /* La frecuencia no sirve para esto: Caja propone 3.75 resp/min y Calma 3.16,
+     por debajo de lo que El Pecho puede medir (5). La FASE, en cambio, se
+     detecta a cualquier ritmo. Así que el compás se mide comparando fases. */
+  let muestras=[];
+  const caja=()=>document.getElementById('compasCaja');
+  /* ojo: ocultar no puede borrar las muestras. Si lo hace, el contador se
+     reinicia en cada tick y nunca alcanza el mínimo para mostrar nada. */
+  const oculta=(borrar)=>{ const c=caja(); if(c)c.style.display='none'; if(borrar)muestras=[]; };
+  const pinta=(pct)=>{
+    const c=caja(); if(!c) return;
+    c.style.display='block';
+    const b=document.getElementById('compasBarra'),t=document.getElementById('compasPct'),n=document.getElementById('compasNota');
+    if(b)b.style.width=pct+'%';
+    if(t)t.textContent=pct+'%';
+    if(b)b.style.background = pct>=75?'var(--ok)' : pct>=45?'var(--champagne)' : 'var(--rose)';
+    if(n)n.textContent = pct>=85?'Vas exactamente con él.'
+      : pct>=60?'Casi. Deja que te lleve.'
+      : pct>=35?'Vas por tu cuenta. Mira el orbe y aflojá.'
+      : 'Tu cuerpo va a otro ritmo. No lo fuerces.';
+  };
+  setInterval(()=>{
+    if(typeof Breath==='undefined'||typeof ElPecho==='undefined'){oculta(true);return}
+    if(!Breath.on||!ElPecho.activo){oculta(true);return}
+    const g=Breath.fase, m=ElPecho.fase;
+    if(g<0||!m||m==='quieto'){oculta(false);return}
+    let ok;
+    if(g===0)      ok = (m==='inhalando');
+    else if(g===2) ok = (m==='exhalando');
+    else           ok = (m==='pausa');
+    muestras.push(ok?1:0);
+    while(muestras.length>66) muestras.shift();     // ~20s a 300ms
+    if(muestras.length<14){oculta(false);return}   // aún no hay con qué juzgar
+    let su=0; for(const v of muestras) su+=v;
+    pinta(Math.round(su/muestras.length*100));
+  },300);
+})();
 
 // ──── EL PECHO · un panel, dos signos, en las dos tarjetas ────
 (function(){
@@ -7301,8 +7395,14 @@ $('#ecoIntensidad').addEventListener('input',function(){EcoFisico.setIntensidad(
   }
   let bpmT=null,engL=false,engA=false;
   ElPecho.onCambio((st,esLatido)=>{
-    if(esLatido){try{Heart.beatMine()}catch(_){} return}
+    if(esLatido){try{Heart.beatMine()}catch(_){} try{ElCuerpo.miLatido()}catch(_){} return}
     pinta(st);numeros(st);estado(st);botones(st.activo);
+    try{ElCuerpo.mio(st)}catch(_){}
+    const q=document.getElementById('cuerpoQuien');
+    if(q){const post=ElCuerpo.postura;
+      q.textContent = ElCuerpo.mirando==='suyo'
+        ? ('su cuerpo'+(post?' · '+post:''))
+        : (st.bpm||st.rpm) ? ('tu cuerpo'+(post?' · '+post:'')) : 'nadie todavía';}
     try{Heart.setBpm(st.bpm)}catch(_){}
     if(st.bpm&&!engL){engL=true;buzz([30,40,60]);toast('❤️ Encontré tu corazón')}
     if(!st.bpm)engL=false;
@@ -7329,7 +7429,7 @@ $('#ecoIntensidad').addEventListener('input',function(){EcoFisico.setIntensidad(
 })();
 
 setInterval(()=>{if(typeof unlocked==='undefined'||!unlocked||typeof currentScreen==='undefined'||currentScreen!=='vivo')return;const pos=Posicion3D.get();const el=document.getElementById('indPosicion');if(el){el.style.display='inline-flex';const map={boca_arriba:'🧍',boca_abajo:'🛐',de_costado:'🧍‍♂️',sentado:'🧘',reclinado:'🛋️'};el.textContent=(map[pos]||'🧭')+' '+pos.replace('_',' ')}},3000);
-console.log('[SENSIA·parche v2.8] UI OK');
+console.log('[SENSIA·parche v3.1] UI OK');
 
 (async function boot(){
   Gate.build();
