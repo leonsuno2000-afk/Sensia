@@ -561,6 +561,94 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
 .spark-item .x{position:absolute;top:10px;right:10px;color:var(--ash-dim);padding:6px;font-size:13px}
 
 /* ============================================================
+   EL GUANTE
+   El reto del día. Lo que se ve desde afuera es un sobre cerrado
+   con el tiempo corriéndole por el borde: esa es toda la firma.
+   ============================================================ */
+.g-estado{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.g-estado .chip{flex:1 1 auto;min-width:calc(50% - 4px);justify-content:center;text-align:center}
+.g-peer{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:var(--r-sm);
+  background:var(--card-2);border:1px solid var(--line);margin-top:12px}
+.g-peer .dot{width:9px;height:9px;border-radius:50%;background:var(--ash-dim);flex:0 0 auto}
+.g-peer .dot.libre{background:var(--ok);box-shadow:0 0 10px rgba(123,174,143,.5)}
+.g-peer .dot.gente{background:var(--warn)}
+.g-peer .dot.trabajo{background:var(--seal)}
+.g-peer .dot.cerrado{background:var(--alert)}
+.g-peer b{font-size:13.5px;color:var(--mist);font-weight:500;display:block}
+.g-peer small{font-size:11.5px;color:var(--ash-dim);display:block;margin-top:1px}
+
+.g-temps{display:flex;gap:8px;margin-top:14px}
+.g-temp{flex:1;padding:11px 6px;border-radius:var(--r-sm);background:var(--card-2);
+  border:1px solid var(--line);text-align:center;transition:.2s var(--ease);position:relative}
+.g-temp b{display:block;font-family:var(--font-d);font-size:16px;color:var(--mist);line-height:1.1}
+.g-temp small{display:block;font-size:10px;color:var(--ash-dim);margin-top:3px;letter-spacing:.04em}
+.g-temp.on{border-color:transparent;background:var(--grad-ember);box-shadow:0 8px 22px rgba(194,64,72,.28)}
+.g-temp.on b,.g-temp.on small{color:#fff}
+.g-temp.locked{opacity:.34}
+.g-temp.locked::after{content:"✦";position:absolute;top:5px;right:8px;font-size:9px;color:var(--seal)}
+.chip.void{opacity:.28}
+
+.g-draw{margin-top:14px;padding:16px;border-radius:var(--r-sm);background:rgba(232,112,79,.06);
+  border:1px solid var(--line-2);min-height:86px;display:flex;align-items:center}
+.g-draw p{margin:0;font-family:var(--font-d);font-size:19px;line-height:1.35;color:var(--champagne)}
+
+.g-item{padding:15px;border-radius:var(--r-sm);background:var(--card-2);border:1px solid var(--line);
+  margin-bottom:10px;position:relative;overflow:hidden}
+.g-item.them{border-color:rgba(232,112,79,.32);background:rgba(232,112,79,.07)}
+.g-item.cerrado{opacity:.5}
+.g-item .g-top{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.g-ring{flex:0 0 auto;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
+  background:conic-gradient(var(--ember-core) calc(var(--p,0)*1%), rgba(255,255,255,.07) 0)}
+.g-ring i{width:22px;height:22px;border-radius:50%;background:var(--noir-2);display:grid;
+  place-items:center;font-style:normal;font-size:11px;color:var(--rose)}
+.g-tag{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--ember)}
+.g-tag.t2{color:var(--ember-core)}
+.g-tag.t3{color:var(--alert)}
+.g-when{margin-left:auto;font-family:var(--font-m);font-size:11px;color:var(--ash-dim)}
+.g-txt{font-size:14.5px;line-height:1.5;color:var(--mist);word-break:break-word}
+.g-item.sealed .g-txt{filter:blur(7px);user-select:none;pointer-events:none}
+.g-meta{font-size:11.5px;color:var(--ash-dim);margin-top:8px}
+.g-proof{margin-top:9px;padding:10px 12px;border-radius:10px;background:rgba(0,0,0,.28);
+  border-left:2px solid var(--ember);font-family:var(--font-d);font-size:16px;line-height:1.4;
+  color:var(--champagne);white-space:pre-wrap;word-break:break-word}
+.g-foto{width:100%;border-radius:12px;display:block;margin-top:10px;border:1px solid var(--line)}
+.g-act{display:flex;gap:8px;margin-top:12px}
+.g-act .btn{flex:1;min-height:42px;font-size:13px;padding:0 12px}
+.g-count{display:flex;gap:8px;margin-top:14px}
+.g-count div{flex:1;text-align:center;padding:10px 4px;border-radius:var(--r-sm);
+  background:var(--card-2);border:1px solid var(--line)}
+.g-count b{display:block;font-family:var(--font-d);font-size:21px;color:var(--champagne)}
+.g-count span{font-size:10px;color:var(--ash-dim);letter-spacing:.03em}
+.g-debt{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:var(--r-sm);
+  background:rgba(154,127,166,.09);border:1px solid rgba(154,127,166,.28);margin-bottom:8px}
+.g-debt .c{flex:1;min-width:0}
+.g-debt .c b{display:block;font-size:13.5px;color:var(--mist);font-weight:500;line-height:1.4}
+.g-debt .c small{font-size:11px;color:var(--seal);display:block;margin-top:2px}
+
+/* ============================================================
+   EL MANDO
+   ============================================================ */
+.md-wrap{width:100%;max-width:400px;display:flex;flex-direction:column;align-items:center}
+.md-orb{width:min(64vw,240px);height:min(64vw,240px);border-radius:50%;position:relative;
+  background:var(--grad-glow);display:grid;place-items:center;
+  transition:transform .18s var(--ease), filter .18s var(--ease)}
+.md-orb::after{content:"";position:absolute;inset:14%;border-radius:50%;
+  border:1px solid var(--line-2);background:radial-gradient(circle at 50% 45%, var(--ember-glow), transparent 70%)}
+.md-orb b{position:relative;z-index:2;font-family:var(--font-d);font-size:44px;color:var(--champagne)}
+.md-clock{font-family:var(--font-m);font-size:13px;color:var(--ash-dim);letter-spacing:.12em;margin-top:14px}
+.md-lbl{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ember);margin:20px 0 6px}
+.md-range{width:100%;-webkit-appearance:none;appearance:none;height:34px;background:none}
+.md-range::-webkit-slider-runnable-track{height:8px;border-radius:8px;
+  background:linear-gradient(90deg,var(--ember-deep),var(--ember-core))}
+.md-range::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;
+  background:var(--champagne);margin-top:-11px;box-shadow:0 4px 16px rgba(0,0,0,.5)}
+.md-range::-moz-range-track{height:8px;border-radius:8px;background:var(--ember-deep)}
+.md-range::-moz-range-thumb{width:30px;height:30px;border:none;border-radius:50%;background:var(--champagne)}
+.md-ceil{font-size:11.5px;color:var(--seal);margin-top:2px;text-align:center}
+.md-cap{position:relative;width:100%;height:4px;border-radius:4px;background:var(--noir-1);margin-top:-4px}
+.md-cap i{position:absolute;top:-5px;width:2px;height:14px;background:var(--seal);border-radius:2px}
+
+/* ============================================================
    BÓVEDA
    ============================================================ */
 .vault-key{font-family:var(--font-m);font-size:12px;color:var(--seal);letter-spacing:.1em;
@@ -712,6 +800,21 @@ body.insecure .nav{--nudge:0}
 #relayBox{font-family:var(--font-m);font-size:11px;min-height:96px}
 .relay-state{font-family:var(--font-m);font-size:11px;color:var(--ash-dim);margin-top:9px;line-height:1.6}
 .relay-state.ok{color:var(--ok)} .relay-state.no{color:var(--alert)}
+
+/* El Meridiano · el reloj del otro lado, siempre a la vista */
+.merid{display:none;align-items:center;gap:9px;margin:0 0 14px;padding:9px 13px;
+  border-radius:var(--r-md);border:1px solid var(--line);background:var(--card);
+  font-size:12.5px;line-height:1.5;color:var(--ash);font-family:var(--font-b)}
+.merid b{color:var(--champagne);font-family:var(--font-m);letter-spacing:.02em}
+.merid-dot{flex:0 0 auto;width:8px;height:8px;border-radius:50%;background:var(--ash-dim);
+  box-shadow:0 0 0 3px rgba(255,255,255,.03)}
+.merid.duerme .merid-dot{background:var(--seal)}
+.merid.mañana .merid-dot{background:var(--ok)}
+.merid.tarde  .merid-dot{background:var(--warn)}
+.merid.noche  .merid-dot{background:var(--ember-core)}
+.merid.duerme{border-color:rgba(154,127,166,.28)}
+.ruta-state{font-family:var(--font-m);font-size:11px;color:var(--ash-dim);margin-top:10px;line-height:1.6}
+.ruta-state.ok{color:var(--ok)} .ruta-state.no{color:var(--alert)} .ruta-state.warn{color:var(--warn)}
 
 /* Invitación entrante */
 .invite-note{padding:13px 15px;border-radius:var(--r-md);margin-bottom:14px;display:none;
@@ -935,8 +1038,66 @@ body.reduce #tour .tour-ring::after{animation:none}
       <div class="stat-cell"><b id="statVistas">0</b><span>vistas</span></div>
       <div class="stat-cell"><b id="statMatch">0</b><span>coincidencias</span></div>
     </div>
+
+    <div class="card">
+      <p class="eyebrow">Los dados</p>
+      <h3 style="margin-bottom:4px">Que decida el azar</h3>
+      <p class="lead">Lo que salga es una propuesta, no una orden. Si uno tira, los dos ven lo mismo.</p>
+      <div class="dice-stage">
+        <div class="die" id="die1"><small>acción</small><span>—</span></div>
+        <div class="die" id="die2"><small>modo</small><span>—</span></div>
+        <div class="die" id="die3"><small>tiempo</small><span>—</span></div>
+      </div>
+      <button class="btn primary" id="rollDice">Lanzar los dados</button>
+    </div>
+
+    <div class="card">
+      <p class="eyebrow">Las preguntas</p>
+      <h3 style="margin-bottom:4px">Conocerse sin prisa</h3>
+      <p class="lead">Una cada vez. Respóndela en voz alta, o guárdala en la Bóveda.</p>
+      <div id="qContainer"></div>
+      <div class="row fld-gap">
+        <button class="btn ghost sm" id="qVault" style="flex:1">Guardar en la Bóveda</button>
+        <button class="btn primary sm" id="nextQ" style="flex:1">Otra pregunta</button>
+      </div>
+    </div>
   </div>
 </section>
+
+<!-- El Mando -->
+<div class="stage" id="mandoStage">
+  <div class="md-wrap" id="mdCtrl" style="display:none">
+    <p class="eyebrow">El mando</p>
+    <h3 style="font-family:var(--font-d);font-size:26px;color:var(--champagne);margin:2px 0 18px">Lo tienes tú</h3>
+    <div class="md-orb" id="mdOrbC"><b id="mdValC">0</b></div>
+    <div class="md-lbl">Cuánto</div>
+    <input type="range" class="md-range" id="mdRange" min="0" max="100" value="0">
+    <div class="md-cap"><i id="mdCapMark" style="left:60%"></i></div>
+    <p class="md-ceil" id="mdCeilTxt">Su techo está en 60</p>
+    <div class="md-lbl">Cómo</div>
+    <div class="chip-row" id="mdPats" style="justify-content:center">
+      <button class="chip sm on" data-p="fijo">Fijo</button>
+      <button class="chip sm" data-p="olas">Olas</button>
+      <button class="chip sm" data-p="latido">Latido</button>
+      <button class="chip sm" data-p="escalera">Escalera</button>
+      <button class="chip sm" data-p="azar">Al azar</button>
+    </div>
+    <div class="md-clock" id="mdClockC">—</div>
+    <button class="btn quiet sm" id="mdDrop" style="margin-top:12px">Soltar el mando</button>
+  </div>
+
+  <div class="md-wrap" id="mdBody" style="display:none">
+    <p class="eyebrow">El mando</p>
+    <h3 style="font-family:var(--font-d);font-size:26px;color:var(--champagne);margin:2px 0 18px">Lo tiene el otro</h3>
+    <div class="md-orb" id="mdOrbB"><b id="mdValB">0</b></div>
+    <div class="md-lbl">Tu techo</div>
+    <input type="range" class="md-range" id="mdTecho" min="0" max="100" value="60">
+    <p class="md-ceil" id="mdTechoTxt">Nunca vas a sentir más que esto</p>
+    <div class="md-clock" id="mdClockB">—</div>
+    <button class="btn stop" id="mdStopBtn" style="margin-top:16px;width:100%;max-width:280px">Basta</button>
+    <p class="dim" id="mdVibNote" style="margin-top:12px;text-align:center;display:none"></p>
+  </div>
+</div>
 
 <!-- Ruleta -->
 <div class="stage" id="ruletaStage">
@@ -951,10 +1112,10 @@ body.reduce #tour .tour-ring::after{animation:none}
   </div>
 </div>
 
-<!-- ══════════════ EL TOQUE ══════════════ -->
-<section id="toque" class="screen">
+<!-- ══════════════ EL RITMO ══════════════ -->
+<section id="ritmo" class="screen">
   <header class="topbar">
-    <div><h1>El Toque</h1><div class="sub">el cuerpo, a la distancia</div></div>
+    <div><h1>El Ritmo</h1><div class="sub">del tacto al cuerpo</div></div>
     <div class="actions">
       <button class="icon-btn" data-gear aria-label="Santuario"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.34 1.87l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.7 1.7 0 00-1.87-.34 1.7 1.7 0 00-1 1.55V21a2 2 0 11-4 0v-.09A1.7 1.7 0 008 19.4a1.7 1.7 0 00-1.87.34l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.7 1.7 0 003.6 15a1.7 1.7 0 00-1.55-1H2a2 2 0 110-4h.09A1.7 1.7 0 003.6 9a1.7 1.7 0 00-.34-1.87l-.06-.06a2 2 0 112.83-2.83l.06.06A1.7 1.7 0 008 4.6h.08A1.7 1.7 0 009.7 3.05V3a2 2 0 114 0v.09A1.7 1.7 0 0015.3 4.6a1.7 1.7 0 001.87-.34l.06-.06a2 2 0 112.83 2.83l-.06.06A1.7 1.7 0 0020.4 9v.08a1.7 1.7 0 001.55 1.02H22a2 2 0 110 4h-.09a1.7 1.7 0 00-1.51 1z"/></svg></button>
       <button class="icon-btn exit" data-exit aria-label="Salida rápida"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
@@ -967,21 +1128,21 @@ body.reduce #tour .tour-ring::after{animation:none}
     <p class="orb-hint">Mantén presionada la brasa. El ritmo que hagas viaja tal cual.<br>Agita el teléfono para un pulso sorpresa.</p>
 
     <div class="card" style="margin-top:18px">
-      <p class="eyebrow">El Cuerpo</p>
-      <h3 style="margin-bottom:4px">Míralo respirar</h3>
-      <p class="lead">Apoya el teléfono sobre el pecho —el tuyo, el suyo, o los dos a la vez— y la silueta empieza a respirar. No se dibuja: se mira. El pecho sube y baja con el aliento real, el corazón destella en cada latido, y la figura entera se enciende cuando la excitación sube.<br><br>Si los dos están apoyados, aparecen los dos cuerpos. Y cuando sus pulsos se encuentran de verdad, un hilo de luz cruza de un corazón al otro.<br><br>Si se acuesta, la figura se acuesta. Nadie escribió nada.</p>
-      <div class="lienzo-wrap" id="lienzoWrap">
-        <canvas id="lienzo"></canvas>
-
-      </div>
-      <div id="cuerpoQuien" style="text-align:center;margin-top:8px;font-size:11px;color:var(--ash-dim);letter-spacing:.1em;text-transform:uppercase">nadie todavía</div>
+      <p class="eyebrow">Su vocabulario</p>
+      <h3 style="margin-bottom:4px">Pulsos con nombre</h3>
+      <p class="lead">Tócale un ritmo a un pulso y ponle nombre: «ven», «te pienso», «no puedo dormir». Se lo mandas, y lo siente en la piel con esas mismas palabras.</p>
+      <div id="vocabList"></div>
+      <button class="btn ghost sm" id="addVocab" style="width:100%;margin-top:14px">+ Crear un pulso nuevo</button>
     </div>
-
+    <p class="foot-note">Los patrones que definen aquí son <b>solo suyos</b>. Un lenguaje que nadie más entiende.</p>
+    <div style="margin:34px 8px 10px;padding-top:20px;border-top:1px solid var(--line);text-align:center">
+      <span style="font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--ash-dim)">El cuerpo</span>
+    </div>
     <div class="card">
       <p class="eyebrow">El Latido</p>
       <h3 style="margin-bottom:4px">Su corazón, en tu mano</h3>
-      <p class="lead">Tapa la cámara trasera y el flash con la yema del dedo. Sensia encuentra tu pulso ahí mismo y lo manda: en su mano, el teléfono late con tu corazón, en vivo.</p>
-      <p class="lead">¿Sin cámara a mano? Marca el ritmo tú mismo, tocando al compás de tu pulso. Y si los quieren libres —latido y aliento a la vez, sin tocar nada—, apóyalo sobre el pecho en <b>El Ritmo → El Fuelle</b>.</p>
+      <p class="lead">Recuéstate un poco, apoya el teléfono contra el centro del pecho —con la pantalla hacia ti— y sostenlo ahí, quieto. El sensor siente el empujón de cada latido y lo manda: en su mano, el teléfono late con tu corazón, en vivo.</p>
+      <p class="lead">¿El pecho no engancha? Tápale la cámara trasera y el flash con la yema del dedo, o marca el ritmo a mano tocando la pantalla. Y si los quieres juntos —latido y aliento a la vez—, apóyalo igual sobre el pecho, más abajo, en <b>El Fuelle</b>.</p>
       <div class="heart-grid">
         <div class="heart-cell mine">
           <span class="who">Tú</span>
@@ -995,36 +1156,27 @@ body.reduce #tour .tour-ring::after{animation:none}
         </div>
       </div>
       <div class="resonance" id="resonance"><b>Resonancia</b><span>sus corazones están en el mismo ritmo</span></div>
-      <div class="row" style="margin-top:14px">
+      <button class="btn primary sm" id="heartChest" style="width:100%;margin-top:14px">Apoyar en el pecho</button>
+      <div class="row" style="margin-top:10px">
         <button class="btn ghost sm" id="heartTap" style="flex:1">Marcar a mano</button>
         <button class="btn ghost sm" id="heartBtn" style="flex:1">Con la cámara</button>
       </div>
-      <p class="dim" id="heartStatus" style="text-align:center;margin-top:10px">Tapa la cámara y el flash con el dedo. Quédate quieto unos segundos.</p>
+      <p class="dim" id="heartStatus" style="text-align:center;margin-top:10px">Reclínate y apoya el teléfono plano sobre el centro del pecho, con la pantalla hacia ti. Sostenlo quieto, con los codos apoyados, unos segundos.</p>
       <button class="ghost-link" id="heartWhy" style="display:none;width:100%;margin-top:6px;font-size:12px">¿por qué no lee mi pulso?</button>
       <video id="ppgVideo" playsinline muted></video><canvas id="ppgCanvas" width="64" height="64"></canvas>
     </div>
 
     <div class="card">
-      <p class="eyebrow">Su vocabulario</p>
-      <h3 style="margin-bottom:4px">Pulsos con nombre</h3>
-      <p class="lead">Tócale un ritmo a un pulso y ponle nombre: «ven», «te pienso», «no puedo dormir». Se lo mandas, y lo siente en la piel con esas mismas palabras.</p>
-      <div id="vocabList"></div>
-      <button class="btn ghost sm" id="addVocab" style="width:100%;margin-top:14px">+ Crear un pulso nuevo</button>
-    </div>
-    <p class="foot-note">Los patrones que definen aquí son <b>solo suyos</b>. Un lenguaje que nadie más entiende.</p>
-  </div>
-</section>
+      <p class="eyebrow">El Cuerpo</p>
+      <h3 style="margin-bottom:4px">Míralo respirar</h3>
+      <p class="lead">Apoya el teléfono sobre el pecho —el tuyo, el suyo, o los dos a la vez— y la silueta empieza a respirar. No se dibuja: se mira. El pecho sube y baja con el aliento real, el corazón destella en cada latido, y la figura entera se enciende cuando la excitación sube.<br><br>Si los dos están apoyados, aparecen los dos cuerpos. Y cuando sus pulsos se encuentran de verdad, un hilo de luz cruza de un corazón al otro.<br><br>Si se acuesta, la figura se acuesta. Nadie escribió nada.</p>
+      <div class="lienzo-wrap" id="lienzoWrap">
+        <canvas id="lienzo"></canvas>
 
-<!-- ══════════════ EL RITMO ══════════════ -->
-<section id="ritmo" class="screen">
-  <header class="topbar">
-    <div><h1>El Ritmo</h1><div class="sub">sincronía, juego y azar</div></div>
-    <div class="actions">
-      <button class="icon-btn" data-gear aria-label="Santuario"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.34 1.87l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.7 1.7 0 00-1.87-.34 1.7 1.7 0 00-1 1.55V21a2 2 0 11-4 0v-.09A1.7 1.7 0 008 19.4a1.7 1.7 0 00-1.87.34l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.7 1.7 0 003.6 15a1.7 1.7 0 00-1.55-1H2a2 2 0 110-4h.09A1.7 1.7 0 003.6 9a1.7 1.7 0 00-.34-1.87l-.06-.06a2 2 0 112.83-2.83l.06.06A1.7 1.7 0 008 4.6h.08A1.7 1.7 0 009.7 3.05V3a2 2 0 114 0v.09A1.7 1.7 0 0015.3 4.6a1.7 1.7 0 001.87-.34l.06-.06a2 2 0 112.83 2.83l-.06.06A1.7 1.7 0 0020.4 9v.08a1.7 1.7 0 001.55 1.02H22a2 2 0 110 4h-.09a1.7 1.7 0 00-1.51 1z"/></svg></button>
-      <button class="icon-btn exit" data-exit aria-label="Salida rápida"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      </div>
+      <div id="cuerpoQuien" style="text-align:center;margin-top:8px;font-size:11px;color:var(--ash-dim);letter-spacing:.1em;text-transform:uppercase">nadie todavía</div>
     </div>
-  </header>
-  <div class="pane">
+
     <div class="card" style="text-align:center;padding:22px 18px">
       <p class="eyebrow">El Fuelle</p>
       <h3 style="margin-bottom:4px">Lo que mueve el aire</h3>
@@ -1060,13 +1212,11 @@ body.reduce #tour .tour-ring::after{animation:none}
           </div>
           <div id="compasNota" style="font-size:11px;color:var(--ash-dim);margin-top:6px;font-family:var(--font-d);font-style:italic"></div>
         </div>
-        <div id="sillaStatus" style="text-align:center;padding:6px 0 10px;color:var(--ash);font-family:var(--font-d);font-style:italic;font-size:13px">Boca arriba sobre el pecho. Qu&eacute;date quieto unos segundos.</div>
+        <div id="sillaStatus" style="text-align:center;padding:6px 0 10px;color:var(--ash);font-family:var(--font-d);font-style:italic;font-size:13px">Reclínate y apoya el teléfono plano sobre el centro del pecho, con la pantalla hacia ti. Sostenlo quieto, con los codos apoyados, unos segundos.</div>
         <div class="row"><button class="btn primary sm" id="sillaToggle" style="flex:1">Apoyar en el pecho</button></div>
       </div>
     </div>
 
-
-<!-- ══════════════ TERMÓMETRO ══════════════ -->
 <div class="card" id="cardTermometro" style="margin-top:12px">
 <p class="eyebrow">Termómetro de Excitación</p>
 <h3 style="margin-bottom:8px">Tu cuerpo, en un número</h3>
@@ -1084,29 +1234,6 @@ body.reduce #tour .tour-ring::after{animation:none}
 <div style="background:var(--noir-1);border-radius:6px;height:8px;margin-top:5px;overflow:hidden"><div id="termometroRemoto" style="width:0%;height:100%;background:var(--rose);border-radius:6px;transition:width .6s var(--ease)"></div></div>
 </div>
 </div>
-
-    <div class="card">
-      <p class="eyebrow">Los dados</p>
-      <h3 style="margin-bottom:4px">Que decida el azar</h3>
-      <p class="lead">Lo que salga es una propuesta, no una orden. Si uno tira, los dos ven lo mismo.</p>
-      <div class="dice-stage">
-        <div class="die" id="die1"><small>acción</small><span>—</span></div>
-        <div class="die" id="die2"><small>modo</small><span>—</span></div>
-        <div class="die" id="die3"><small>tiempo</small><span>—</span></div>
-      </div>
-      <button class="btn primary" id="rollDice">Lanzar los dados</button>
-    </div>
-
-    <div class="card">
-      <p class="eyebrow">Las preguntas</p>
-      <h3 style="margin-bottom:4px">Conocerse sin prisa</h3>
-      <p class="lead">Una cada vez. Respóndela en voz alta, o guárdala en la Bóveda.</p>
-      <div id="qContainer"></div>
-      <div class="row fld-gap">
-        <button class="btn ghost sm" id="qVault" style="flex:1">Guardar en la Bóveda</button>
-        <button class="btn primary sm" id="nextQ" style="flex:1">Otra pregunta</button>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -1126,7 +1253,15 @@ body.reduce #tour .tour-ring::after{animation:none}
     <!-- Puerta de consentimiento -->
     <div id="vivoGate">
       <div class="warn-bar" id="insecureWarn">Estás abriendo Sensia sin HTTPS. Sin conexión segura no hay cifrado ni cámara. Ábrela desde una dirección <b>https://</b>.</div>
+      <div class="merid" id="meridVivo"></div>
       <div class="invite-note" id="inviteNote"></div>
+      <div class="card" id="rutaCard">
+        <p class="eyebrow">La ruta</p>
+        <h3 style="margin-bottom:4px">¿Hay camino hasta allá?</h3>
+        <p class="lead">Entre dos países, en datos móviles, casi nunca existe un camino directo entre los dos teléfonos: hace falta un <b>relevo</b> que empuje el tráfico cifrado de un lado al otro. Esta prueba lo dice ahora, no en medio de la noche.</p>
+        <button class="btn ghost sm" id="rutaRun" style="width:100%;margin-top:12px">Probar el camino</button>
+        <div class="ruta-state" id="rutaState"></div>
+      </div>
       <div class="card">
         <p class="eyebrow">El enlace</p>
         <h3>Una sesión empieza cuando ambos la eligen</h3>
@@ -1144,7 +1279,7 @@ body.reduce #tour .tour-ring::after{animation:none}
             <button class="btn ghost sm" id="genCode" style="flex:0 0 auto">Generar</button>
           </div>
           <div class="row fld-gap">
-            <button class="btn ghost sm" id="shareCode" style="flex:1">Compartir código</button>
+            <button class="btn ghost sm" id="shareCode" style="flex:1">Compartir enlace</button>
             <button class="btn primary sm" id="startSession" style="flex:1">Entrar</button>
           </div>
           <p class="dim" id="vivoStatus" style="margin-top:12px;display:none;color:var(--rose)"></p>
@@ -1316,13 +1451,99 @@ body.reduce #tour .tour-ring::after{animation:none}
 <!-- ══════════════ LA CHISPA ══════════════ -->
 <section id="chispa" class="screen">
   <header class="topbar">
-    <div><h1>La Chispa</h1><div class="sub">tensión que se cocina lento</div></div>
+    <div><h1>La Chispa</h1><div class="sub">la espera y lo que guardas</div></div>
     <div class="actions">
       <button class="icon-btn" data-gear aria-label="Santuario"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.34 1.87l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.7 1.7 0 00-1.87-.34 1.7 1.7 0 00-1 1.55V21a2 2 0 11-4 0v-.09A1.7 1.7 0 008 19.4a1.7 1.7 0 00-1.87.34l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.7 1.7 0 003.6 15a1.7 1.7 0 00-1.55-1H2a2 2 0 110-4h.09A1.7 1.7 0 003.6 9a1.7 1.7 0 00-.34-1.87l-.06-.06a2 2 0 112.83-2.83l.06.06A1.7 1.7 0 008 4.6h.08A1.7 1.7 0 009.7 3.05V3a2 2 0 114 0v.09A1.7 1.7 0 0015.3 4.6a1.7 1.7 0 001.87-.34l.06-.06a2 2 0 112.83 2.83l-.06.06A1.7 1.7 0 0020.4 9v.08a1.7 1.7 0 001.55 1.02H22a2 2 0 110 4h-.09a1.7 1.7 0 00-1.51 1z"/></svg></button>
       <button class="icon-btn exit" data-exit aria-label="Salida rápida"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
     </div>
   </header>
   <div class="pane">
+    <div class="merid" id="meridChispa"></div>
+    <!-- ── EL GUANTE ── el juego del día, a la distancia ── -->
+    <div class="card" id="guanteCard">
+      <p class="eyebrow">El guante</p>
+      <h3 style="margin-bottom:4px">El reto del día</h3>
+      <p class="lead">Uno lo tira, el otro decide si lo recoge. Nadie más se entera, y decir <b>hoy no</b> no cuesta nada.</p>
+
+      <label class="fld">Cómo ando yo hoy</label>
+      <div class="g-estado" id="gEstado">
+        <button class="chip on" data-est="libre">Libre</button>
+        <button class="chip" data-est="gente">Con gente cerca</button>
+        <button class="chip" data-est="trabajo">Trabajando</button>
+        <button class="chip" data-est="cerrado">Hoy no</button>
+      </div>
+      <p class="dim" id="gEstadoNote" style="margin:9px 0 0"></p>
+      <button class="btn quiet sm" id="gSilencio" style="width:100%;margin-top:10px">Horas de silencio</button>
+
+      <div class="g-peer" id="gPeer">
+        <span class="dot"></span>
+        <div style="flex:1;min-width:0"><b id="gPeerName">Todavía no dijo nada</b><small id="gPeerSub">Cuando declare cómo anda, aquí aparece.</small></div>
+      </div>
+
+      <div id="gThrow">
+        <label class="fld fld-gap">Qué tan lejos</label>
+        <div class="g-temps" id="gTemps">
+          <button class="g-temp on" data-temp="1"><b>Tibio</b><small>a plena luz</small></button>
+          <button class="g-temp" data-temp="2"><b>Caliente</b><small>puerta cerrada</small></button>
+          <button class="g-temp" data-temp="3"><b>Al rojo</b><small>sin red</small></button>
+        </div>
+        <p class="dim" id="gGateNote" style="margin:9px 0 0;display:none"></p>
+
+        <label class="fld fld-gap">De qué va</label>
+        <div class="chip-row" id="gFams"></div>
+
+        <div class="g-draw" id="gDraw"><p>—</p></div>
+        <div class="row fld-gap">
+          <button class="btn ghost sm" id="gShuffle" style="flex:1">Otro</button>
+          <button class="btn ghost sm" id="gMine" style="flex:1">Escribirlo yo</button>
+        </div>
+        <textarea id="gCustom" class="fld-gap" placeholder="el tuyo, con tus palabras…" maxlength="240" style="display:none"></textarea>
+
+        <label class="fld fld-gap">Tiene hasta</label>
+        <div class="chip-row" id="gWindow">
+          <button class="chip" data-w="1800000">Media hora</button>
+          <button class="chip on" data-w="3600000">Una hora</button>
+          <button class="chip" data-w="10800000">Tres horas</button>
+          <button class="chip" data-w="tonight">Esta noche</button>
+        </div>
+
+        <button class="btn primary fld-gap" id="gSend" style="width:100%;margin-top:16px">Tirar el guante</button>
+        <p class="dim" id="gSendNote" style="margin-top:10px"></p>
+      </div>
+
+      <div class="g-count" id="gCount">
+        <div><b id="gcTirados">0</b><span>tirados</span></div>
+        <div><b id="gcCumplidos">0</b><span>cumplidos</span></div>
+        <div><b id="gcDeudas">0</b><span>debiendo</span></div>
+      </div>
+    </div>
+
+    <div class="card" id="mandoCard">
+      <p class="eyebrow">El mando</p>
+      <h3 style="margin-bottom:4px">Que lo maneje el otro</h3>
+      <p class="lead">Apoyas el teléfono donde quieras y le entregas el control. Tú pones el techo, tú lo cortas cuando quieras, y se apaga solo cuando se acaba el tiempo.</p>
+      <div class="row">
+        <button class="btn ghost sm" id="mdAskBtn" style="flex:1">Pedirlo</button>
+        <button class="btn primary sm" id="mdGiveBtn" style="flex:1">Entregarlo</button>
+      </div>
+      <p class="dim" id="mdNote" style="margin-top:10px"></p>
+    </div>
+
+    <div style="margin-top:22px">
+      <p class="eyebrow">En juego</p>
+      <div id="gList"></div>
+    </div>
+
+    <div style="margin-top:20px;display:none" id="gDebtWrap">
+      <p class="eyebrow">La cuenta</p>
+      <div id="gDebts"></div>
+      <p class="foot-note">Lo que se aceptó y no se cumplió no se castiga: se cobra. La próxima vez que se vean, o cuando uno de los dos lo reclame.</p>
+    </div>
+
+    <p class="foot-note" style="margin-top:14px">La regla del guante: nada que pueda ver alguien que no aceptó jugar, nada desde el teléfono ni la red del trabajo, nada al volante. Lo que quema no es que te vean: es que solo yo sepa.</p>
+
+    <div style="margin:30px 8px 16px;border-top:1px solid var(--line)"></div>
+
     <div class="card" id="reunionCard">
       <p class="eyebrow">La espera</p>
       <div id="reunionOff">
@@ -1364,20 +1585,10 @@ body.reduce #tour .tour-ring::after{animation:none}
       <p class="eyebrow">Flotando</p>
       <div id="sparkList"></div>
     </div>
-  </div>
-</section>
 
-<!-- ══════════════ LA BÓVEDA ══════════════ -->
-<section id="boveda" class="screen">
-  <header class="topbar">
-    <div><h1>La Bóveda</h1><div class="sub">bajo llave, solo suya</div></div>
-    <div class="actions">
-      <button class="icon-btn" id="vaultExportBtn" aria-label="Exportar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg></button>
-      <button class="icon-btn" data-gear aria-label="Santuario"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.34 1.87l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.7 1.7 0 00-1.87-.34 1.7 1.7 0 00-1 1.55V21a2 2 0 11-4 0v-.09A1.7 1.7 0 008 19.4a1.7 1.7 0 00-1.87.34l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.7 1.7 0 003.6 15a1.7 1.7 0 00-1.55-1H2a2 2 0 110-4h.09A1.7 1.7 0 003.6 9a1.7 1.7 0 00-.34-1.87l-.06-.06a2 2 0 112.83-2.83l.06.06A1.7 1.7 0 008 4.6h.08A1.7 1.7 0 009.7 3.05V3a2 2 0 114 0v.09A1.7 1.7 0 0015.3 4.6a1.7 1.7 0 001.87-.34l.06-.06a2 2 0 112.83 2.83l-.06.06A1.7 1.7 0 0020.4 9v.08a1.7 1.7 0 001.55 1.02H22a2 2 0 110 4h-.09a1.7 1.7 0 00-1.51 1z"/></svg></button>
-      <button class="icon-btn exit" data-exit aria-label="Salida rápida"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    <div style="margin:34px 8px 10px;padding-top:20px;border-top:1px solid var(--line);text-align:center">
+      <span style="font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--ash-dim)">La Bóveda</span>
     </div>
-  </header>
-  <div class="pane">
     <div id="vaultLocked" class="card" style="text-align:center">
       <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="var(--seal)" stroke-width="1.3" style="margin:0 auto 12px;display:block"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M7.5 10V7a4.5 4.5 0 019 0v3"/><circle cx="12" cy="15" r="1.6" fill="var(--seal)"/></svg>
       <h3 id="vaultTitle">Un segundo sello</h3>
@@ -1412,8 +1623,9 @@ body.reduce #tour .tour-ring::after{animation:none}
       <div id="vaultEntries" style="margin-top:14px"></div>
       <div class="row fld-gap">
         <button class="btn ghost sm" id="vaultDecoy" style="flex:1">Crear frase señuelo</button>
-        <button class="btn quiet sm" id="vaultLock" style="flex:1">Cerrar y borrar la llave</button>
+        <button class="btn ghost sm" id="vaultExportBtn" style="flex:1">Exportar</button>
       </div>
+      <button class="btn quiet sm" id="vaultLock" style="width:100%;margin-top:8px">Cerrar y borrar la llave</button>
       <p class="foot-note">La <b>frase señuelo</b> abre una bóveda distinta, con lo que tú pongas ahí. Si alguien te obliga a abrirla, le das esa. Nadie puede demostrar que hay otra.</p>
     </div>
   </div>
@@ -1500,6 +1712,10 @@ body.reduce #tour .tour-ring::after{animation:none}
         <div class="toggle" data-toggle="audioHaptic"></div>
       </div>
       <div class="switch">
+        <div class="lbl"><b>Sonido del cuerpo</b><small>Un tono grave que respira con el cuerpo y se abre con la excitación. Mejor con auriculares</small></div>
+        <div class="toggle" data-toggle="bodySound"></div>
+      </div>
+      <div class="switch">
         <div class="lbl"><b>Menos movimiento</b><small>Apaga animaciones y brasas</small></div>
         <div class="toggle" data-toggle="reduce"></div>
       </div>
@@ -1551,6 +1767,36 @@ body.reduce #tour .tour-ring::after{animation:none}
     </div>
 
     <div class="card">
+      <p class="eyebrow">El meridiano</p>
+      <h3 style="margin-bottom:4px">En qué huso vive</h3>
+      <p class="lead">La Chispa y El Guante no esperan a que se enlacen: salen antes. Para que <b>“esta noche”</b> signifique <i>su</i> noche y no la tuya, Sensia necesita saber dónde vive. Se aprende sola en el primer túnel — o la eliges ahora.</p>
+      <select id="meridSel" class="fld-gap">
+        <option value="">Aprenderla al enlazarnos</option>
+        <option value="Europe/Rome">Italia · Roma</option>
+        <option value="Europe/Madrid">España · Madrid</option>
+        <option value="Europe/Lisbon">Portugal · Lisboa</option>
+        <option value="Europe/London">Reino Unido · Londres</option>
+        <option value="Europe/Paris">Francia · París</option>
+        <option value="Europe/Berlin">Alemania · Berlín</option>
+        <option value="America/Bogota">Colombia · Bogotá</option>
+        <option value="America/Lima">Perú · Lima</option>
+        <option value="America/Santiago">Chile · Santiago</option>
+        <option value="America/Argentina/Buenos_Aires">Argentina · Buenos Aires</option>
+        <option value="America/Montevideo">Uruguay · Montevideo</option>
+        <option value="America/Mexico_City">México · Ciudad de México</option>
+        <option value="America/Managua">Nicaragua · Managua</option>
+        <option value="America/New_York">EE. UU. · Nueva York</option>
+        <option value="America/Los_Angeles">EE. UU. · Los Ángeles</option>
+        <option value="Africa/Lagos">Nigeria · Lagos</option>
+        <option value="Asia/Tokyo">Japón · Tokio</option>
+        <option value="Australia/Sydney">Australia · Sídney</option>
+        <option value="__otra">Otra… (escribir la zona)</option>
+      </select>
+      <input type="text" id="meridOtra" class="fld-gap" style="display:none;font-family:var(--font-m)" placeholder="Europe/Athens" spellcheck="false" autocomplete="off">
+      <div class="relay-state" id="meridState"></div>
+    </div>
+
+    <div class="card">
       <p class="eyebrow">Los relevos</p>
       <h3 style="margin-bottom:4px">Cuando no hay camino directo</h3>
       <p class="lead">En datos móviles muchas veces los dos teléfonos no se ven entre sí y hace falta un <b>relevo</b> que empuje el tráfico —cifrado— de un lado al otro. Sin uno bueno, la sesión a veces no abre. Pega aquí el tuyo y queda guardado en este teléfono.</p>
@@ -1569,7 +1815,7 @@ body.reduce #tour .tour-ring::after{animation:none}
       <p class="dim" style="margin-top:10px">Elimina el gesto, las fantasías, el vocabulario, las chispas, la bóveda y los ajustes. No se puede deshacer.</p>
     </div>
 
-    <p class="foot-note">Sensia Ω∞ · v5 <b>La Puerta</b><br>Túnel P2P cifrado extremo a extremo · sello verificable · sin cuentas ni registro. Nada de lo que se dicen queda en un servidor; para conectarlos (y a veces para sostener la señal) se usa un relay que ve <i>por dónde</i> pasan, nunca <i>qué</i> pasa.</p>
+    <p class="foot-note">Sensia Ω∞ · v5.1 <b>El Meridiano</b><br>Túnel P2P cifrado extremo a extremo · sello verificable · sin cuentas ni registro. Nada de lo que se dicen queda en un servidor; para conectarlos (y a veces para sostener la señal) se usa un relay que ve <i>por dónde</i> pasan, nunca <i>qué</i> pasa.</p>
   </div>
 </section>
 
@@ -1577,11 +1823,9 @@ body.reduce #tour .tour-ring::after{animation:none}
 <nav class="nav" id="nav">
   <div class="nav-inner">
     <button class="nav-btn on" data-go="diario"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l2.2 5.5L20 9l-4.5 3.8L17 19l-5-3.2L7 19l1.5-6.2L4 9l5.8-.5z"/></svg><span>Diario</span><i class="badge" id="badgeDiario"></i></button>
-    <button class="nav-btn" data-go="toque"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="8" opacity=".5"/></svg><span>Toque</span></button>
     <button class="nav-btn" data-go="ritmo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 12h3l2-6 3 13 3-9 2 4h5"/></svg><span>Ritmo</span></button>
     <button class="nav-btn" data-go="vivo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2.5"/></svg><span>En vivo</span><i class="badge" id="badgeVivo"></i></button>
     <button class="nav-btn" data-go="chispa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2s4 4 4 8a4 4 0 01-8 0c0-2 1.5-3.5 1.5-3.5S9 9 10 10c0-3 2-8 2-8z"/></svg><span>Chispa</span><i class="badge" id="badgeChispa"></i></button>
-    <button class="nav-btn" data-go="boveda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 018 0v3"/></svg><span>Bóveda</span></button>
   </div>
 </nav>
 
@@ -1886,11 +2130,27 @@ function defaultState(){
     outbox: [],
     reunion: null,
     vault: {},
-    stats: { sessions:0, minutes:0, breaths:0, pulses:0, sparks:0 },
+    guante: {
+      dia: '',            // YYYY-MM-DD: todo lo del día se reinicia solo
+      mio: 'libre',       // mi estado declarado
+      suyo: '',           // el suyo, tal como me lo mandó
+      suyoAt: 0,
+      vivos: [],          // guantes en juego (míos y suyos)
+      deudas: [],         // aceptados y no cumplidos
+      salida: [],         // los que esperan a que se enlacen
+      tiradosHoy: 0,
+      hechosHoy: { t1:0, t2:0, t3:0 },
+      silencio: { on:false, d:'23:00', h:'08:00' }
+    },
+    stats: { sessions:0, minutes:0, breaths:0, pulses:0, sparks:0, guantes:0 },
     settings: {
       discreet:true, veilBg:true, killBg:false, autolock:true, flipExit:true,
-      haptics:true, audioHaptic:true, reduce:false, notif:false,
-      theme:'brasa', safeWord:'', triggerWord:'', lastCode:'', relays:''
+      haptics:true, audioHaptic:true, bodySound:false, reduce:false, notif:false,
+      theme:'brasa', safeWord:'', triggerWord:'', lastCode:'', relays:'',
+      /* El Meridiano · la distancia horaria. Se aprende sola al enlazarse,
+         y se puede poner a mano para que funcione ANTES del primer túnel:
+         La Chispa y El Guante son asíncronos y no esperan a nadie. */
+      peerTz:'', peerOff:null, peerOffAt:0, peerTzManual:false
     }
   };
 }
@@ -2546,6 +2806,9 @@ async function hydrate(){
       State.stats = Object.assign(defaultState().stats, raw.stats || {});
       State.choices = Object.assign({me:{},them:{}}, raw.choices || {});
       State.filters = Object.assign({lvl:[],cat:[]}, raw.filters || {});
+      State.guante = Object.assign(defaultState().guante, raw.guante || {});
+      State.guante.hechosHoy = Object.assign({t1:0,t2:0,t3:0}, State.guante.hechosHoy || {});
+      State.guante.silencio = Object.assign({on:false,d:'23:00',h:'08:00'}, State.guante.silencio || {});
     }
     if (rescued){
       persist();   // vuelve a guardarse, ahora cifrado
@@ -2566,13 +2829,12 @@ function go(id){
   $$('.nav-btn').forEach(b => b.classList.toggle('on', b.dataset.go === id));
   const pane = el.querySelector('.pane');
   if (pane) pane.scrollTop = 0;
-  if (id === 'diario'){ Deck.render(); Deck.stats(); }
-  if (id === 'toque'){ Vocab.render(); Lienzo.size(); }
-  if (id === 'ritmo'){ Quiz.render(); }
-  if (id === 'chispa'){ Spark.render(); Spark.reunion(); }
-  if (id === 'boveda'){ Vault.ui(); }
+  if (id === 'diario'){ Deck.render(); Deck.stats(); Quiz.render(); }
+  if (id === 'ritmo'){ Vocab.render(); Lienzo.size(); }
+  if (id === 'chispa'){ Guante.tick(); Guante.render(); Mando.nota(); Spark.render(); Spark.reunion(); Vault.ui(); }
   if (id === 'santuario'){ Settings.stats(); }
-  if (id === 'vivo'){ Live.resizeMarea(); }
+  if (id === 'vivo'){ Live.resizeMarea(); Ruta.ui(); }
+  if (id === 'chispa' || id === 'vivo' || id === 'santuario') Meridiano.ui();
   Idle.reset();
 }
 $$('.nav-btn').forEach(b => b.addEventListener('click', () => go(b.dataset.go)));
@@ -2581,6 +2843,9 @@ $('#backFromGear').addEventListener('click', () => go('diario'));
 
 /* Salida rápida */
 function quickExit(){
+  /* El mando se corta ANTES que nada y de forma explícita: dependía de que el
+     canal avisara al cerrarse, y una salida rápida no puede depender de nada. */
+  if (typeof Mando !== 'undefined' && Mando.rol) Mando.fin('');
   Live.hardStop(true);
   Haptics.stopAll();
   $('#neutral').classList.add('on');
@@ -2601,6 +2866,19 @@ $('#replayTour').addEventListener('click', () => { go('diario'); setTimeout(() =
 $('#revRun').addEventListener('click', () => Revision.run());
 $('#relaySave').addEventListener('click', () => Relay.save());
 $('#relayTest').addEventListener('click', async () => { if (Relay.save()) await Relay.test(); });
+
+$('#meridSel').addEventListener('change', e => {
+  const v = e.target.value;
+  $('#meridOtra').style.display = v === '__otra' ? 'block' : 'none';
+  if (v === '__otra'){ $('#meridOtra').focus(); return; }
+  if (Meridiano.setManual(v)) toast(v ? 'Meridiano fijado' : 'Se aprenderá al enlazarse');
+});
+$('#meridOtra').addEventListener('change', e => {
+  const v = e.target.value.trim();
+  if (!v) return;
+  if (Meridiano.setManual(v)) toast('Meridiano fijado · ' + esc(v));
+  else toast('No reconozco esa zona. Se escribe así: <b>Europe/Athens</b>.');
+});
 $('#shareAppBtn').addEventListener('click', async () => {
   const url = Invite.base();
   let discreet = true;
@@ -2636,10 +2914,9 @@ $('#pausaBack').addEventListener('click', () => {
   let flipSince = 0;
   addEventListener('deviceorientation', e => {
     if (!State.settings.flipExit || !unlocked) return;
-    /* Boca abajo sobre el pecho es la postura QUE PIDEN La Silla y El Latido.
-       Mientras uno de los dos lee, voltear no es una huida: es el gesto. */
-    if ((typeof LaSilla !== 'undefined' && LaSilla.activa) ||
-        (typeof LatidoPecho !== 'undefined' && LatidoPecho.activo)) { flipSince = 0; return; }
+    /* El Latido y La Silla se leen con la pantalla hacia ti (nunca boca abajo),
+       lejos del umbral de volteo. Por eso el gesto de salida sigue vivo aun
+       durante una lectura: si de verdad volteas boca abajo, es una huida. */
     if ($('#neutral').classList.contains('on') || $('#umbral').classList.contains('on')) return;
     const down = e.beta != null && Math.abs(e.beta) > 150;
     if (down){
@@ -2656,9 +2933,16 @@ document.addEventListener('visibilitychange', () => {
     if (Live.active && Net.sealed) Net.send({ t:'away', on:true });   // avisar antes de velar
     if (State.settings.killBg){ Live.hardStop(true); }
     else if (State.settings.veilBg){ Live.veil(true); document.body.classList.add('blackout'); }
+    /* Haptics.stopAll() no bastaba: el latido del Mando volvía a encender el
+       motor 120 ms después. Se pausa de verdad, y el otro lado se entera. */
+    if (typeof Mando !== 'undefined' && Mando.rol){
+      if (State.settings.killBg) Mando.fin('');
+      else Mando.pausa(true);
+    }
     Haptics.stopAll();
   } else {
     document.body.classList.remove('blackout');
+    if (typeof Mando !== 'undefined' && Mando.rol) Mando.pausa(false);
     Live.veil(false);
     if (State.settings.discreet) document.title = 'Notas';
     Live.keepAwake(Live.active);
@@ -2879,6 +3163,129 @@ const SPARK_PRESETS = [
   'Cuenta las horas. Yo las estoy contando.',
   'Hoy te toca a ti decidir todo.'
 ];
+
+/* ── EL GUANTE ────────────────────────────────────────────────
+   lib = cuánta libertad necesita el reto, y la declara QUIEN LO RECIBE:
+     0 · se puede cumplir con gente delante y sin que se note nada
+     1 · hace falta poder moverse un minuto (salir, cerrar una puerta)
+     2 · hace falta estar solo
+   temp = 1 tibio · 2 caliente · 3 al rojo.
+   fam  = de qué va el reto: envío, objetos, ropa, reloj, aguante, a dúo, palabra.
+   Todos son ACCIONES con prueba: se hacen y se mandan. Ninguno pide contar algo
+   en lugar de hacerlo.
+   Ningún reto de aquí depende de que un tercero vea, oiga o participe:
+   el riesgo es que te descubran el deseo, nunca el cuerpo. Esa distinción
+   es la que hace que esto se pueda jugar un martes a las once de la mañana. */
+const RETOS = [
+  /* ═══ lib 0 · con gente delante, sin que se note nada ═══ */
+  {lib:0,temp:1,fam:'envio',   t:'Foto de tu mano metida entre los muslos, ahora, donde estés.'},
+  {lib:0,temp:1,fam:'envio',   t:'Mándame una foto de tu boca abierta. Solo eso.'},
+  {lib:0,temp:1,fam:'envio',   t:'Foto de tu cuello y de hasta donde te llegue el escote, sin arreglarte nada.'},
+  {lib:0,temp:1,fam:'palabra', t:'Mándame un audio de cinco segundos con mi nombre, dicho como lo dices cuando estás encima.'},
+  {lib:0,temp:1,fam:'palabra', t:'Escríbeme de qué color es lo que llevas debajo y qué tan poco es.'},
+  {lib:0,temp:1,fam:'ropa',    t:'Desabróchate todo lo que puedas sin que se note y mándame la foto de lo que quedó abierto.'},
+  {lib:0,temp:1,fam:'objeto',  t:'Pásate hielo por dentro del muslo, lo más arriba que puedas, y mándame el audio de lo que se te escape.'},
+  {lib:0,temp:1,fam:'reloj',   t:'Ponte una alarma dentro de una hora. Cuando suene, pares lo que pares, te metes la mano bajo la ropa diez segundos y me mandas una palabra.'},
+  {lib:0,temp:1,fam:'duo',     t:'A las seis en punto, los dos a la vez: la mano donde más falta hace, diez segundos, y los dos mandamos foto.'},
+
+  {lib:0,temp:2,fam:'envio',   t:'Mándame una foto de tu pecho por encima de la ropa, sin arreglarte nada.'},
+  {lib:0,temp:2,fam:'envio',   t:'Audio de diez segundos, en voz muy baja, diciéndome lo que me harías. Que se te note que no puedes hablar fuerte.'},
+  {lib:0,temp:2,fam:'envio',   t:'Foto de tu mano dentro de tu propio bolsillo. Y me cuentas qué está haciendo ahí.'},
+  {lib:0,temp:2,fam:'ropa',    t:'Métete la mano bajo la ropa un segundo, donde estés, y mándame una sola palabra.'},
+  {lib:0,temp:2,fam:'objeto',  t:'Apoya el teléfono contra tu piel, donde yo no pueda verlo, y déjalo ahí diez minutos. Cuando lo saques, me lo dices.'},
+  {lib:0,temp:2,fam:'reloj',   t:'La próxima hora, cada quince minutos me mandas una foto de algo tuyo. Cada una un poco más abajo que la anterior.'},
+  {lib:0,temp:2,fam:'aguante', t:'Aprieta los muslos y cuenta hasta veinte donde estés. Al llegar a veinte me mandas un audio.'},
+  {lib:0,temp:2,fam:'duo',     t:'Ahora, los dos a la vez: una mano en el cuello, diez segundos, y los dos mandamos una foto.'},
+
+  {lib:0,temp:3,fam:'aguante', t:'A partir de ahora no terminas sin mi permiso. Ni hoy, ni esta noche: me lo pides por audio.'},
+  {lib:0,temp:3,fam:'aguante', t:'Cada vez que hoy alguien diga tu nombre, aprietas los muslos. Al final del día me dices cuántas veces fue.'},
+  {lib:0,temp:3,fam:'envio',   t:'Mándame una foto de una parte de ti que solo yo conozca de memoria. Tú eliges cuál; la siguiente la elijo yo.'},
+  {lib:0,temp:3,fam:'envio',   t:'Grábame diez segundos de tu respiración. Solo eso. Que se oiga.'},
+  {lib:0,temp:3,fam:'palabra', t:'Escríbeme sin corregir nada lo que quieres que te haga esta noche. En presente, como si estuviera pasando.'},
+  {lib:0,temp:3,fam:'reloj',   t:'Ponte una alarma cada hora hasta la noche. En cada una me mandas un audio de treinta segundos.'},
+
+  /* ═══ lib 1 · un minuto a solas, una puerta con llave ═══ */
+  {lib:1,temp:1,fam:'envio',   t:'Vete al baño, cierra con llave y mándame una foto con la ropa a medio bajar.'},
+  {lib:1,temp:1,fam:'envio',   t:'Cierra una puerta y mándame lo que ves en el espejo con la mano dentro de la ropa.'},
+  {lib:1,temp:1,fam:'palabra', t:'Grábame un audio en voz baja diciéndome lo que te harías ahora mismo si nadie te oyera.'},
+  {lib:1,temp:1,fam:'reloj',   t:'Sal a caminar dos cuadras apretando los muslos a cada paso. Al volver me mandas un audio de cómo llegaste.'},
+  {lib:1,temp:1,fam:'ropa',    t:'Quítate los zapatos y una prenda más, mándame la foto de las dos y sigue así el resto del rato.'},
+  {lib:1,temp:1,fam:'duo',     t:'Los dos al mismo tiempo: la mano por dentro de la ropa, diez segundos, y una foto de la cara al terminar.'},
+
+  {lib:1,temp:2,fam:'envio',   t:'Baño, llave, y me mandas una foto sin la prenda de arriba.'},
+  {lib:1,temp:2,fam:'envio',   t:'Un video de diez segundos subiéndote la ropa despacio, hasta donde te animes hoy.'},
+  {lib:1,temp:2,fam:'envio',   t:'Mándame una foto tuya que no puedas enseñarle a nadie más. Tú decides hasta dónde.'},
+  {lib:1,temp:2,fam:'ropa',    t:'Quítate la ropa interior donde puedas, guárdatela en el bolsillo y sigue con tu día. Mándame la foto de lo que te quitaste.'},
+  {lib:1,temp:2,fam:'ropa',    t:'Cámbiate: ponte lo que te pondrías si supieras que te voy a ver esta noche. Mándamelo puesto.'},
+  {lib:1,temp:2,fam:'objeto',  t:'Ponte el juguete antes de volver a salir, y no lo enciendas hasta que yo te escriba.'},
+  {lib:1,temp:2,fam:'objeto',  t:'Mójate la nuca y las muñecas con agua fría, mándame la foto y aguanta así hasta que se seque.'},
+  {lib:1,temp:2,fam:'aguante', t:'Cierra con llave, métete la mano bajo la ropa un minuto entero y mándame un audio al terminar.'},
+  {lib:1,temp:2,fam:'duo',     t:'Los dos, a la misma hora, cinco minutos encerrados donde podamos. Y los dos mandamos algo.'},
+
+  {lib:1,temp:3,fam:'aguante', t:'Baño, llave, cinco minutos: te tocas hasta el borde y paras. Me escribes "estoy" y esperas.'},
+  {lib:1,temp:3,fam:'envio',   t:'Mándame un video de treinta segundos tocándote por encima de la ropa, sin cortar.'},
+  {lib:1,temp:3,fam:'envio',   t:'Mándame una foto sin nada encima, de la clavícula para abajo, donde sea que puedas.'},
+  {lib:1,temp:3,fam:'envio',   t:'Foto de tu mano donde no debería estar, ahora, donde estés. Con llave si hace falta.'},
+  {lib:1,temp:3,fam:'envio',   t:'Grábame treinta segundos de tu voz que no puedas volver a escuchar en público.'},
+  {lib:1,temp:3,fam:'objeto',  t:'Ponte el juguete y déjatelo puesto hasta que llegues a casa. Cada vez que lo enciendas, me avisas.'},
+  {lib:1,temp:3,fam:'reloj',   t:'Búscate cinco minutos solo, donde sea, haz exactamente lo que te pedí la última vez y mándame la prueba.'},
+  {lib:1,temp:3,fam:'ropa',    t:'Salte de donde estés, quítate una prenda más en el baño y vuelve. Mándame la foto de lo que falta.'},
+
+  /* ═══ lib 2 · puerta cerrada ═══ */
+  {lib:2,temp:1,fam:'envio',   t:'Mándame una foto de cómo estás ahora, en ropa interior y sin arreglarte nada.'},
+  {lib:2,temp:1,fam:'envio',   t:'Foto tuya en la cama, con la mano donde yo la pondría si estuviera.'},
+  {lib:2,temp:1,fam:'palabra', t:'Un audio de treinta segundos contándome con detalle qué me hiciste en el sueño.'},
+  {lib:2,temp:1,fam:'objeto',  t:'Ponte la canción que sabes cuál es, escúchala entera tocándote por encima de la ropa y mándame un audio al final.'},
+  {lib:2,temp:1,fam:'reloj',   t:'Apaga todo, quédate a oscuras dos minutos con la mano encima y mándame lo primero que se te apareció.'},
+  {lib:2,temp:1,fam:'duo',     t:'Los dos a la vez, contando hasta tres: la misma caricia donde yo diga, y una foto de dónde la pusimos.'},
+
+  {lib:2,temp:2,fam:'ropa',    t:'Quítate una prenda y mándame la foto de cuál.'},
+  {lib:2,temp:2,fam:'ropa',    t:'Ponte mi remera, o lo que huela a mí, y nada más. Mándame la prueba.'},
+  {lib:2,temp:2,fam:'envio',   t:'Desvístete despacio grabando, y para justo antes del final.'},
+  {lib:2,temp:2,fam:'envio',   t:'Un video corto de tus manos encima de tu propia piel. Sin ropa de por medio.'},
+  {lib:2,temp:2,fam:'envio',   t:'Báilame una canción entera a la cámara, sin cortarte.'},
+  {lib:2,temp:2,fam:'objeto',  t:'Métete a la ducha con el teléfono cerca y mándame un audio desde dentro del agua.'},
+  {lib:2,temp:2,fam:'objeto',  t:'Aceite, crema, lo que tengas: recórrete entero con las manos y mándame treinta segundos de video.'},
+  {lib:2,temp:2,fam:'objeto',  t:'Véndate los ojos, ponte a mi disposición y mándame una foto así. Después esperas instrucciones.'},
+  {lib:2,temp:2,fam:'objeto',  t:'Ponte frente al espejo, dime en voz alta mirándote lo que quieres que te haga, y grábalo.'},
+  {lib:2,temp:2,fam:'aguante', t:'Empieza y para a los dos minutos. Mándame la foto de cómo te quedaste.'},
+  {lib:2,temp:2,fam:'duo',     t:'Los dos ahora, cada uno en su cama, la misma orden: la mano donde el otro diga, y los dos mandamos audio.'},
+
+  {lib:2,temp:3,fam:'envio',   t:'Mándame una foto sin nada encima. El encuadre lo elijo yo: avísame cuando estés y te digo qué quiero ver.'},
+  {lib:2,temp:3,fam:'envio',   t:'Video de treinta segundos, sin ropa, moviéndote despacio. Sin cara, si prefieres.'},
+  {lib:2,temp:3,fam:'envio',   t:'Mándame un video tocándote. Empiezas vestido y terminas como quieras.'},
+  {lib:2,temp:3,fam:'envio',   t:'Foto de lo que solo yo veo. Tú eliges la luz.'},
+  {lib:2,temp:3,fam:'envio',   t:'Grábate llegando. Solo el sonido, sin imagen.'},
+  {lib:2,temp:3,fam:'envio',   t:'Termina para mí y mándame el video entero, sin cortes.'},
+  {lib:2,temp:3,fam:'envio',   t:'Espejo, luz encendida y la cámara: enséñame lo que ves tú, no lo que veo yo.'},
+  {lib:2,temp:3,fam:'objeto',  t:'Ponte el juguete y no lo apagues hasta que yo lo diga. Me vas escribiendo.'},
+  {lib:2,temp:3,fam:'objeto',  t:'Mándame un video de treinta segundos con el juguete puesto, sin decir una palabra.'},
+  {lib:2,temp:3,fam:'objeto',  t:'Átate las muñecas con lo primero que encuentres, mándame la foto y quédate así hasta que yo diga.'},
+  {lib:2,temp:3,fam:'aguante', t:'Cuenta hasta cien despacio, tocándote por encima de la ropa. Al llegar a cien paras y me mandas un audio.'},
+  {lib:2,temp:3,fam:'aguante', t:'Tres veces al borde, y en las tres paras. A la tercera me mandas la foto de cómo te dejé.'},
+  {lib:2,temp:3,fam:'aguante', t:'Ponte a cuatro dedos de terminar, mándame un audio de tres segundos y espera mi mensaje. Puede tardar.'},
+  {lib:2,temp:3,fam:'reloj',   t:'Haz exactamente lo que te pedí la última vez, grabándolo, y esta vez no pares antes.'},
+  {lib:2,temp:3,fam:'reloj',   t:'Ni una prenda, ni una luz, ni una excusa: grábate cinco minutos, ahora, y mándamelo entero.'},
+  {lib:2,temp:3,fam:'duo',     t:'Los dos ahora, a la vez, con la cámara abierta. El que termine primero debe una.'},
+  {lib:2,temp:3,fam:'duo',     t:'Cada uno graba lo suyo, sin ver lo del otro, y los dos lo mandamos al mismo tiempo.'},
+  {lib:0,temp:3,fam:'objeto',  t:'Apoya el teléfono donde nadie vea y entrégame el mando cinco minutos, ahí donde estés.'},
+  {lib:1,temp:2,fam:'objeto',  t:'Apóyate el teléfono donde te dije, entrégame el mando cinco minutos y aguanta sin moverte.'},
+  {lib:2,temp:2,fam:'objeto',  t:'Apoya el teléfono contra ti, dame el mando diez minutos y no lo muevas de ahí.'},
+  {lib:2,temp:3,fam:'objeto',  t:'El mando es mío veinte minutos: te lo apoyas donde yo diga, subes el techo al máximo y no lo cortas hasta que yo lo diga.'},
+  {lib:2,temp:3,fam:'duo',     t:'Los dos con el teléfono apoyado y el mando cruzado: cada uno maneja al otro, y el primero que pida basta debe una.'}
+];
+
+const G_FAM = { envio:'Envío', objeto:'Objetos', ropa:'Ropa', reloj:'Reloj',
+                aguante:'Aguante', duo:'A dúo', palabra:'Palabra' };
+
+const G_CTX = {
+  libre:   { n:'Libre',            lvl:2, mio:'Estoy solo y puedo todo.',            suyo:'Está solo. Puede todo.' },
+  gente:   { n:'Con gente cerca',  lvl:1, mio:'No estoy solo, pero puedo moverme.',  suyo:'No está solo, pero puede moverse.' },
+  trabajo: { n:'Trabajando',       lvl:0, mio:'Poca libertad. Nada que se vea.',     suyo:'Poca libertad. Nada que se vea.' },
+  cerrado: { n:'Hoy no',           lvl:-1, mio:'La puerta está cerrada. Hoy no llega nada.', suyo:'Cerró la puerta. Hoy no.' }
+};
+const G_TEMP = { 1:{n:'Tibio', k:'t1'}, 2:{n:'Caliente', k:'t2'}, 3:{n:'Al rojo', k:'t3'} };
+const G_MAX_DIA = 6;          // techo por lado: esto es un juego, no una insistencia
 
 const DEFAULT_VOCAB = [
   {id:'v1', name:'pensándote',    pattern:[60,80,60]},
@@ -3212,7 +3619,7 @@ $('#addVocab').addEventListener('click', () => Vocab.creator());
   let lx=0, ly=0, lz=0, n=0, cd=0;
   if (!window.DeviceMotionEvent) return;
   addEventListener('devicemotion', e => {
-    if (!unlocked || currentScreen !== 'toque') return;
+    if (!unlocked || currentScreen !== 'ritmo') return;
     const a = e.accelerationIncludingGravity;
     if (!a || a.x == null) return;
     const d = Math.abs(a.x-lx) + Math.abs(a.y-ly) + Math.abs(a.z-lz);
@@ -3665,6 +4072,168 @@ const ElCuerpo = (() => {
     get postura(){ return postNom(vivo(suyo) ? suyo : mio); }
   };
 })();
+
+/* ═══════════════════════ EL ALIENTO SONORO ═══════════════════════
+   Un tono grave, vivo, que NO es música: es el cuerpo hecho sonido.
+   Se apoya en los mismos datos que El Cuerpo ya mira —respiración,
+   excitación, latido, resonancia— y los vuelve señal.
+
+     · respira: el filtro se abre al inhalar, se cierra al exhalar,
+       en fase con la silueta (misma cuenta que usa el dibujo).
+     · sube: al trepar la excitación, el tono se abre y engorda —más
+       brillo, la quinta más presente.
+     · late: cada latido real deja un golpe de sub, más sentido que oído.
+     · resonancia: cuando los dos pulsos se encuentran de verdad,
+       entra un armónico alto, dorado. No se puede fingir ni apurar.
+
+   Decisiones de diseño:
+   · Cero dependencias: Web Audio nativo, colgado del audioCtx que ya
+     existe y que el toque de pantalla ya desbloquea (iOS incluido).
+   · NUNCA suspende audioCtx: es compartido con el pulso de respaldo del
+     iPhone. Solo baja su propia ganancia a cero y, si se apaga el
+     interruptor, desarma su propio grafo. El contexto queda sano.
+   · Desacoplado de El Cuerpo: lo lee por sus getters públicos
+     (datos, resonando, hayAlgunoVivo). El Cuerpo no sabe que existe.
+   · Detrás de un interruptor, apagado por defecto. Off es off: sin el
+     interruptor no crea ni un nodo. Con auriculares se siente de verdad;
+     por el parlante del teléfono, un grave apenas insinuado.
+   ═══════════════════════════════════════════════════════════════ */
+const Aliento = (() => {
+  const ROOT = 110;       // A2 — la voz grave
+  const FIFTH = 164.81;   // E3 — la quinta
+  const SHIMMER = 329.63; // E4 — el brillo de la resonancia
+  const SUB = 55;         // A1 — el golpe del latido
+
+  let g = null;   // nodos persistentes { master, filtro, v1, v2, v3, mix1, mix2, mix3 }
+  let raf = 0;
+  let construido = false;
+
+  // estado suavizado (evita zipper: los targets se persiguen de a poco)
+  let mMaster = 0, mCut = 240, mG2 = 0.22, mG3 = 0, mNivel = 0, mRes = 0;
+  let fase = 0, ultLatido = 0;
+
+  function ctxVivo(){
+    try{
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();   // best-effort; el gesto del toggle ya desbloqueó
+      return audioCtx.state !== 'closed';
+    }catch(_){ return false; }
+  }
+
+  function construir(){
+    if (construido) return true;
+    if (!ctxVivo()) return false;
+    try{
+      const t = audioCtx.currentTime;
+      const master = audioCtx.createGain(); master.gain.setValueAtTime(0.0001, t);
+      const filtro = audioCtx.createBiquadFilter(); filtro.type = 'lowpass'; filtro.frequency.setValueAtTime(mCut, t); filtro.Q.setValueAtTime(0.8, t);
+      const v1 = audioCtx.createOscillator(); v1.type = 'sine';     v1.frequency.setValueAtTime(ROOT, t);
+      const v2 = audioCtx.createOscillator(); v2.type = 'triangle'; v2.frequency.setValueAtTime(FIFTH, t);
+      const v3 = audioCtx.createOscillator(); v3.type = 'sine';     v3.frequency.setValueAtTime(SHIMMER, t);
+      const mix1 = audioCtx.createGain(); mix1.gain.setValueAtTime(0.9, t);
+      const mix2 = audioCtx.createGain(); mix2.gain.setValueAtTime(mG2, t);
+      const mix3 = audioCtx.createGain(); mix3.gain.setValueAtTime(0.0001, t);
+      v1.connect(mix1); v2.connect(mix2); v3.connect(mix3);
+      mix1.connect(filtro); mix2.connect(filtro); mix3.connect(filtro);
+      filtro.connect(master); master.connect(audioCtx.destination);
+      v1.start(t); v2.start(t); v3.start(t);
+      g = { master, filtro, v1, v2, v3, mix1, mix2, mix3 };
+      construido = true;
+      return true;
+    }catch(_){ return false; }
+  }
+
+  function desarmar(){
+    if (!construido) return;
+    try{
+      const t = audioCtx ? audioCtx.currentTime : 0;
+      if (g.master) g.master.gain.setValueAtTime(0.0001, t);
+      ['v1','v2','v3'].forEach(k => { try{ g[k].stop(t + 0.02); }catch(_){} });
+      Object.values(g).forEach(n => { try{ n.disconnect(); }catch(_){} });
+    }catch(_){}
+    g = null; construido = false;
+    mMaster = 0; mG3 = 0; mRes = 0;
+  }
+
+  // golpe de sub por cada latido real — nodos de un solo uso, se van solos
+  function latir(){
+    if (!ctxVivo() || !g) return;
+    try{
+      const t = audioCtx.currentTime;
+      const o = audioCtx.createOscillator(), e = audioCtx.createGain();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(SUB * 1.6, t);
+      o.frequency.exponentialRampToValueAtTime(SUB, t + 0.12);   // un thump que cae
+      e.gain.setValueAtTime(0.0001, t);
+      e.gain.exponentialRampToValueAtTime(0.16 + mNivel * 0.10, t + 0.014);
+      e.gain.exponentialRampToValueAtTime(0.0001, t + 0.16);
+      o.connect(e); e.connect(g.master);   // directo al master: el sub no pasa por el filtro
+      o.start(t); o.stop(t + 0.2);
+    }catch(_){}
+  }
+
+  const aprox = (v, obj, k) => v + (obj - v) * k;
+
+  function tick(){
+    raf = requestAnimationFrame(tick);
+
+    const on = (typeof State !== 'undefined' && State.settings && State.settings.bodySound);
+    const vivo = on && (typeof ElCuerpo !== 'undefined' && ElCuerpo.hayAlgunoVivo);
+
+    // apagado por completo: desarmar y no gastar nada
+    if (!on){ if (construido) desarmar(); return; }
+    if (!construido && vivo){ if (!construir()) return; }
+    if (!construido) return;   // encendido pero aún sin cuerpo: nada que sonar todavía
+
+    const d = ElCuerpo.datos || {};
+    const t = audioCtx.currentTime;
+
+    // respiración: fase propia guiada por rpm real (misma cuenta que la silueta)
+    if (vivo && d.rpm > 0){
+      fase += (Math.PI * 2) * (d.rpm / 60) / 60;
+      if (d.fase === 'inhalando' && Math.sin(fase) < 0) fase = Math.PI * 0.25;
+      if (d.fase === 'exhalando' && Math.sin(fase) > 0) fase = Math.PI * 1.25;
+    }
+    const aliento = (vivo && d.rpm > 0) ? (Math.sin(fase) * 0.5 + 0.5) : 0.3;
+
+    // suavizados
+    mNivel = aprox(mNivel, vivo ? Math.max(0, Math.min(100, d.nivel || 0)) / 100 : 0, 0.03);
+    mRes   = aprox(mRes,   (vivo && ElCuerpo.resonando) ? 1 : 0, 0.02);
+
+    // objetivos
+    const objMaster = vivo ? (0.055 + mNivel * 0.06 + aliento * 0.014) : 0;
+    const objCut    = 240 + mNivel * 1060 + aliento * 180;      // se abre al inhalar y al subir
+    const objG2     = 0.20 + mNivel * 0.30;                     // la quinta engorda con la excitación
+    const objG3     = mRes * 0.16;                              // el brillo dorado de la resonancia
+
+    mMaster = aprox(mMaster, objMaster, 0.05);
+    mCut    = aprox(mCut,    objCut,    0.06);
+    mG2     = aprox(mG2,     objG2,     0.05);
+    mG3     = aprox(mG3,     objG3,     0.04);
+
+    try{
+      g.master.gain.setValueAtTime(Math.max(0.0001, mMaster), t);
+      g.filtro.frequency.setValueAtTime(mCut, t);
+      g.mix2.gain.setValueAtTime(mG2, t);
+      g.mix3.gain.setValueAtTime(Math.max(0.0001, mG3), t);
+      // en resonancia la quinta afina hacia el intervalo puro
+      g.v2.detune.setValueAtTime(mRes * -4, t);
+    }catch(_){}
+
+    // latido real → golpe de sub
+    if (vivo && d.tLatido && d.tLatido !== ultLatido){ ultLatido = d.tLatido; latir(); }
+  }
+
+  function start(){ if (!raf) raf = requestAnimationFrame(tick); }
+
+  return {
+    start,
+    // para los tests / apagar a mano
+    get activo(){ return construido && mMaster > 0.001; },
+    _desarmar: desarmar
+  };
+})();
+Aliento.start();
 
 
 /* El Lienzo ahora es El Cuerpo: se mira, no se dibuja. */
@@ -4331,9 +4900,9 @@ const Quiz = {
 $('#nextQ').addEventListener('click', () => Quiz.next());
 $('#qVault').addEventListener('click', () => {
   const q = QUESTIONS[Quiz.i % QUESTIONS.length];
-  if (!Vault.key){ toast('Abre la Bóveda primero'); go('boveda'); return; }
+  if (!Vault.key){ toast('Abre la Bóveda primero'); go('chispa'); return; }
   $('#vaultInput').value = q.q + '\n\n';
-  go('boveda');
+  go('chispa');
   setTimeout(() => $('#vaultInput').focus(), 300);
 });
 
@@ -4378,7 +4947,10 @@ const ICE = {
     { urls:'stun:stun.l.google.com:19302' },
     { urls:'stun:stun1.l.google.com:19302' },
     ...MIS_RELEVOS,
-    /* último recurso gratis (puede estar caído): */
+    /* Último recurso. Advertencia honesta: el proyecto openrelay gratuito lleva
+       tiempo sin servicio fiable — quedan por si alguna vez vuelven, pero NO
+       cuentes con ellos. Entre dos países hace falta un relevo propio; La Ruta,
+       en En Vivo, lo dice sin adornos antes de que empiece la noche. */
     { urls:'turn:openrelay.metered.ca:443',                username:'openrelayproject', credential:'openrelayproject' },
     { urls:'turn:openrelay.metered.ca:443?transport=tcp',  username:'openrelayproject', credential:'openrelayproject' }
   ],
@@ -4386,7 +4958,12 @@ const ICE = {
 };
 const CAN_E2EE = !!(window.RTCRtpSender && RTCRtpSender.prototype && RTCRtpSender.prototype.createEncodedStreams);
 const CFG = { e2ee:false, lowdata:false, stats:false, signal:'server' };
-const QUEUEABLE = ['swipe','swipeBulk','spark','sparkBulk'];
+/* Lo que se pierde si se cae la red un segundo no es lo mismo que lo que se
+   puede reintentar: recoger un guante, decir que hoy no o cumplirlo son actos,
+   no estados. Se guardan y se entregan tarde. El estado del día también, porque
+   llegar tarde es mejor que no llegar: sin él, el otro juega con la baraja más
+   prudente. Los trozos de foto NO entran: se reintentan enteros o no se manda. */
+const QUEUEABLE = ['swipe','swipeBulk','spark','sparkBulk','gK','gN','gD','gEst'];
 
 function fpOf(sdp){
   const m = /a=fingerprint:sha-256\s+([0-9A-Fa-f:]+)/.exec(sdp || '');
@@ -4538,6 +5115,7 @@ const Net = {
          último valor quedaba congelado y la marea seguía subiendo contra un
          número de alguien que ya no estaba. */
       Live.remoteMarea(0);
+      if (typeof Mando !== 'undefined' && Mando.rol) Mando.fin('Se cortó el enlace');
       Live.badge();
     };
     dc.onmessage = e => {
@@ -4580,7 +5158,7 @@ const Net = {
   handshake(){
     if (!this.key || !this.dc || this.dc.readyState !== 'open' || this.helloSent) return;
     this.helloSent = true;
-    this.send({ t:'hello', v:4, e2ee: !!(CFG.e2ee && CAN_E2EE) });
+    this.send({ t:'hello', v:5, e2ee: !!(CFG.e2ee && CAN_E2EE), tz:Meridiano.myTz(), off:Meridiano.myOff() });
     this.flush();
     const q = this.rawQ.slice(); this.rawQ = [];
     q.forEach(d => { this.inChain = this.inChain.then(() => this.decode(d)).catch(() => {}); });
@@ -4598,8 +5176,12 @@ const Net = {
     this.sealed = true;
     clearTimeout(this.sealT);
     this.e2eeActive = !!(CFG.e2ee && CAN_E2EE && peer && peer.e2ee);
+    Meridiano.learn(peer);
     Live.onSealed();
     Spark.flushOutbox();
+    Guante.flushSalida();
+    Guante.anunciar();
+    Mando.nota();
     Deck.flushSwipes();
     buzz([20,50,20]);
   },
@@ -4922,6 +5504,16 @@ function handle(m){
     case 'script':     Live.scriptIn(m.text); break;
     case 'spark':      Spark.receive(m.s); break;
     case 'sparkBulk':  (m.items||[]).forEach(s => Spark.receive(s)); break;
+    case 'gEst':       Guante.suEstado(m.v); break;
+    case 'gT':         Guante.recibir(m.g); break;
+    case 'gBulk':      (m.items||[]).forEach(x => Guante.recibir(x)); break;
+    case 'gK':         Guante.recogido(m.id); break;
+    case 'gN':         Guante.rechazado(m.id); break;
+    case 'gD':         Guante.cumplido(m.id, m.p); break;
+    case 'gF': case 'gFc': Guante.rxFoto(m); break;
+    case 'mdAsk': case 'mdOk': case 'mdNo': case 'mdV':
+    case 'mdP':   case 'mdT':  case 'mdStop': case 'mdEnd': case 'mdPz':
+                       Mando.recv(m); break;
     case 'sceneReq':   Live.sceneAsk(m.id); break;
     case 'sceneOk':    Live.sceneApply(m.id, true); break;
     case 'sceneNo':    toast('Prefiere seguir como están'); break;
@@ -4935,6 +5527,201 @@ function handle(m){
     case 'body_event': handleBodyEvent(m.d); break;
   }
 }
+
+/* ═══════════════════════ EL MERIDIANO ═══════════════════════
+   Dos personas en dos países no comparten "hoy" ni "esta noche".
+   Sensia lo daba por sentado: "esta noche" se calculaba a las 22:00
+   DE QUIEN ENVÍA y viajaba como instante absoluto. Con siete horas de
+   diferencia, una chispa reservada "para esta noche" se abría a las
+   cinco de la madrugada del otro lado, dormido, y un guante que vencía
+   "esta noche" moría antes de que amaneciera allá.
+   El Meridiano arregla eso y hace algo más importante: pone el reloj
+   del otro a la vista. Nada aquí se manda a ningún servidor — la zona
+   viaja dentro del túnel cifrado, en el mismo saludo que el sello.
+   ═══════════════════════════════════════════════════════════════ */
+const Meridiano = {
+  DIAS: ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'],
+
+  myTz(){
+    try{ return Intl.DateTimeFormat().resolvedOptions().timeZone || ''; }catch(_){ return ''; }
+  },
+  myOff(){ return -new Date().getTimezoneOffset(); },   // minutos al este de UTC
+
+  /* Offset real de una zona EN UN INSTANTE dado: así el horario de verano
+     no descuadra nada. Sin librerías: se le pregunta al propio navegador. */
+  offsetOfTz(tz, date){
+    try{
+      const p = {};
+      new Intl.DateTimeFormat('en-US', { timeZone:tz, hour12:false,
+        year:'numeric', month:'2-digit', day:'2-digit',
+        hour:'2-digit', minute:'2-digit', second:'2-digit' })
+        .formatToParts(date).forEach(x => { p[x.type] = x.value; });
+      let h = +p.hour; if (h === 24) h = 0;
+      const asUTC = Date.UTC(+p.year, +p.month - 1, +p.day, h, +p.minute, +p.second);
+      return Math.round((asUTC - date.getTime()) / 60000);
+    }catch(_){ return null; }
+  },
+  validTz(tz){ return !!tz && this.offsetOfTz(tz, new Date()) !== null; },
+
+  learn(peer){
+    if (!peer) return;
+    const s = State.settings;
+    if (s.peerTzManual) return;                 // lo puso a mano: manda su decisión
+    let cambio = false;
+    if (peer.tz && this.validTz(peer.tz) && peer.tz !== s.peerTz){ s.peerTz = peer.tz; cambio = true; }
+    if (typeof peer.off === 'number' && peer.off !== s.peerOff){ s.peerOff = peer.off; cambio = true; }
+    if (cambio || !s.peerOffAt){ s.peerOffAt = Date.now(); persist(); }
+    this.ui();
+  },
+  setManual(tz){
+    const s = State.settings;
+    if (!tz){ s.peerTzManual = false; }
+    else {
+      if (!this.validTz(tz)) return false;
+      s.peerTz = tz; s.peerOff = this.offsetOfTz(tz, new Date()); s.peerTzManual = true; s.peerOffAt = Date.now();
+    }
+    persist(); this.ui(); return true;
+  },
+
+  known(){ const s = State.settings; return !!(s.peerTz || typeof s.peerOff === 'number'); },
+  /* Offset del otro lado en un instante. Con zona IANA es exacto; con
+     solo un número es el que nos dijeron la última vez. */
+  off(date){
+    const s = State.settings;
+    if (s.peerTz){ const o = this.offsetOfTz(s.peerTz, date || new Date()); if (o !== null) return o; }
+    return (typeof s.peerOff === 'number') ? s.peerOff : this.myOff();
+  },
+  diffMin(){ return this.off(new Date()) - this.myOff(); },
+
+  /* Su reloj de pared en un instante dado. */
+  theirClock(ts){
+    const d = new Date(typeof ts === 'number' ? ts : Date.now());
+    const w = new Date(d.getTime() + this.off(d) * 60000);
+    return { h:w.getUTCHours(), m:w.getUTCMinutes(), dow:w.getUTCDay(),
+             dia:w.getUTCDate(), mes:w.getUTCMonth() + 1 };
+  },
+  theirHHMM(ts){
+    const c = this.theirClock(ts);
+    return String(c.h).padStart(2,'0') + ':' + String(c.m).padStart(2,'0');
+  },
+  /* Su fecha de calendario, no la mía. Sirve para saber si SU día ya cambió. */
+  theirDayKey(ts){
+    const d = new Date(typeof ts === 'number' ? ts : Date.now());
+    const w = new Date(d.getTime() + this.off(d) * 60000);
+    return w.getUTCFullYear() + '-' + String(w.getUTCMonth() + 1).padStart(2,'0')
+         + '-' + String(w.getUTCDate()).padStart(2,'0');
+  },
+  /* Franja humana, no solo un número. */
+  franja(ts){
+    const h = this.theirClock(ts).h;
+    if (h < 6)  return { k:'duerme',  t:'de madrugada' };
+    if (h < 12) return { k:'mañana',  t:'de mañana' };
+    if (h < 19) return { k:'tarde',   t:'de tarde' };
+    if (h < 23) return { k:'noche',   t:'de noche' };
+    return { k:'duerme', t:'muy tarde' };
+  },
+  esMadrugada(ts){ const h = this.theirClock(ts).h; return h < 7; },
+
+  /* El instante real de la PRÓXIMA H:M en el reloj DE ELLA/ÉL.
+     Con corrección de horario de verano si el salto cae en el medio. */
+  nextTheirLocal(H, M, minAheadMs){
+    const now = Date.now();
+    const off = this.off(new Date(now));
+    const w = new Date(now + off * 60000);
+    let ts = Date.UTC(w.getUTCFullYear(), w.getUTCMonth(), w.getUTCDate(), H, M || 0, 0) - off * 60000;
+    if (ts < now + (minAheadMs || 900000)){
+      ts += 86400000;
+      const off2 = this.off(new Date(ts));
+      if (off2 !== off) ts += (off - off2) * 60000;
+    }
+    return ts;
+  },
+
+  /* Cómo se lee ese instante de los dos lados. Para no mentirle a nadie. */
+  ambos(ts){
+    const aca = new Date(ts).toLocaleTimeString('es', { hour:'2-digit', minute:'2-digit', hour12:false });
+    if (!this.known() || this.diffMin() === 0) return aca;
+    return this.theirHHMM(ts) + ' allá · ' + aca + ' aquí';
+  },
+
+  texto(){
+    /* Mismo huso: no hay nada que traducir y la tira sería ruido. */
+    if (!this.known() || this.diffMin() === 0) return '';
+    const c = this.theirClock(), f = this.franja();
+    const dm = this.diffMin();
+    const sg = dm > 0 ? '+' : '−';
+    const ah = Math.floor(Math.abs(dm) / 60), am = Math.abs(dm) % 60;
+    const dif = dm === 0 ? 'misma hora'
+      : sg + ah + (am ? ' h ' + am + ' min' : ' h');
+    return '<b>' + String(c.h).padStart(2,'0') + ':' + String(c.m).padStart(2,'0') + '</b> allá · '
+         + this.DIAS[c.dow] + ' ' + f.t + ' · ' + dif;
+  },
+
+  /* Nadie quiere ser el que despierta a las cuatro de la mañana sin saberlo.
+     No prohíbe nada: informa y deja decidir. Si no sé la hora de allá, o si
+     lo que se manda llega más tarde, pasa de largo sin molestar. */
+  siDuerme(ts, que, ok){
+    const t = typeof ts === 'number' ? ts : Date.now();
+    if (!this.known() || !this.esMadrugada(t) || t > Date.now() + 3600000) return ok();
+    const c = this.theirClock(t);
+    openSheet(
+      '<h3>Allá son las ' + String(c.h).padStart(2,'0') + ':' + String(c.m).padStart(2,'0') + '</h3>' +
+      '<p class="muted" style="margin:0 0 14px">' + esc(que || 'Esto') +
+      ' le va a llegar de madrugada. Puede que esté durmiendo.</p>' +
+      '<p class="muted">Si es a propósito, adelante. Si no, guardarlo para su mañana suele ser mejor regalo.</p>' +
+      '<div class="row fld-gap" style="margin-top:16px">' +
+      '<button class="btn ghost sm" id="mdWait" style="flex:1">Mejor espero</button>' +
+      '<button class="btn primary sm" id="mdGo" style="flex:1">Igual</button></div>');
+    const w = $('#mdWait'), g = $('#mdGo');
+    if (w) w.addEventListener('click', closeSheet);
+    if (g) g.addEventListener('click', () => { closeSheet(); ok(); });
+  },
+
+  ui(){
+    const html = this.texto();
+    ['#meridChispa', '#meridVivo'].forEach(sel => {
+      const el = $(sel); if (!el) return;
+      if (!html){
+        el.style.display = 'none';
+      } else {
+        el.style.display = 'flex';
+        el.className = 'merid ' + this.franja().k;
+        el.innerHTML = '<span class="merid-dot"></span><span>' + html + '</span>';
+      }
+    });
+    const s = $('#meridState');
+    if (s){
+      const t = this.texto();
+      s.innerHTML = this.known()
+        ? (State.settings.peerTzManual ? 'Puesta a mano: ' : 'Aprendida al enlazarse: ')
+          + '<b>' + esc(State.settings.peerTz || (this.off() / 60) + ' h UTC') + '</b> · '
+          + (t || 'mismo huso que el tuyo — no hay nada que traducir')
+        : 'Todavía no la sé. Se aprende sola en el primer túnel, o elígela aquí para que <b>La Chispa</b> y <b>El Guante</b> acierten desde hoy.';
+    }
+    const sel = $('#meridSel'), otra = $('#meridOtra');
+    if (sel && document.activeElement !== sel && document.activeElement !== otra){
+      const tz = State.settings.peerTzManual ? (State.settings.peerTz || '') : '';
+      const hay = Array.prototype.some.call(sel.options, o => o.value === tz);
+      sel.value = tz ? (hay ? tz : '__otra') : '';
+      if (otra){
+        otra.style.display = (tz && !hay) ? 'block' : 'none';
+        if (tz && !hay) otra.value = tz;
+      }
+    }
+    this.etiquetas();
+  },
+
+  /* Las fichas de tiempo dejan de mentir: "esta noche" dice de quién. */
+  etiquetas(){
+    const sp = document.querySelector('#sparkWhen [data-when="tonight"]');
+    if (sp) sp.innerHTML = this.known() && this.diffMin() !== 0
+      ? 'Esta noche <small style="opacity:.7">· la suya</small>' : 'Esta noche';
+    const gw = document.querySelector('#gWindow [data-w="tonight"]');
+    if (gw) gw.innerHTML = this.known() && this.diffMin() !== 0
+      ? 'Esta noche <small style="opacity:.7">· la suya</small>' : 'Esta noche';
+  }
+};
+setInterval(() => { if (unlocked && Meridiano.known()) Meridiano.ui(); }, 30000);
 
 /* ───────────────────────── 13 · EN VIVO ───────────────────────── */
 /* El botón de entrar tiene tres vidas: quieto, esperando (y cancelable) y ocupado. */
@@ -5157,6 +5944,7 @@ const Live = {
 
   /* --- palabra segura --- */
   safeword(fromPeer){
+    if (typeof Mando !== 'undefined' && Mando.rol) Mando.fin('');
     // 1) El aviso arranca primero. Es asíncrono: no demora nada de lo de abajo.
     const told = fromPeer ? null : Net.sendNow({ t:'safeword' });
     // 2) El corte local pasa YA, pase lo que pase con el aviso. Nada lo condiciona.
@@ -5595,13 +6383,35 @@ const Live = {
     this._st = setTimeout(() => { $('#scriptStatus').textContent = 'sincronizado'; }, 1400);
   },
 
+  /* Un enlace entre continentes no es una videollamada de la misma ciudad:
+     el ida y vuelta pasa de 200 ms y casi siempre va por relevo. Con el perfil
+     de siempre, el video se congela y el audio se parte justo cuando importa.
+     Se baja el techo una sola vez, se avisa por qué, y se respeta la decisión
+     del usuario si ya eligió Ahorro de datos. */
+  async largaDistancia(pair, relevo, enviando){
+    if (this._haul || CFG.lowdata || !enviando) return;
+    const rtt = typeof pair.currentRoundTripTime === 'number' ? pair.currentRoundTripTime : 0;
+    if (!relevo && rtt < 0.22) return;
+    this._haul = true;
+    try{
+      if (!(Net.tcV && Net.tcV.sender)) return;
+      const p = Net.tcV.sender.getParameters();
+      if (!p.encodings || !p.encodings.length) p.encodings = [{}];
+      p.encodings[0].maxBitrate = 700000;
+      p.encodings[0].maxFramerate = 24;
+      p.degradationPreference = 'balanced';
+      await Net.tcV.sender.setParameters(p);
+      toast('Están lejos de verdad. Bajé el peso del video para que no se corte.');
+    }catch(_){}
+  },
+
   /* --- estadísticas de red --- */
   stats(on){
     clearInterval(this.statT);
     const pill = $('#vfStat');
     pill.classList.toggle('on', !!on);
     if (!on){ pill.style.color = ''; return; }
-    this._lastF = 0; this._lastB = 0; this._lastS = 0;
+    this._lastF = 0; this._lastB = 0; this._lastS = 0; this._haul = false;
     this.statT = setInterval(async () => {
       if (!Net.pc) return;
       try{
@@ -5627,6 +6437,7 @@ const Live = {
         if (pair){
           const a = cand[pair.localCandidateId], b = cand[pair.remoteCandidateId];
           conn = (a === 'relay' || b === 'relay') ? 'relevo' : 'directa';
+          this.largaDistancia(pair, conn === 'relevo', tx);
         }
         const badge = $('#camBadge'); badge.style.display = 'block';
         pill.textContent = conn + ' · ↑' + up + ' ↓' + dn + ' kb/s';
@@ -5914,9 +6725,9 @@ const Maestro = (() => {
 
   /* ══════════ las noches: pools + constructores (nunca dos iguales) ══════════ */
   const OPEN = ['Bajen la voz. Apaguen el resto del mundo.', 'Suelten el día. Acá no hace falta.', 'Respiren hondo una vez. Lleguen.'];
-  const Q_TENDER = ['¿Qué extrañaste de mí esta semana? Una sola cosa.', '¿Qué fue lo primero que pensaste hoy al despertar?', 'Decime algo que todavía no te animaste a decirme.', '¿Qué parte de mí te gustaría tener cerca ahora mismo?'];
-  const Q_PLAY = ['Confesá: ¿en qué momento de hoy pensaste en algo que no debías?', 'Una verdad y una mentira. A ver si adivino.', '¿Qué te da vergüenza que yo sepa… y que igual querés que sepa?', 'Terminá la frase: "lo que me muero por hacerte es…"'];
-  const Q_REPAIR = ['¿Qué necesitás de mí en este momento? Decilo sin filtro.', '¿Qué te dolió? Te escucho, sin defenderme.', 'Decime una cosa buena que sigue intacta entre los dos.', '¿Qué extrañaste de nosotros cuando estábamos lejos hoy?'];
+  const Q_TENDER = ['¿Qué extrañaste de mí esta semana? Una sola cosa.', '¿Qué fue lo primero que pensaste hoy al despertar?', 'Dime algo que todavía no te animas a decirme.', '¿Qué parte de mí te gustaría tener cerca ahora mismo?'];
+  const Q_PLAY = ['Confiesa: ¿en qué momento de hoy pensaste en algo que no debías?', 'Una verdad y una mentira. A ver si adivino.', '¿Qué te da vergüenza que yo sepa… y que igual quieres que sepa?', 'Termina la frase: "lo que me muero por hacerte es…"'];
+  const Q_REPAIR = ['¿Qué necesitas de mí en este momento? Dilo sin filtro.', '¿Qué te dolió? Te escucho, sin defenderme.', 'Dime una cosa buena que sigue intacta entre los dos.', '¿Qué extrañaste de nosotros cuando estábamos lejos hoy?'];
   const RET = ['Quédense ahí. No suban todavía.', 'Esperen. Lo bueno es la espera.', 'Todavía no. Sostengan lo que hay.', 'Quietos un momento. Déjenlo crecer.'];
   const NEAR = ['Ahora sí. Un poco más cerca.', 'Dejen que suba. Solo si los dos quieren.', 'Otro paso. Juntos.', 'Más cerca. Sin apuro.'];
   const PEAK = ['Todo lo que construyeron, ahora.', 'Suéltenlo. Al mismo tiempo.', 'No se contengan más.'];
@@ -6180,6 +6991,9 @@ const Spark = {
       return v ? new Date(v).getTime() : Date.now();
     }
     if (w === 'tonight'){
+      /* "Esta noche" es la SUYA. Se reserva a las 22:00 de su reloj, no del mío:
+         con siete horas de por medio, mi noche es su madrugada. */
+      if (Meridiano.known()) return Meridiano.nextTheirLocal(22, 0, 60000);
       const d = new Date(); d.setHours(22, 0, 0, 0);
       if (d.getTime() < Date.now()) d.setDate(d.getDate() + 1);
       return d.getTime();
@@ -6190,7 +7004,11 @@ const Spark = {
   send(){
     const text = $('#sparkText').value.trim();
     if (!text){ toast('Escribe algo primero'); return; }
-    const s = { id:uid(), text:text, revealAt:this.computeAt(), ts:Date.now() };
+    const at = this.computeAt();
+    Meridiano.siDuerme(at, 'Esta chispa', () => this.enviar(text, at));
+  },
+  enviar(text, at){
+    const s = { id:uid(), text:text, revealAt:at, ts:Date.now() };
     State.sparks.unshift(Object.assign({}, s, { from:'me', seen:true }));
     State.stats.sparks++;
     if (Net.sealed) Net.send({ t:'spark', s:s });
@@ -6227,7 +7045,8 @@ const Spark = {
     }
   },
   badge(){
-    const n = State.sparks.filter(s => s.from === 'them' && !s.seen && s.revealAt <= Date.now()).length;
+    const n = State.sparks.filter(s => s.from === 'them' && !s.seen && s.revealAt <= Date.now()).length
+            + (typeof Guante !== 'undefined' ? Guante.pendientes() : 0);
     const b = $('#badgeChispa');
     b.textContent = String(n);
     b.classList.toggle('on', n > 0);
@@ -6335,6 +7154,919 @@ $('#reunionSave').addEventListener('click', () => {
 });
 $('#reunionClear').addEventListener('click', () => { State.reunion = null; persist(); Spark.reunion(); });
 setInterval(() => { if (unlocked) Spark.tickReveal(); }, 20000);
+
+/* ───────────────────────── 15b · EL GUANTE ─────────────────────────
+   El juego del día. Tres reglas lo sostienen, y son las tres la misma:
+   quien corre el riesgo es quien pone el límite.
+     1 · El contexto lo declara quien recibe, no quien tira. El mazo se
+         filtra solo: si dice que está trabajando, no existe un reto que
+         lo exponga. La seguridad no es un aviso, es lo que hay en la baraja.
+     2 · "Hoy no" es gratis, mudo y sin motivo. No rompe rachas —no hay
+         rachas— ni deja deuda. Solo lo que se aceptó puede deberse.
+     3 · La escalada se gana. Al rojo no se desbloquea con un botón: se
+         desbloquea porque alguien ya cumplió algo caliente hoy.        */
+const Guante = {
+  temp: 1, fam: 'todas', ventana: 3600000, reto: null, custom: false, rx: {}, fotoPend: null,
+
+  hoy(){
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  },
+
+  /* El día se cierra solo: lo aceptado y no cumplido baja a la cuenta,
+     lo que nunca se recogió se apaga sin dejar rastro ni reproche. */
+  rollover(){
+    const g = State.guante;
+    if (g.dia === this.hoy()) return false;
+    g.vivos.forEach(x => {
+      if (x.estado === 'recogido') this.aDeuda(x);
+    });
+    g.vivos = [];
+    g.dia = this.hoy();
+    g.tiradosHoy = 0;
+    g.hechosHoy = { t1:0, t2:0, t3:0 };
+    this.caducaSuyo();              // su declaración muere en SU medianoche, no en la mía
+    return true;
+  },
+
+  /* Antes la declaración del otro lado se borraba en MI medianoche. Con siete
+     horas de por medio eso pasaba a media tarde suya, con su declaración
+     perfectamente vigente: el mazo caía solo a la baraja más prudente y nadie
+     entendía por qué. Ahora caduca cuando cambia SU fecha, no la mía. */
+  caducaSuyo(){
+    const g = State.guante;
+    if (!g.suyo) return false;
+    if (!g.suyoAt){ g.suyo = ''; return true; }
+    if (Meridiano.theirDayKey(g.suyoAt) === Meridiano.theirDayKey()) return false;
+    g.suyo = ''; g.suyoAt = 0;
+    return true;
+  },
+
+  aDeuda(x){
+    const g = State.guante;
+    if (g.deudas.some(d => d.id === x.id)) return;
+    /* Debe quien lo aceptó. Si me lo tiraron a mí (from 'them') y lo recogí,
+       el que quedó debiendo soy yo. */
+    g.deudas.unshift({ id:x.id, t:x.t, temp:x.temp, ts:Date.now(), deudor: x.from === 'them' ? 'me' : 'them' });
+    g.deudas = g.deudas.slice(0, 20);
+  },
+
+  /* Sin declaración del otro lado se juega con la baraja más prudente. */
+  peerLvl(){
+    const s = State.guante.suyo;
+    return s && G_CTX[s] ? G_CTX[s].lvl : 0;
+  },
+  gate(temp){
+    const h = State.guante.hechosHoy;
+    if (temp === 2) return (h.t1 + h.t2 + h.t3) >= 1;
+    if (temp === 3) return (h.t2 + h.t3) >= 1;
+    return true;
+  },
+
+  pool(fam){
+    const lvl = Math.max(0, this.peerLvl());
+    const f = fam || this.fam;
+    return RETOS.filter(r => r.temp === this.temp && r.lib <= lvl &&
+                             (f === 'todas' || r.fam === f));
+  },
+  sortear(){
+    const p = this.pool();
+    if (!p.length){ this.reto = null; return; }
+    let n = p[Math.floor(Math.random() * p.length)];
+    if (p.length > 1 && this.reto && n.t === this.reto.t) n = p[(p.indexOf(n) + 1) % p.length];
+    this.reto = n;
+  },
+
+  venceAt(){
+    if (this.ventana === 'tonight'){
+      /* Quien tiene hasta "esta noche" es quien RECIBE. Su noche, su reloj:
+         si no, el plazo vence antes de que amanezca del otro lado. */
+      if (Meridiano.known()) return Meridiano.nextTheirLocal(23, 0, 900000);
+      const d = new Date(); d.setHours(23, 0, 0, 0);
+      if (d.getTime() < Date.now() + 900000) d.setDate(d.getDate() + 1);
+      return d.getTime();
+    }
+    return Date.now() + (parseInt(this.ventana, 10) || 3600000);
+  },
+
+  hojaSilencio(){
+    const sc = State.guante.silencio;
+    openSheet(
+      '<h3>Horas de silencio</h3>' +
+      '<p class="muted" style="margin:0 0 14px;font-size:13.5px;color:var(--ash)">Dentro de esta franja los guantes siguen llegando, pero no suenan ni vibran. Los ves cuando abras.</p>' +
+      '<div class="row" style="align-items:center;gap:10px">' +
+        '<label class="fld" style="flex:1;margin:0">Desde<input type="time" id="gsD" value="' + sc.d + '"></label>' +
+        '<label class="fld" style="flex:1;margin:0">Hasta<input type="time" id="gsH" value="' + sc.h + '"></label>' +
+      '</div>' +
+      '<button class="btn ' + (sc.on ? 'quiet' : 'primary') + ' fld-gap" id="gsGo" style="width:100%;margin-top:16px">' +
+        (sc.on ? 'Quitar el silencio' : 'Encenderlo') + '</button>');
+    $('#gsGo').addEventListener('click', () => {
+      sc.d = $('#gsD').value || '23:00';
+      sc.h = $('#gsH').value || '08:00';
+      sc.on = !sc.on;
+      persist(); closeSheet(); buzz(16);
+      toast(sc.on ? 'En silencio de ' + sc.d + ' a ' + sc.h : 'Silencio quitado');
+      this.render();
+    });
+  },
+
+  /* ---------- mi estado ---------- */
+  declarar(v){
+    if (!G_CTX[v]) return;
+    State.guante.mio = v;
+    persist();
+    if (Net.sealed) Net.send({ t:'gEst', v:v });
+    buzz(14);
+    this.render();
+  },
+  anunciar(){ if (Net.sealed) Net.send({ t:'gEst', v:State.guante.mio }); },
+  suEstado(v){
+    if (!G_CTX[v]) return;
+    const antes = State.guante.suyo;
+    State.guante.suyo = v; State.guante.suyoAt = Date.now();
+    persist();
+    if (antes !== v && v === 'libre') toast('✦ Quedó libre');
+    if (antes !== v && v === 'cerrado') toast('Cerró la puerta por hoy');
+    this.render();
+  },
+
+  /* ---------- tirar ---------- */
+  tirar(){
+    const g = State.guante;
+    if (g.suyo === 'cerrado'){ toast('Hoy cerró la puerta. Mañana.'); buzz(20); return; }
+    if (g.tiradosHoy >= G_MAX_DIA){ toast('Ya van ' + G_MAX_DIA + ' hoy. Deja que respire.'); return; }
+    if (!this.gate(this.temp)){ toast('Todavía no. Primero que alguien cumpla algo.'); return; }
+    const txt = this.custom ? $('#gCustom').value.trim() : (this.reto ? this.reto.t : '');
+    if (!txt){ toast('No hay reto que tirar'); return; }
+    Meridiano.siDuerme(Date.now(), 'Este guante', () => this.lanzar(txt));
+  },
+  lanzar(txt){
+    const g = State.guante;
+    const gt = { id:uid(), temp:this.temp, t:txt.slice(0, 300), ts:Date.now(), vence:this.venceAt() };
+    g.vivos.unshift(Object.assign({}, gt, { from:'me', estado:'esperando' }));
+    g.tiradosHoy++;
+    State.stats.guantes = (State.stats.guantes || 0) + 1;
+    if (Net.sealed) Net.send({ t:'gT', g:gt });
+    else g.salida.push(gt);
+    persist();
+    $('#gCustom').value = '';
+    buzz([20, 50, 20]);
+    toast(Net.sealed ? 'Guante tirado' : 'Guardado. Sale solo en cuanto se enlacen.');
+    this.sortear();
+    this.render();
+  },
+  flushSalida(){
+    const g = State.guante;
+    if (!g.salida.length) return;
+    Net.send({ t:'gBulk', items:g.salida.slice() });
+    g.salida = [];
+    persist();
+    toast('Le llegaron los guantes que estaban esperando');
+  },
+
+  /* ---------- recibir ---------- */
+  recibir(gt){
+    if (!gt || !gt.id) return;
+    const g = State.guante;
+    if (g.vivos.some(x => x.id === gt.id) || g.deudas.some(x => x.id === gt.id)) return;
+    if (g.mio === 'cerrado'){                 // la puerta cerrada contesta sola
+      if (Net.sealed) Net.send({ t:'gN', id:gt.id });
+      return;
+    }
+    g.vivos.unshift({ id:gt.id, temp:gt.temp || 1, t:gt.t, ts:gt.ts || Date.now(),
+                      vence:gt.vence || (Date.now() + 3600000), from:'them', estado:'esperando', visto:false });
+    persist();
+    this.aviso(gt);
+    this.render();
+  },
+  /* Un guante puede llegar a las tres de la mañana. Que llegue está bien;
+     que suene, no. En silencio entra igual y espera despierto por la mañana. */
+  enSilencio(){
+    const sc = State.guante.silencio;
+    if (!sc || !sc.on) return false;
+    const d = new Date(), ahora = d.getHours() * 60 + d.getMinutes();
+    const p = t => { const [a, b] = String(t || '0:0').split(':'); return (+a) * 60 + (+b); };
+    const desde = p(sc.d), hasta = p(sc.h);
+    return desde <= hasta ? (ahora >= desde && ahora < hasta)
+                          : (ahora >= desde || ahora < hasta);   // cruza la medianoche
+  },
+  aviso(gt){
+    if (this.enSilencio()) return;
+    buzz([30, 60, 30, 60, 120]);
+    toast('✦ <b>Te tiraron un guante</b> · ' + (G_TEMP[gt.temp] ? G_TEMP[gt.temp].n.toLowerCase() : ''));
+    /* El aviso del sistema no dice nunca qué dice el guante: un teléfono
+       boca arriba sobre una mesa no tiene por qué delatar nada. */
+    if (State.settings.notif && 'Notification' in window && Notification.permission === 'granted'){
+      try{ new Notification('Notas', { body:'Tienes algo pendiente.', silent:false }); }catch(_){}
+    }
+  },
+
+  find(id){ return State.guante.vivos.filter(x => x.id === id)[0]; },
+
+  recoger(id){
+    const x = this.find(id); if (!x || x.estado !== 'esperando') return;
+    x.estado = 'recogido'; x.visto = true;
+    persist();
+    if (Net.sealed) Net.send({ t:'gK', id:id });
+    buzz([25, 40, 25]);
+    this.render();
+  },
+  hoyNo(id){
+    const x = this.find(id); if (!x) return;
+    x.estado = 'no'; x.visto = true;
+    persist();
+    if (Net.sealed) Net.send({ t:'gN', id:id });
+    toast('Listo. No hace falta explicar nada.');
+    this.render();
+  },
+  pedirPrueba(id){
+    const x = this.find(id); if (!x) return;
+    this.fotoPend = null;
+    openSheet(
+      '<h3>Cumplido</h3>' +
+      '<p class="muted" style="margin:0 0 12px;font-size:13.5px;color:var(--ash)">Cuéntaselo, mándale la foto, o no mandes nada. Las tres cosas valen igual.</p>' +
+      '<textarea id="gPruebaTxt" placeholder="cómo fue…" maxlength="400"></textarea>' +
+      '<input type="file" id="gPruebaFile" accept="image/*" style="display:none">' +
+      '<button class="btn ghost sm fld-gap" id="gPruebaFoto" style="width:100%;margin-top:10px">Adjuntar una foto</button>' +
+      '<div id="gPruebaPrev" style="display:none;margin-top:10px">' +
+        '<img id="gPruebaImg" alt="" style="width:100%;border-radius:12px;display:block">' +
+        '<button class="btn quiet sm" id="gPruebaQuita" style="width:100%;margin-top:6px">Quitarla</button>' +
+      '</div>' +
+      '<button class="btn primary fld-gap" id="gPruebaSend" style="width:100%;margin-top:14px">Mandar la prueba</button>' +
+      '<button class="btn quiet sm" id="gPruebaMudo" style="width:100%;margin-top:6px">Sin palabras</button>' +
+      '<p class="foot-note" style="margin-top:12px">La foto va por el mismo canal cifrado y se borra sola al cambiar el día. Si la quieres guardar, mándala a la Bóveda desde el guante.</p>');
+    const f = $('#gPruebaFile');
+    $('#gPruebaFoto').addEventListener('click', () => f.click());
+    f.addEventListener('change', async () => {
+      const file = f.files && f.files[0]; if (!file) return;
+      try{
+        const raw = await new Promise((res, rej) => {
+          const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(file);
+        });
+        let url = await shrink(raw, 1100, 0.7);
+        if (url.length > 420000) url = await shrink(url, 820, 0.6);
+        if (url.length > 620000){ toast('Esa foto pesa demasiado'); return; }
+        this.fotoPend = url;
+        $('#gPruebaImg').src = url;
+        $('#gPruebaPrev').style.display = 'block';
+      }catch(_){ toast('No pude leer la foto'); }
+    });
+    $('#gPruebaQuita').addEventListener('click', () => {
+      this.fotoPend = null; $('#gPruebaPrev').style.display = 'none'; f.value = '';
+    });
+    const done = (txt) => { const foto = this.fotoPend; this.fotoPend = null; closeSheet(); this.cumplir(id, txt, foto); };
+    $('#gPruebaSend').addEventListener('click', () => done($('#gPruebaTxt').value.trim()));
+    $('#gPruebaMudo').addEventListener('click', () => done(''));
+  },
+  async cumplir(id, prueba, foto){
+    const x = this.find(id); if (!x) return;
+    x.estado = 'cumplido'; x.prueba = prueba || '';
+    if (foto) x.foto = foto;
+    State.guante.hechosHoy['t' + x.temp] = (State.guante.hechosHoy['t' + x.temp] || 0) + 1;
+    State.guante.deudas = State.guante.deudas.filter(d => d.id !== id);
+    persist();
+    if (Net.sealed) Net.send({ t:'gD', id:id, p:x.prueba });
+    if (foto) this.enviaFoto(id, foto);
+    buzz([30, 50, 30, 50, 150]);
+    toast('Cumplido');
+    if (Vault.key && prueba){
+      try{ await Vault.add({ text:'Guante — ' + x.t + '\n\n' + prueba }); }catch(_){}
+    }
+    this.render();
+  },
+  noPude(id){
+    const x = this.find(id); if (!x) return;
+    x.estado = 'deuda'; this.aDeuda(x);
+    persist();
+    toast('Queda debiendo. Se cobra después.');
+    this.render();
+  },
+
+  /* La foto viaja partida en trozos por el mismo canal que todo lo demás, así
+     que la cifra la misma llave y la ordena la misma cadena de envío. No hay
+     un segundo camino que auditar: el que hay ya estaba probado.
+     Se manda en base64 sobre texto: cuesta un tercio más que binario, y a
+     cambio no toca ni una línea del canal ni del cifrado. */
+  CHUNK: 8000,
+  MAXCH: 90,
+  enviaFoto(id, url){
+    if (!Net.sealed || !url) return;
+    const n = Math.ceil(url.length / this.CHUNK);
+    if (n > this.MAXCH){ toast('La foto pesa demasiado para el canal'); return; }
+    Net.send({ t:'gF', id:id, n:n });
+    for (let i = 0; i < n; i++)
+      Net.send({ t:'gFc', id:id, i:i, d:url.slice(i * this.CHUNK, (i + 1) * this.CHUNK) });
+  },
+  rxFoto(m){
+    if (m.t === 'gF'){
+      if (!m.n || m.n > this.MAXCH) return;
+      this.rx[m.id] = { n:m.n, parts:new Array(m.n), got:0, ts:Date.now() };
+      return;
+    }
+    const r = this.rx[m.id];
+    if (!r || typeof m.i !== 'number' || m.i < 0 || m.i >= r.n) return;
+    if (r.parts[m.i] !== undefined) return;          // trozo repetido
+    r.parts[m.i] = m.d; r.got++;
+    if (r.got < r.n) return;
+    const url = r.parts.join('');
+    delete this.rx[m.id];
+    if (url.slice(0, 11) !== 'data:image/') return;   // solo imágenes, y se comprueba
+    const x = this.find(m.id);
+    if (!x) return;
+    x.foto = url;
+    persist();
+    if (!this.enSilencio()){ buzz([30, 60, 30]); toast('✦ Llegó la prueba'); }
+    this.render();
+  },
+  async aBoveda(id){
+    const x = this.find(id); if (!x) return;
+    if (!Vault.key){ toast('Abre la Bóveda primero'); go('chispa'); return; }
+    try{
+      await Vault.add({ text:'Guante — ' + x.t + (x.prueba ? '\n\n' + x.prueba : ''), img:x.foto || undefined });
+      toast('Guardado en la Bóveda');
+      buzz(20);
+    }catch(_){ toast('No pude guardarlo'); }
+  },
+
+  /* ---------- lo que llega del otro lado ---------- */
+  recogido(id){
+    const x = this.find(id); if (!x) return;
+    x.estado = 'recogido'; persist();
+    buzz([20, 60, 20]); toast('✦ Recogió el guante');
+    this.render();
+  },
+  rechazado(id){
+    const x = this.find(id); if (!x) return;
+    x.estado = 'no'; persist();
+    toast('Hoy no. Sin deuda y sin explicaciones.');
+    this.render();
+  },
+  cumplido(id, p){
+    const x = this.find(id);
+    /* Puede cumplirse una deuda de otro día: para entonces el guante ya no
+       está en juego, pero la cuenta sí. Se salda igual. */
+    if (!x){
+      const d = State.guante.deudas.filter(y => y.id === id)[0];
+      if (!d) return;
+      State.guante.deudas = State.guante.deudas.filter(y => y.id !== id);
+      State.guante.vivos.unshift({ id:d.id, temp:d.temp, t:d.t, ts:Date.now(), vence:Date.now(),
+                                   from:'me', estado:'cumplido', prueba:p || '' });
+      State.guante.hechosHoy['t' + d.temp] = (State.guante.hechosHoy['t' + d.temp] || 0) + 1;
+      persist();
+      buzz([40, 60, 40, 60, 200]);
+      toast('✦ <b>Saldado</b>' + (p ? ' · te mandó la prueba' : ''));
+      this.render();
+      return;
+    }
+    x.estado = 'cumplido'; x.prueba = p || '';
+    State.guante.hechosHoy['t' + x.temp] = (State.guante.hechosHoy['t' + x.temp] || 0) + 1;
+    State.guante.deudas = State.guante.deudas.filter(d => d.id !== id);
+    persist();
+    buzz([40, 60, 40, 60, 200]);
+    toast(p ? '✦ <b>Cumplido</b> · te mandó la prueba' : '✦ <b>Cumplido</b>');
+    if (State.settings.notif && 'Notification' in window && Notification.permission === 'granted'){
+      try{ new Notification('Notas', { body:'Tienes algo pendiente.' }); }catch(_){}
+    }
+    this.render();
+  },
+
+  /* ---------- deudas ---------- */
+  cobrar(id){
+    const d = State.guante.deudas.filter(x => x.id === id)[0]; if (!d) return;
+    this.custom = true; this.temp = d.temp;
+    $('#gCustom').style.display = 'block';
+    $('#gCustom').value = d.t;
+    State.guante.deudas = State.guante.deudas.filter(x => x.id !== id);
+    persist();
+    toast('Está sobre la mesa. Tíralo cuando quieras.');
+    this.render();
+    $('#gCustom').scrollIntoView({ behavior:'smooth', block:'center' });
+  },
+  saldar(id){
+    const d = State.guante.deudas.filter(x => x.id === id)[0]; if (!d) return;
+    State.guante.vivos.unshift({ id:d.id, temp:d.temp, t:d.t, ts:Date.now(),
+                                 vence:Date.now() + 10800000, from:'them', estado:'recogido', visto:true });
+    State.guante.deudas = State.guante.deudas.filter(x => x.id !== id);
+    persist();
+    this.render();
+    toast('Volvió al juego. Tienes tres horas.');
+  },
+
+  /* ---------- tiempo ---------- */
+  tick(){
+    const g = State.guante;
+    let changed = this.rollover();
+    if (this.caducaSuyo()) changed = true;
+    const now = Date.now();
+    g.vivos.forEach(x => {
+      if (x.vence > now) return;
+      if (x.estado === 'esperando'){ x.estado = 'vencido'; changed = true; }
+      else if (x.estado === 'recogido'){ x.estado = 'deuda'; this.aDeuda(x); changed = true; }
+    });
+    if (changed) persist();
+    if (changed || currentScreen === 'chispa') this.render();
+  },
+
+  pendientes(){
+    return State.guante.vivos.filter(x => x.from === 'them' &&
+      (x.estado === 'esperando' || x.estado === 'recogido')).length;
+  },
+
+  fmt(ms){
+    const d = Math.max(0, ms);
+    const h = Math.floor(d / 3600000), m = Math.floor(d % 3600000 / 60000);
+    if (h > 0) return h + 'h ' + m + 'm';
+    if (m > 0) return m + ' min';
+    return 'menos de un minuto';
+  },
+
+  /* ---------- pintura ---------- */
+  render(){
+    if (!$('#guanteCard')) return;
+    const g = State.guante;
+
+    $$('#gEstado .chip').forEach(b => b.classList.toggle('on', b.dataset.est === g.mio));
+    $('#gEstadoNote').textContent = G_CTX[g.mio] ? G_CTX[g.mio].mio : '';
+    const sb = $('#gSilencio');
+    if (sb) sb.textContent = g.silencio.on
+      ? 'En silencio de ' + g.silencio.d + ' a ' + g.silencio.h
+      : 'Horas de silencio';
+
+    const peer = $('#gPeer');
+    peer.querySelector('.dot').className = 'dot ' + (g.suyo || '');
+    if (g.suyo){
+      $('#gPeerName').textContent = G_CTX[g.suyo].n;
+      $('#gPeerSub').textContent = G_CTX[g.suyo].suyo;
+    } else {
+      $('#gPeerName').textContent = 'Todavía no dijo cómo anda hoy';
+      $('#gPeerSub').textContent = 'Mientras tanto se juega con la baraja más prudente: nada que se vea.';
+    }
+
+    $$('#gTemps .g-temp').forEach(b => {
+      const t = parseInt(b.dataset.temp, 10);
+      const ok = this.gate(t);
+      b.classList.toggle('locked', !ok);
+      b.classList.toggle('on', t === this.temp);
+    });
+    const gn = $('#gGateNote');
+    if (!this.gate(3)){
+      gn.style.display = 'block';
+      gn.textContent = this.gate(2)
+        ? 'Al rojo se abre cuando alguno cumpla algo caliente hoy.'
+        : 'Caliente se abre con el primer guante cumplido del día. Al rojo, más tarde.';
+    } else gn.style.display = 'none';
+
+    /* Las familias sin nada para este momento no se esconden: se apagan.
+       Que se vea que existen y por qué hoy no dan. */
+    const fc = $('#gFams');
+    if (fc && !fc.children.length){
+      const mk = (k, n) => {
+        const b = document.createElement('button');
+        b.className = 'chip sm'; b.dataset.fam = k; b.textContent = n;
+        b.addEventListener('click', () => {
+          if (!this.pool(k).length){ toast('Nada de ahí para este momento'); buzz(20); return; }
+          this.fam = k; this.custom = false;
+          $('#gCustom').style.display = 'none';
+          this.sortear(); buzz(12); this.render();
+        });
+        fc.appendChild(b);
+      };
+      mk('todas', 'Todas');
+      Object.keys(G_FAM).forEach(k => mk(k, G_FAM[k]));
+    }
+    if (!this.pool().length && this.fam !== 'todas') this.fam = 'todas';
+    $$('#gFams .chip').forEach(b => {
+      const vacia = !this.pool(b.dataset.fam).length;
+      b.classList.toggle('on', b.dataset.fam === this.fam && !vacia);
+      b.classList.toggle('void', vacia);
+    });
+
+    if (!this.custom){
+      if (!this.reto || this.pool().indexOf(this.reto) < 0) this.sortear();
+      $('#gDraw').innerHTML = '<p>' + esc(this.reto ? this.reto.t : 'No hay nada en la baraja para este momento.') + '</p>';
+      $('#gDraw').style.display = 'flex';
+    } else {
+      $('#gDraw').style.display = 'none';
+    }
+    $('#gMine').textContent = this.custom ? 'Usar la baraja' : 'Escribirlo yo';
+
+    const cerrado = g.suyo === 'cerrado';
+    const lleno = g.tiradosHoy >= G_MAX_DIA;
+    const vacio = !this.custom && !this.reto;
+    $('#gSend').disabled = cerrado || lleno || vacio;
+    $('#gSendNote').textContent = cerrado
+      ? 'Hoy cerró la puerta. No sale nada.'
+      : (lleno ? 'Techo del día. Mañana se abre otra vez.'
+      : (vacio ? 'No queda nada de esa familia para este momento. Prueba otra, o escríbelo tú.'
+      : (Net.sealed ? '' : 'No están enlazados. El guante espera y sale solo.')));
+
+    $('#gcTirados').textContent = String(g.tiradosHoy);
+    $('#gcCumplidos').textContent = String(g.hechosHoy.t1 + g.hechosHoy.t2 + g.hechosHoy.t3);
+    $('#gcDeudas').textContent = String(g.deudas.length);
+
+    /* --- en juego --- */
+    const list = $('#gList');
+    list.innerHTML = '';
+    /* Lo cerrado sin gloria —un "hoy no", una hora que se pasó— se queda
+       a la vista hora y media y después desaparece solo. Nadie necesita
+       una lista de lo que el otro no quiso. */
+    const vivos = g.vivos.filter(x => {
+      if (x.estado === 'no' || x.estado === 'vencido') return (Date.now() - x.ts) < 5400000;
+      return true;
+    });
+    if (!vivos.length){
+      list.innerHTML = '<div class="empty"><p>Nada en juego.<br>Tira el primero y que le arruine la mañana.</p></div>';
+    } else {
+      const now = Date.now();
+      vivos.slice(0, 12).forEach(x => {
+        const mio = x.from === 'me';
+        const sellado = !mio && x.estado === 'esperando';
+        const total = Math.max(1, x.vence - x.ts);
+        const pct = clamp(Math.round((now - x.ts) / total * 100), 0, 100);
+        const vivo = x.estado === 'esperando' || x.estado === 'recogido';
+        const el = document.createElement('div');
+        el.className = 'g-item' + (mio ? '' : ' them') + (sellado ? ' sealed' : '') +
+                       (vivo ? '' : ' cerrado');
+        let meta = '';
+        if (mio){
+          meta = { esperando:'tuyo · esperando que lo mire', recogido:'lo recogió · está en eso',
+                   cumplido:'cumplido', no:'dijo que hoy no', vencido:'se le pasó la hora',
+                   deuda:'quedó debiendo' }[x.estado] || '';
+        } else {
+          meta = { esperando:'te lo tiró · decide tú', recogido:'lo recogiste · te queda ' + this.fmt(x.vence - now),
+                   cumplido:'cumplido', no:'dijiste que hoy no', vencido:'se te pasó la hora',
+                   deuda:'quedaste debiendo' }[x.estado] || '';
+        }
+        el.innerHTML =
+          '<div class="g-top">' +
+            '<span class="g-ring" style="--p:' + (vivo ? pct : 100) + '"><i>' + (mio ? '↗' : '↘') + '</i></span>' +
+            '<span class="g-tag ' + G_TEMP[x.temp].k + '">' + G_TEMP[x.temp].n + '</span>' +
+            '<span class="g-when">' + (vivo ? this.fmt(x.vence - now) : '—') + '</span>' +
+          '</div>' +
+          '<div class="g-txt">' + esc(sellado ? 'Un guante cerrado. Recógelo para leerlo.' : x.t) + '</div>' +
+          (x.prueba ? '<div class="g-proof">' + esc(x.prueba) + '</div>' : '') +
+          (x.foto ? '<img class="g-foto" src="' + x.foto + '" alt="">' : '') +
+          '<div class="g-meta">' + meta + '</div>' +
+          (x.foto || x.prueba ? '<div class="g-act"><button class="btn quiet sm" data-g-save="' + x.id + '">Guardar en la Bóveda</button></div>' : '') +
+          (!mio && x.estado === 'esperando'
+            ? '<div class="g-act"><button class="btn primary sm" data-g-take="' + x.id + '">Lo recojo</button>' +
+              '<button class="btn quiet sm" data-g-no="' + x.id + '">Hoy no</button></div>' : '') +
+          (!mio && x.estado === 'recogido'
+            ? '<div class="g-act"><button class="btn primary sm" data-g-done="' + x.id + '">Cumplido</button>' +
+              '<button class="btn ghost sm" data-g-fail="' + x.id + '">No pude</button></div>' : '');
+        list.appendChild(el);
+      });
+    }
+    $$('#gList [data-g-take]').forEach(b => b.addEventListener('click', () => this.recoger(b.dataset.gTake)));
+    $$('#gList [data-g-no]').forEach(b => b.addEventListener('click', () => this.hoyNo(b.dataset.gNo)));
+    $$('#gList [data-g-done]').forEach(b => b.addEventListener('click', () => this.pedirPrueba(b.dataset.gDone)));
+    $$('#gList [data-g-fail]').forEach(b => b.addEventListener('click', () => this.noPude(b.dataset.gFail)));
+    $$('#gList [data-g-save]').forEach(b => b.addEventListener('click', () => this.aBoveda(b.dataset.gSave)));
+
+    /* --- la cuenta --- */
+    const dw = $('#gDebtWrap'), db = $('#gDebts');
+    if (!g.deudas.length){ dw.style.display = 'none'; }
+    else {
+      dw.style.display = 'block';
+      db.innerHTML = '';
+      g.deudas.slice(0, 12).forEach(d => {
+        const el = document.createElement('div');
+        el.className = 'g-debt';
+        el.innerHTML =
+          '<div class="c"><b>' + esc(d.t) + '</b>' +
+          '<small>' + (d.deudor === 'me' ? 'lo debes tú' : 'te lo debe') + ' · ' + G_TEMP[d.temp].n.toLowerCase() + '</small></div>' +
+          (d.deudor === 'me'
+            ? '<button class="btn ghost sm" data-g-pay="' + d.id + '" style="flex:0 0 auto">Saldar</button>'
+            : '<button class="btn ghost sm" data-g-charge="' + d.id + '" style="flex:0 0 auto">Cobrar</button>');
+        db.appendChild(el);
+      });
+      $$('#gDebts [data-g-pay]').forEach(b => b.addEventListener('click', () => this.saldar(b.dataset.gPay)));
+      $$('#gDebts [data-g-charge]').forEach(b => b.addEventListener('click', () => this.cobrar(b.dataset.gCharge)));
+    }
+
+    if (typeof Spark !== 'undefined' && Spark.badge) Spark.badge();
+    if (typeof Mando !== 'undefined' && Mando.nota) Mando.nota();
+  }
+};
+
+$$('#gEstado .chip').forEach(b => b.addEventListener('click', () => Guante.declarar(b.dataset.est)));
+$('#gSilencio').addEventListener('click', () => Guante.hojaSilencio());
+$$('#gTemps .g-temp').forEach(b => b.addEventListener('click', () => {
+  const t = parseInt(b.dataset.temp, 10);
+  if (!Guante.gate(t)){ toast('Todavía no. Se gana jugando.'); buzz(20); return; }
+  Guante.temp = t; Guante.sortear(); buzz(12); Guante.render();
+}));
+$('#gShuffle').addEventListener('click', () => { Guante.custom = false; $('#gCustom').style.display = 'none'; Guante.sortear(); buzz(10); Guante.render(); });
+$('#gMine').addEventListener('click', () => {
+  Guante.custom = !Guante.custom;
+  $('#gCustom').style.display = Guante.custom ? 'block' : 'none';
+  if (Guante.custom) $('#gCustom').focus();
+  Guante.render();
+});
+$$('#gWindow .chip').forEach(b => b.addEventListener('click', () => {
+  $$('#gWindow .chip').forEach(x => x.classList.remove('on'));
+  b.classList.add('on');
+  Guante.ventana = b.dataset.w === 'tonight' ? 'tonight' : b.dataset.w;
+  buzz(10);
+}));
+$('#gSend').addEventListener('click', () => Guante.tirar());
+setInterval(() => { if (unlocked) Guante.tick(); }, 30000);
+
+/* ───────────────────────── 15c · EL MANDO ─────────────────────────
+   Uno apoya el teléfono contra el cuerpo; el otro lo maneja desde lejos.
+   La ley es la misma que la de La Marea, y por los mismos motivos:
+
+     · lo que se siente es min(lo que pide, el techo de quien lo lleva)
+     · el techo lo mueve solo quien tiene el teléfono encima, y bajarlo
+       sale al aire SIN acelerador — retirar consentimiento no espera
+     · el mando se entrega por un tiempo y se apaga solo al vencerse
+     · "Basta" corta en el aparato antes de avisar al otro: primero para
+       el motor, después se manda el mensaje. Nunca al revés.          */
+const Mando = {
+  rol: null,            // 'ctrl' lo manejo yo · 'cuerpo' lo llevo puesto
+  hasta: 0, v: 0, techo: 60, pat: 'fijo', pausado: false,
+  tk: null, t0: 0, sendT: 0, sent: -1, wl: null, azar: .6, azarT: 0,
+
+  puede(){
+    if (!Net.sealed){ toast('Hace falta que estén enlazados'); return false; }
+    if (this.rol){ toast('Ya hay un mando en juego'); return false; }
+    /* Una puerta cerrada lo está para todo. Si El Guante no deja pasar nada
+       hoy, el Mando tampoco: era la misma puerta y tenía dos cerraduras. */
+    if (State.guante.suyo === 'cerrado'){ toast('Hoy cerró la puerta. Mañana.'); return false; }
+    if (State.guante.mio === 'cerrado'){ toast('Tienes la puerta cerrada hoy'); return false; }
+    return true;
+  },
+
+  /* Los botones dicen lo que pasa antes de tocarlos: si están apagados, la
+     nota de abajo explica por qué. Igual que el botón de tirar el guante. */
+  nota(){
+    const b1 = $('#mdAskBtn'), b2 = $('#mdGiveBtn'), nt = $('#mdNote');
+    if (!nt) return;
+    const g = State.guante;
+    let motivo = '';
+    if (this.rol) motivo = 'Hay un mando en juego ahora mismo.';
+    else if (!Net.sealed) motivo = 'Hace falta que estén enlazados: esto va en directo.';
+    else if (g.suyo === 'cerrado') motivo = 'Hoy cerró la puerta.';
+    else if (g.mio === 'cerrado') motivo = 'Tienes la puerta cerrada hoy.';
+    const off = !!motivo;
+    if (b1) b1.disabled = off;
+    if (b2) b2.disabled = off;
+    nt.textContent = motivo || (HAS_VIBRATE
+      ? 'Se apaga solo cuando se acaba el tiempo.'
+      : 'Este teléfono no vibra en el navegador: enciende el tono háptico en el Santuario.');
+  },
+
+  /* ---------- abrir el trato ---------- */
+  pedir(){
+    if (!this.puede()) return;
+    Net.send({ t:'mdAsk' });
+    toast('Se lo pedí. A ver si te lo da.');
+    buzz(20);
+  },
+  ofrecer(){
+    if (!this.puede()) return;
+    openSheet(
+      '<h3>Entregar el mando</h3>' +
+      '<p class="muted" style="margin:0 0 14px;font-size:13.5px;color:var(--ash)">Apoya el teléfono donde quieras. Manda tú el techo y el reloj; se apaga solo al terminar, y "Basta" corta antes de avisar a nadie.</p>' +
+      '<label class="fld">Por cuánto</label>' +
+      '<div class="chip-row" id="mdMins"><button class="chip on" data-m="5">5 min</button>' +
+      '<button class="chip" data-m="10">10 min</button><button class="chip" data-m="20">20 min</button>' +
+      '<button class="chip" data-m="30">30 min</button></div>' +
+      '<label class="fld fld-gap">Tu techo</label>' +
+      '<input type="range" class="md-range" id="mdTechoPre" min="0" max="100" value="60">' +
+      '<p class="md-ceil" id="mdTechoPreTxt">60 · nunca vas a sentir más que esto</p>' +
+      '<button class="btn primary fld-gap" id="mdGiveGo" style="width:100%;margin-top:12px">Entregarlo</button>');
+    let min = 5;
+    $$('#mdMins .chip').forEach(b => b.addEventListener('click', () => {
+      $$('#mdMins .chip').forEach(x => x.classList.remove('on'));
+      b.classList.add('on'); min = parseInt(b.dataset.m, 10);
+    }));
+    const r = $('#mdTechoPre');
+    r.addEventListener('input', () => { $('#mdTechoPreTxt').textContent = r.value + ' · nunca vas a sentir más que esto'; });
+    $('#mdGiveGo').addEventListener('click', () => { closeSheet(); this.entregar(min, +r.value); });
+  },
+  /* Me lo piden: decido yo, que soy quien lo va a llevar encima. */
+  meLoPiden(){
+    if (this.rol || State.guante.mio === 'cerrado'){ Net.send({ t:'mdNo' }); return; }
+    buzz([40, 60, 40, 60, 140]);
+    openSheet(
+      '<h3>Te pide el mando</h3>' +
+      '<p class="muted" style="margin:0 0 14px;font-size:13.5px;color:var(--ash)">Si se lo das, apoya el teléfono donde quieras. El techo y el reloj los pones tú.</p>' +
+      '<div class="row"><button class="btn ghost" id="mdDeny" style="flex:1">Ahora no</button>' +
+      '<button class="btn primary" id="mdGrant" style="flex:1">Dárselo</button></div>');
+    $('#mdDeny').addEventListener('click', () => { closeSheet(); Net.send({ t:'mdNo' }); });
+    $('#mdGrant').addEventListener('click', () => { closeSheet(); this.ofrecer(); });
+  },
+
+  /* ---------- el trato ---------- */
+  entregar(min, techo){
+    this.rol = 'cuerpo';
+    this.techo = clamp(techo|0, 0, 100);
+    this.v = 0; this.pat = 'fijo';
+    this.hasta = Date.now() + clamp(min|0, 1, 30) * 60000;
+    Net.send({ t:'mdOk', min:min, techo:this.techo });
+    this.abrir();
+  },
+  meLoDan(min, techo){
+    this.rol = 'ctrl';
+    this.techo = clamp(techo|0, 0, 100);
+    this.v = 0; this.sent = -1; this.pat = 'fijo';
+    this.hasta = Date.now() + clamp(min|0, 1, 30) * 60000;
+    buzz([30, 50, 30, 50, 160]);
+    toast('✦ <b>Te dio el mando</b> · ' + min + ' min');
+    this.abrir();
+  },
+
+  async abrir(){
+    this.t0 = Date.now();
+    $('#mdCtrl').style.display  = this.rol === 'ctrl'   ? 'flex' : 'none';
+    $('#mdBody').style.display  = this.rol === 'cuerpo' ? 'flex' : 'none';
+    $('#mandoStage').classList.add('on');
+    if (this.rol === 'ctrl'){
+      $('#mdRange').value = '0';
+      $$('#mdPats .chip').forEach(x => x.classList.toggle('on', x.dataset.p === 'fijo'));
+      this.pintaTecho();
+    } else {
+      $('#mdTecho').value = String(this.techo);
+      /* En iPhone el navegador no deja vibrar. Se dice antes, no después. */
+      const nota = $('#mdVibNote');
+      if (!HAS_VIBRATE){
+        nota.style.display = 'block';
+        nota.innerHTML = State.settings.audioHaptic
+          ? 'Este teléfono no deja vibrar al navegador. Va a sonar un tono grave en su lugar: sube el volumen y apóyalo contra ti.'
+          : 'Este teléfono no deja vibrar al navegador. Enciende el <b>tono háptico</b> en el Santuario para sentir algo.';
+      } else nota.style.display = 'none';
+      try{ if ('wakeLock' in navigator) this.wl = await navigator.wakeLock.request('screen'); }catch(_){ this.wl = null; }
+    }
+    clearInterval(this.tk);
+    this.tk = setInterval(() => this.latir(), 120);
+  },
+
+  /* Irse de la app no puede dejar el motor solo: se para aquí y se avisa allá,
+     para que quien controla no siga moviendo una palanca que ya no mueve nada. */
+  pausa(on){
+    if (!this.rol) return;
+    this.pausado = !!on;
+    if (this.rol === 'cuerpo'){
+      if (on) Haptics.stopAll();
+      Net.send({ t:'mdPz', on:!!on });
+    }
+    if (this.rol === 'ctrl'){
+      const t = $('#mdCeilTxt');
+      if (t && on) t.textContent = 'Se apartó del teléfono · en pausa';
+      else this.pintaTecho();
+    }
+  },
+
+  /* ---------- el motor ---------- */
+  forma(base){
+    const t = (Date.now() - this.t0) / 1000;
+    switch (this.pat){
+      case 'olas':     return base * (0.55 + 0.45 * Math.sin(t * 2 * Math.PI / 6));
+      case 'latido': {
+        const f = t % 1.25;
+        if (f < 0.18) return base;
+        if (f < 0.30) return base * 0.08;
+        if (f < 0.46) return base * 0.8;
+        return base * 0.10;
+      }
+      case 'escalera': {
+        const c = t % 52;
+        if (c < 45) return base * (c / 45);
+        if (c < 48) return base;
+        return 0;
+      }
+      case 'azar': {
+        if (Date.now() - this.azarT > 900){
+          this.azarT = Date.now();
+          this.azar = clamp(this.azar + (Math.random() - 0.45) * 0.5, 0.15, 1);
+        }
+        return base * this.azar;
+      }
+      default: return base;
+    }
+  },
+  latir(){
+    if (!this.rol) return;
+    const queda = this.hasta - Date.now();
+    if (queda <= 0){ this.fin('Se acabó el tiempo'); return; }
+    const mm = Math.floor(queda / 60000), ss = Math.floor(queda % 60000 / 1000);
+    const reloj = mm + ':' + String(ss).padStart(2, '0');
+    const efectivo = Math.round(this.forma(Math.min(this.v, this.techo)));
+
+    if (this.rol === 'cuerpo'){
+      Haptics.wave(this.pausado ? 0 : efectivo);
+      $('#mdClockB').textContent = reloj;
+      $('#mdValB').textContent = String(efectivo);
+      const o = $('#mdOrbB');
+      o.style.transform = 'scale(' + (1 + efectivo / 320) + ')';
+      o.style.filter = 'brightness(' + (0.55 + efectivo / 130) + ')';
+    } else {
+      $('#mdClockC').textContent = reloj;
+      $('#mdValC').textContent = String(efectivo);
+      const o = $('#mdOrbC');
+      o.style.transform = 'scale(' + (1 + efectivo / 320) + ')';
+      o.style.filter = 'brightness(' + (0.55 + efectivo / 130) + ')';
+    }
+  },
+
+  /* ---------- lo que se manda ---------- */
+  pide(v){
+    this.v = clamp(v|0, 0, 100);
+    const now = Date.now();
+    const bajando = this.sent >= 0 && this.v < this.sent;
+    if (bajando || now - this.sendT > 90){
+      Net.send({ t:'mdV', v:this.v });
+      this.sent = this.v; this.sendT = now;
+      clearTimeout(this._tail);
+    } else {
+      clearTimeout(this._tail);
+      this._tail = setTimeout(() => {
+        if (this.rol !== 'ctrl') return;
+        Net.send({ t:'mdV', v:this.v });
+        this.sent = this.v; this.sendT = Date.now();
+      }, 110);
+    }
+    this.pintaTecho();
+  },
+  patron(p){
+    this.pat = p; this.t0 = Date.now();
+    if (this.rol === 'ctrl') Net.send({ t:'mdP', p:p });
+    buzz(12);
+  },
+  subeTecho(v){
+    this.techo = clamp(v|0, 0, 100);
+    /* Bajar el techo no espera a nada: se aplica aquí y sale ya. */
+    Net.send({ t:'mdT', v:this.techo });
+    $('#mdTechoTxt').textContent = this.techo + ' · nunca vas a sentir más que esto';
+  },
+  pintaTecho(){
+    const m = $('#mdCapMark'); if (m) m.style.left = this.techo + '%';
+    const t = $('#mdCeilTxt'); if (t) t.textContent = 'Su techo está en ' + this.techo +
+      (this.v > this.techo ? ' · le estás pidiendo más de lo que deja' : '');
+  },
+
+  /* ---------- cortar ---------- */
+  basta(){
+    Haptics.stopAll();                 // primero el motor
+    Net.send({ t:'mdStop' });          // después el aviso
+    this.fin('Cortaste');
+  },
+  soltar(){ Net.send({ t:'mdEnd' }); this.fin('Soltaste el mando'); },
+  fin(msg){
+    const eraCuerpo = this.rol === 'cuerpo';
+    const duro = Date.now() - this.t0;
+    clearInterval(this.tk); this.tk = null;
+    clearTimeout(this._tail);
+    Haptics.stopAll();
+    this.rol = null; this.v = 0; this.sent = -1; this.hasta = 0; this.pausado = false;
+    $('#mandoStage').classList.remove('on');
+    this.nota();
+    if (this.wl){ try{ this.wl.release(); }catch(_){} this.wl = null; }
+    if (msg) toast(msg);
+    buzz(24);
+    /* Si esto venía de un guante, no hace falta que nadie lo marque a mano:
+       el reto era entregar el mando y el mando se entregó. */
+    if (eraCuerpo && duro > 30000) this.cierraGuante();
+  },
+  cierraGuante(){
+    if (typeof Guante === 'undefined') return;
+    const x = State.guante.vivos.filter(g =>
+      g.from === 'them' && g.estado === 'recogido' && /mando/i.test(g.t))[0];
+    if (x) setTimeout(() => Guante.pedirPrueba(x.id), 800);
+  },
+
+  /* ---------- lo que llega ---------- */
+  recv(m){
+    switch (m.t){
+      case 'mdAsk':  this.meLoPiden(); break;
+      case 'mdOk':
+        /* Empate: los dos lo entregaron a la vez y nadie quedó al mando. Antes
+           esto dejaba dos escenarios abiertos con el motor en cero hasta que
+           venciera el reloj. Ahora se deshace el trato y se dice por qué. */
+        if (this.rol === 'cuerpo'){ Net.send({ t:'mdEnd' }); this.fin('Se lo entregaron los dos a la vez'); break; }
+        if (!this.rol) this.meLoDan(m.min, m.techo);
+        break;
+      case 'mdNo':   toast('Prefiere quedarse con él'); break;
+      case 'mdV':    if (this.rol === 'cuerpo') this.v = clamp(m.v|0, 0, 100); break;
+      case 'mdP':    if (this.rol === 'cuerpo'){ this.pat = m.p; this.t0 = Date.now(); } break;
+      case 'mdT':    if (this.rol === 'ctrl'){ this.techo = clamp(m.v|0, 0, 100); this.pintaTecho(); } break;
+      case 'mdPz':   if (this.rol === 'ctrl'){ this.pausado = !!m.on; this.pausa(!!m.on); } break;
+      case 'mdStop': if (this.rol) this.fin('Cortó'); break;
+      case 'mdEnd':  if (this.rol) this.fin('Se terminó'); break;
+    }
+  }
+};
+$('#mdAskBtn').addEventListener('click', () => Mando.pedir());
+$('#mdGiveBtn').addEventListener('click', () => Mando.ofrecer());
+$('#mdRange').addEventListener('input', e => Mando.pide(+e.target.value));
+$('#mdTecho').addEventListener('input', e => Mando.subeTecho(+e.target.value));
+$$('#mdPats .chip').forEach(b => b.addEventListener('click', () => {
+  $$('#mdPats .chip').forEach(x => x.classList.remove('on'));
+  b.classList.add('on'); Mando.patron(b.dataset.p);
+}));
+$('#mdStopBtn').addEventListener('click', () => Mando.basta());
+$('#mdDrop').addEventListener('click', () => Mando.soltar());
 
 /* ───────────────────────── 16 · LA BÓVEDA ───────────────────────── */
 async function shrink(dataUrl, max, q){
@@ -6728,10 +8460,12 @@ function renderAll(){
   Deck.render(); Deck.stats();
   Vocab.render();
   Quiz.render();
+  Guante.tick(); Guante.render();
   Spark.render(); Spark.reunion(); Spark.badge();
   Vault.ui();
   Settings.sync(); Settings.stats();
   Relay.ui();
+  Meridiano.ui();
   Live.scenes();
   Live.badge();
   setTimeout(() => Lienzo.size(), 60);
@@ -6768,23 +8502,29 @@ const Onboard = (() => {
       body:'Si los dos dicen que sí a la misma carta, aparece aquí una <b>coincidencia ✦</b>. Eso es lo único que se comparte.<br><br>Arriba tienes el <b>filtro</b>, para buscar por tema o intensidad, y la <b>ruleta</b>, por si prefieren que elija el azar.',
       cta:'Sigue' },
 
-    /* ── EL TOQUE ── */
-    { screen:'toque', target:'#pulseStage', pad:12, chapter:'El Toque',
-      eyebrow:'El Toque · el cuerpo, a la distancia',
+    { screen:'diario', target:'.dice-stage', pad:10, chapter:'El Diario',
+      eyebrow:'El Diario · dados y preguntas',
+      title:'Que decida el azar',
+      body:'Tira los <b>dados</b> —acción, modo y tiempo— y los dos ven lo mismo. Es una propuesta, no una orden.<br><br>Justo debajo están <b>Las preguntas</b>, para conocerse sin prisa.',
+      cta:'Sigue' },
+
+    /* ── EL RITMO ── */
+    { screen:'ritmo', target:'#pulseStage', pad:12, chapter:'El Ritmo',
+      eyebrow:'El Ritmo · el pulso',
       title:'Manda tu pulso',
       body:'Mantén el dedo apretado sobre la brasa. Su teléfono vibra con el ritmo exacto que marques, al instante.<br><br>Si agitas el teléfono, le llega un pulso sorpresa.',
       cta:'Sigue' },
 
-    { screen:'toque', target:'#lienzoWrap', pad:10, chapter:'El Toque',
-      eyebrow:'El Toque · El Cuerpo',
-      title:'Míralo respirar',
-      body:'Aquí no se dibuja: se mira. La silueta muestra lo que los sensores están midiendo de verdad.<br><br>El pecho sube y baja con su respiración. El corazón destella en cada latido real. La figura entera se enciende con su excitación.<br><br>Si los dos se están leyendo, aparecen <b>los dos cuerpos</b>, uno sobre el otro. Y si sus pulsos convergen de verdad, un <b>hilo de oro</b> los une: no se puede fingir ni apurar.<br><br>Y si ella se acuesta, la figura se acuesta. Nadie tuvo que escribirlo.',
+    { screen:'ritmo', target:'.heart-grid', pad:10, chapter:'El Ritmo',
+      eyebrow:'El Ritmo · El Latido',
+      title:'Su corazón, en tu mano',
+      body:'Recuéstate un poco, apoya el teléfono plano sobre el centro del pecho —con la pantalla hacia ti— y sostenlo ahí, quieto, con los codos apoyados.<br><br>El sensor siente el empujón de cada latido —sin cámara, sin tocar la pantalla.<br><br>Cuando encuentre tu corazón, su teléfono empieza a latir contigo. Si los dos pulsos se acercan, salta la <b>Resonancia</b>.',
       cta:'Sigue' },
 
-    { screen:'toque', target:'.heart-grid', pad:10, chapter:'El Toque',
-      eyebrow:'El Toque · El Latido',
-      title:'Su corazón, en tu mano',
-      body:'Es la misma lectura de El Pecho, vista desde aquí: apoya el teléfono <b>boca arriba sobre tu pecho</b>.<br><br>El sensor siente el empujón de cada latido. No hace falta la cámara ni las manos.<br><br>Cuando encuentre tu corazón, su teléfono empieza a latir contigo. Si los dos pulsos se acercan, salta la <b>Resonancia</b>.',
+    { screen:'ritmo', target:'#lienzoWrap', pad:10, chapter:'El Ritmo',
+      eyebrow:'El Ritmo · El Cuerpo',
+      title:'Míralo respirar',
+      body:'Aquí no se dibuja: se mira. La silueta muestra lo que los sensores están midiendo de verdad.<br><br>El pecho sube y baja con su respiración. El corazón destella en cada latido real. La figura entera se enciende con su excitación.<br><br>Si los dos se están leyendo, aparecen <b>los dos cuerpos</b>, uno sobre el otro. Y si sus pulsos convergen de verdad, un <b>hilo de oro</b> los une: no se puede fingir ni apurar.<br><br>Y si ella se acuesta, la figura se acuesta. Nadie tuvo que escribirlo.',
       cta:'Sigue' },
 
     /* ── EL RITMO ── */
@@ -6797,19 +8537,13 @@ const Onboard = (() => {
     { screen:'ritmo', target:'#sillaToggle', pad:14, chapter:'El Ritmo',
       eyebrow:'El Ritmo · El Fuelle',
       title:'Y tu cuerpo, de verdad',
-      body:'Apoya el teléfono <b>boca arriba sobre tu pecho</b> y toca el botón. La pantalla te mira a ti: ves todo mientras te lee.<br><br>De esa única lectura salen <b>tu respiración y tu latido a la vez</b>.<br><br>Y si el guía está andando, aparece <b>el compás</b>: cuánto estás siguiendo de verdad el ritmo que propone.',
+      body:'Recuéstate un poco y apoya el teléfono <b>plano sobre el centro del pecho</b>, con la pantalla hacia ti, y toca el botón. Lo ves todo mientras te lee.<br><br>De esa única lectura salen <b>tu respiración y tu latido a la vez</b>.<br><br>Y si el guía está andando, aparece <b>el compás</b>: cuánto estás siguiendo de verdad el ritmo que propone.',
       cta:'Sigue' },
 
     { screen:'ritmo', target:'#cardTermometro', pad:10, chapter:'El Ritmo',
       eyebrow:'El Ritmo · Termómetro y Eco',
       title:'Tu cuerpo, en un número',
       body:'Junta cuatro señales —corazón, respiración, temblor y movimiento— en un número del 0 al 100. Es una <b>estimación</b> a partir de los sensores: sirve para acompañar, no para calificar a nadie.<br><br><b>Conectar a La Marea</b>: tus deslizadores de deseo no suben más que tu cuerpo.<br><br><b>Eco Físico</b>: sientes en tu mano lo que su cuerpo está haciendo. El deslizador ajusta la fuerza.',
-      cta:'Sigue' },
-
-    { screen:'ritmo', target:'.dice-stage', pad:10, chapter:'El Ritmo',
-      eyebrow:'El Ritmo · dados y preguntas',
-      title:'Que decida el azar',
-      body:'Tira los <b>dados</b> —acción, modo y tiempo— y los dos ven lo mismo. Es una propuesta, no una orden.<br><br>Justo debajo están <b>Las preguntas</b>, para conocerse sin prisa.',
       cta:'Sigue' },
 
     /* ── EN VIVO ── */
@@ -6839,8 +8573,8 @@ const Onboard = (() => {
       cta:'Sigue' },
 
     /* ── LA BÓVEDA ── */
-    { screen:'boveda', target:'#vaultLocked', pad:10, chapter:'La Bóveda',
-      eyebrow:'La Bóveda · bajo llave, solo suya',
+    { screen:'chispa', target:'#vaultLocked', pad:10, chapter:'La Chispa',
+      eyebrow:'La Chispa · La Bóveda',
       title:'Un segundo sello',
       body:'Aquí adentro hay <b>otra llave</b>: una frase que solo ustedes saben. Ni tu gesto de entrada la abre.<br><br>Guarden recuerdos, fotos o promesas, cifrados de verdad.<br><br>Existe también una <b>frase señuelo</b>: abre una bóveda distinta, por si alguien te obliga a abrir.<br><br>Si olvidan la frase, nadie la recupera. Ni nosotros. Esa es la idea.',
       cta:'Casi listo' },
@@ -7296,6 +9030,60 @@ function iceProbe(servers, ms, onlyRelay){
   });
 }
 
+/* ───────────────────────── 21b · LA RUTA ─────────────────────────
+   La Revisión vive en el Santuario y nadie entra ahí antes de una noche.
+   Pero la pregunta que decide si esta noche existe —¿hay camino hasta
+   allá?— se hace justo antes de tocar Entrar. Por eso está acá, con la
+   respuesta honesta: no "el relevo está configurado", sino "este teléfono
+   consiguió de verdad un candidato de tipo relay".
+   ─────────────────────────────────────────────────────────────────── */
+const Ruta = {
+  probando: false,
+  servidores(){
+    let mine = [];
+    try{ mine = Relay.list(); }catch(_){}
+    return mine.concat(ICE.iceServers);
+  },
+  ui(){
+    const st = $('#rutaState'); if (!st) return;
+    if (this.probando) return;
+    let propio = false;
+    try{ propio = Relay.has(); }catch(_){}
+    if (this._ultimo){ st.className = 'ruta-state ' + this._ultimo.k; st.innerHTML = this._ultimo.t; return; }
+    st.className = 'ruta-state' + (propio ? '' : ' warn');
+    st.innerHTML = propio
+      ? 'Tienes relevo propio guardado. Pruébalo para confirmar que está vivo.'
+      : 'Sin relevo propio. Los públicos que quedan por defecto están casi siempre caídos: entre dos países esto <b>no suele abrir</b>. Ponlo en Santuario → Los relevos.';
+  },
+  async run(){
+    const st = $('#rutaState'), btn = $('#rutaRun');
+    if (!st || this.probando) return;
+    this.probando = true; this._ultimo = null;
+    if (btn) btn.disabled = true;
+    st.className = 'ruta-state';
+    st.textContent = 'Probando el camino… (hasta 15 s)';
+    if (!SECURE){
+      this._ultimo = { k:'no', t:'✕ ' + insecureWhy() };
+    } else {
+      const srv = this.servidores();
+      const rel = await iceProbe(srv, 9000, true);
+      if (rel.relay){
+        this._ultimo = { k:'ok', t:'✓ <b>Hay relevo vivo.</b> El túnel abre aunque no exista camino directo — que es lo normal entre dos países.' };
+      } else {
+        const dir = await iceProbe(srv, 6000, false);
+        if (dir.srflx) this._ultimo = { k:'warn', t:'⚠ Solo <b>camino directo</b>. Puede abrir en wifi de casa, pero en datos móviles o con NAT simétrico va a fallar. Pega un relevo propio en <b>Santuario → Los relevos</b>.' };
+        else if (dir.host) this._ultimo = { k:'no', t:'✕ Este teléfono no consigue salir a internet para negociar. Revisa la red o prueba con datos móviles.' };
+        else this._ultimo = { k:'no', t:'✕ No se consiguió ningún camino.' + (rel.err ? ' · ' + esc(rel.err) : '') };
+      }
+    }
+    this.probando = false;
+    if (btn) btn.disabled = false;
+    buzz(this._ultimo.k === 'ok' ? [18,40,18] : [40,60,40]);
+    this.ui();
+  }
+};
+$('#rutaRun').addEventListener('click', () => Ruta.run());
+
 /* ───────────────────────── 22 · LA REVISIÓN ─────────────────────────
    Lo que un primer usuario necesita cuando algo no anda: saber QUÉ falló.
    Cada línea prueba una cosa de verdad —no una bandera del navegador— y
@@ -7634,7 +9422,7 @@ $('#ecoIntensidad').addEventListener('input',function(){EcoFisico.setIntensidad(
     }
   }
   function estado(st){
-    const txt=!st.activo?'Boca arriba sobre el pecho. Quédate quieto unos segundos.'
+    const txt=!st.activo?'Reclínate y apoya el teléfono plano sobre el centro del pecho, con la pantalla hacia ti. Sostenlo quieto, con los codos apoyados, unos segundos.'
       :st.motivoLatido==='movimiento'?'Demasiado movimiento. Quédate quieto.'
       :(st.bpm&&st.rpm)?'Te estoy leyendo entero · latido '+st.confLatido+'% · aliento '+st.confAliento+'%'
       :st.bpm?'Encontré tu corazón. Buscando tu respiración…'
@@ -7660,7 +9448,7 @@ $('#ecoIntensidad').addEventListener('input',function(){EcoFisico.setIntensidad(
     if(!ElPecho.activo){
       try{if(Heart.active)Heart.stop()}catch(_){}
       ElPecho.activar();
-      toast('🫀 Boca arriba sobre el pecho, sin moverte');buzz(18);
+      toast('🫀 Pantalla hacia ti, contra el centro del pecho, quieto');buzz(18);
       clearInterval(bpmT);
       bpmT=setInterval(()=>{const b=ElPecho.bpm;
         if(b>40&&ElPecho.confianza>=45&&typeof Net!=='undefined'&&Net.sealed)Net.send({t:'heart',bpm:b})},2200);
@@ -7734,7 +9522,7 @@ console.log('[SENSIA·parche v3.1] UI OK');
     }
   });
   $('#iosDismiss').addEventListener('click', () => $('#iosGate').classList.remove('on'));
-  if (IS_IOS) $('#heartStatus').textContent = PPG_IDLE_MSG;
+  /* El Latido arranca por el pecho (mejor en iPhone: no depende del flash); el aviso de cámara solo aparece si se elige esa vía. */
 
   Invite.read();            // lee y limpia el #s= antes de que nadie lo vea
   Install.bind();
