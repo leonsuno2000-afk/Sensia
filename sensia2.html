@@ -1800,7 +1800,7 @@ body.reduce #tour .tour-ring::after{animation:none}
       <p class="eyebrow">Los relevos</p>
       <h3 style="margin-bottom:4px">Cuando no hay camino directo</h3>
       <p class="lead">En datos móviles muchas veces los dos teléfonos no se ven entre sí y hace falta un <b>relevo</b> que empuje el tráfico —cifrado— de un lado al otro. Sin uno bueno, la sesión a veces no abre. Pega aquí el tuyo y queda guardado en este teléfono.</p>
-      <textarea id="relayBox" class="fld-gap" placeholder="turn:mi-dominio.metered.live:443|usuario|clave&#10;&#10;— o pega el bloque iceServers en JSON —" spellcheck="false" autocomplete="off"></textarea>
+      <textarea id="relayBox" class="fld-gap" placeholder="Pega aquí el bloque tal como te lo da tu proveedor — aunque venga envuelto en new RTCPeerConnection({…})&#10;&#10;— o una línea por servidor: turn:host:puerto|usuario|clave —" spellcheck="false" autocomplete="off"></textarea>
       <div class="row fld-gap">
         <button class="btn ghost sm" id="relaySave" style="flex:1">Guardar</button>
         <button class="btn primary sm" id="relayTest" style="flex:1">Probar</button>
@@ -8907,7 +8907,23 @@ const Relay = {
     const out = [];
 
     const asJson = s => {
-      let t = s.replace(/^\s*(?:const|let|var)?\s*iceServers\s*[:=]\s*/i, '').replace(/;\s*$/, '');
+      let t = String(s).trim();
+      /* Los proveedores no dan el array pelado: lo dan envuelto en código
+         listo para copiar —  new RTCPeerConnection({ iceServers:[…] });  —
+         y eso hacía fallar el pegado más común que existe. Se recorta el
+         array por conteo de corchetes, venga envuelto en lo que venga. */
+      const k = t.search(/iceServers\s*[:=]/i);
+      if (k >= 0){
+        const lb = t.indexOf('[', k);
+        if (lb >= 0){
+          let d = 0;
+          for (let i = lb; i < t.length; i++){
+            if (t[i] === '[') d++;
+            else if (t[i] === ']'){ d--; if (!d){ t = t.slice(lb, i + 1); break; } }
+          }
+        }
+      }
+      t = t.replace(/^\s*(?:const|let|var)?\s*iceServers\s*[:=]\s*/i, '').replace(/;\s*$/, '');
       try{ return JSON.parse(t); }catch(_){}
       try{
         const fixed = t
@@ -8942,6 +8958,21 @@ const Relay = {
       const p = l.split('|').map(x => x.trim());
       push({ urls:p[0], username:p[1] || '', credential:p[2] || '' });
     });
+
+    /* Último recurso: media copia, con comentarios, o el snippet de otro
+       lenguaje. Si en el texto hay URLs y un par usuario/clave, se arma con
+       eso antes de rendirse. Vale más aceptar un pegado sucio que dejar a
+       alguien sin relevo por una llave de más. */
+    if (!out.length){
+      const urls = (raw.match(/["'`]\s*((?:stun|turn)s?:[^"'`]+)\s*["'`]/gi) || [])
+        .map(x => x.replace(/^["'`]\s*|\s*["'`]$/g, ''));
+      const u = /username\s*[:=]\s*["'`]([^"'`]+)/i.exec(raw);
+      const c = /credential\s*[:=]\s*["'`]([^"'`]+)/i.exec(raw);
+      urls.forEach(x => {
+        const esTurn = /^turns?:/i.test(x);
+        push({ urls:x, username:esTurn && u ? u[1] : '', credential:esTurn && c ? c[1] : '' });
+      });
+    }
     return out;
   },
 
