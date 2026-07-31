@@ -1288,6 +1288,7 @@ body.reduce #tour .tour-ring::after{animation:none}
 
         <div id="modeManual" style="display:none">
           <p class="dim" style="margin-bottom:12px">Sin ningún servidor. Uno crea la invitación, la manda por donde quiera, el otro responde con su sello. Sensia funciona aunque el mundo se caiga.</p>
+          <p class="dim" style="margin-bottom:12px;color:var(--warn)"><b>Sépanlo antes:</b> este modo <b>no reconecta</b>. Si se cae la red hay que rehacer el intercambio de códigos entero — no hay por dónde pedirle al otro teléfono que lo reintente. Con servidor, el túnel se levanta solo.</p>
           <div class="row">
             <button class="btn ghost sm" id="mkOffer" style="flex:1">Crear invitación</button>
             <button class="btn ghost sm" id="mkAnswer" style="flex:1">Tengo una invitación</button>
@@ -1577,6 +1578,7 @@ body.reduce #tour .tour-ring::after{animation:none}
         <button class="chip" data-when="custom">Elegir…</button>
       </div>
       <input type="datetime-local" id="sparkCustom" class="fld-gap" style="display:none">
+      <p class="dim" id="sparkHonest" style="margin-top:10px;font-size:11.5px;line-height:1.6">Una cápsula sellada se abre <b>cuando abra la app</b>, no antes: el reloj que la destapa vive aquí dentro. Sensia no tiene servidor que la despierte — y no lo va a tener.</p>
       <button class="btn primary fld-gap" id="sendSpark" style="width:100%;margin-top:16px">Enviar la chispa</button>
       <p class="dim" id="sparkQueueNote" style="margin-top:10px;display:none">No están enlazados. La chispa se guarda y sale sola en cuanto se conecten.</p>
     </div>
@@ -1805,8 +1807,8 @@ body.reduce #tour .tour-ring::after{animation:none}
         <button class="btn ghost sm" id="relaySave" style="flex:1">Guardar</button>
         <button class="btn primary sm" id="relayTest" style="flex:1">Probar</button>
       </div>
-      <div class="relay-state" id="relayState">Sin relevo propio. Se usan los públicos, que a veces están caídos.</div>
-      <p class="dim" style="margin-top:10px;font-size:11.5px;line-height:1.6">Un relevo ve <i>por dónde</i> pasa el tráfico, nunca <i>qué</i> pasa: todo va cifrado de punta a punta antes de tocarlo. Cuentas gratuitas: <b>metered.ca</b>, <b>Cloudflare Calls</b>, <b>Twilio</b>.</p>
+      <div class="relay-state" id="relayState">Sin relevo propio. Ya no hay públicos de reserva: sin uno tuyo, la sesión depende de que exista camino directo.</div>
+      <p class="dim" style="margin-top:10px;font-size:11.5px;line-height:1.6">Un relevo ve <i>por dónde</i> pasa el tráfico, nunca <i>qué</i> pasa: todo va cifrado de punta a punta antes de tocarlo. Nunca se guarda dentro del archivo de la app: vive cifrado con tu gesto, en este teléfono. Cuentas gratuitas: <b>metered.ca</b>, <b>Cloudflare Calls</b>, <b>Twilio</b>, <b>ExpressTURN</b>.</p>
     </div>
 
     <div class="card">
@@ -4920,39 +4922,37 @@ $('#qVault').addEventListener('click', () => {
    RELEVOS (TURN) — el plan B cuando NO hay camino directo.
    En redes móviles (datos, CGNAT, WiFi con NAT simétrico) muchas veces
    no existe un camino directo entre los dos teléfonos. Ahí entra un
-   relevo (TURN). Si el relevo está muerto, la conexión entera se cae:
-   es el "El túnel no pudo abrirse". Los relevos gratis de abajo
-   (openrelay) son poco confiables — por eso a veces conecta "directa"
-   y otras veces falla.
+   relevo (TURN). Sin uno vivo la conexión entera se cae: es el
+   "El túnel no pudo abrirse".
 
    → PARA QUE CONECTE SIEMPRE, poné tu propio TURN gratis:
-     1. Entrá a https://dashboard.metered.ca  (cuenta gratis, ~50 GB/mes).
-     2. Creá una app y copiá tu bloque "iceServers" (te lo dan listo).
-     3. Pegá esas líneas dentro de MIS_RELEVOS, borrando el ejemplo.
+     1. Entrá a https://dashboard.metered.ca (cuenta gratis, sin tarjeta).
+     2. TURN Server → Add Credential → "Show ICE Servers Array".
+     3. Copiá el bloque y pegalo en Santuario → Los relevos. Va cifrado
+        con tu gesto y NUNCA dentro de este archivo: el día que compartas
+        el HTML no querés estar regalando tus llaves con él.
+     4. Lo mismo en el otro teléfono.
 
-   → PARA PROBAR que tu TURN sirve: abrí la app con  #relay  al final de
-     la URL  (…onrender.com/#relay). Eso obliga a que TODO pase por el
-     relevo. Si con #relay conecta, tu TURN está vivo y ya conectan
-     siempre. Si con #relay NO conecta, el TURN está mal puesto.
+   → PARA PROBARLO: Santuario → La Revisión. La fila "Relevo" hace la
+     prueba honesta —¿este teléfono consigue un candidato de tipo relay?—
+     y el veredicto no dice "listo" sin ella. Atajo: En Vivo → La Ruta.
+
+   → PRUEBA DURA: abrí la app con  #relay  al final de la URL. Eso obliga
+     a que TODO pase por el relevo, sin camino directo posible. Si con
+     #relay conecta, conecta siempre.
    ──────────────────────────────────────────────────────────────── */
-const MIS_RELEVOS = [
-  /* ↓↓↓ PEGÁ ACÁ TUS CREDENCIALES (Metered / Cloudflare / Twilio) ↓↓↓
-  { urls:'turn:TU-DOMINIO.metered.live:80',                 username:'TU_USUARIO', credential:'TU_CLAVE' },
-  { urls:'turn:TU-DOMINIO.metered.live:443',                username:'TU_USUARIO', credential:'TU_CLAVE' },
-  { urls:'turns:TU-DOMINIO.metered.live:443?transport=tcp', username:'TU_USUARIO', credential:'TU_CLAVE' },
-     ↑↑↑ borrá este comentario cuando pegues las tuyas ↑↑↑ */
-];
+/* Un solo lugar para los relevos: el Santuario, cifrado con el gesto.
+   Antes había además un MIS_RELEVOS acá adentro, y era una trampa — el día
+   que compartís el HTML, compartís tus llaves TURN con él. También se fueron
+   los openrelay públicos: llevan tiempo sin servicio y no eran un plan B sino
+   latencia, porque ICE los intenta y espera. Lo que queda es honesto: STUN
+   para descubrir la IP pública, y el relevo que vos pongas. La Revisión te
+   dice, sin adornos, si lo tenés vivo. */
 const ICE = {
   iceServers: [
     { urls:'stun:stun.l.google.com:19302' },
     { urls:'stun:stun1.l.google.com:19302' },
-    ...MIS_RELEVOS,
-    /* Último recurso. Advertencia honesta: el proyecto openrelay gratuito lleva
-       tiempo sin servicio fiable — quedan por si alguna vez vuelven, pero NO
-       cuentes con ellos. Entre dos países hace falta un relevo propio; La Ruta,
-       en En Vivo, lo dice sin adornos antes de que empiece la noche. */
-    { urls:'turn:openrelay.metered.ca:443',                username:'openrelayproject', credential:'openrelayproject' },
-    { urls:'turn:openrelay.metered.ca:443?transport=tcp',  username:'openrelayproject', credential:'openrelayproject' }
+    { urls:'stun:stun.cloudflare.com:3478' }
   ],
   iceCandidatePoolSize: 4
 };
@@ -5662,6 +5662,10 @@ const Meridiano = {
      lo que se manda llega más tarde, pasa de largo sin molestar. */
   siDuerme(ts, que, ok){
     const t = typeof ts === 'number' ? ts : Date.now();
+    /* Si el túnel está abierto, está despierta: la tenés del otro lado. Avisar
+       "puede que esté durmiendo" en medio de una sesión es una impertinencia
+       del programa opinando sobre algo que los dos ya saben. */
+    if (Net.sealed) return ok();
     if (!this.known() || !this.esMadrugada(t) || t > Date.now() + 3600000) return ok();
     const c = this.theirClock(t);
     openSheet(
@@ -6274,7 +6278,7 @@ const Live = {
       return;
     }
     if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia){
-      toast('Compartir pantalla no funciona en este teléfono. El iPhone no lo permite en el navegador.');
+      toast('Compartir pantalla no funciona desde un teléfono. Solo existe en el navegador de escritorio.');
       return;
     }
     try{
@@ -7016,8 +7020,15 @@ const Spark = {
     persist();
     $('#sparkText').value = '';
     buzz([20,40]);
+    /* "Se abre sola" era mentira: el reloj que la abre corre dentro de la app,
+       así que la cápsula se abre cuando ella ENTRA, no antes. Hacerlo de
+       verdad pediría push, y push pide servidor, suscripción e identidad —
+       exactamente las tres cosas que Sensia promete no tener. Se prefiere
+       decir la verdad a romper la promesa. */
     toast(Net.sealed
-      ? (s.revealAt > Date.now() + 60000 ? 'Sellada. Se abre sola.' : 'Chispa enviada')
+      ? (s.revealAt > Date.now() + 60000
+          ? 'Sellada hasta las ' + Meridiano.ambos(s.revealAt) + '. Se abre cuando entre.'
+          : 'Chispa enviada')
       : 'Guardada. Sale sola en cuanto se enlacen.');
     this.render();
   },
@@ -7126,7 +7137,14 @@ const Spark = {
     $('#reunionOff').style.display = on ? 'none' : 'block';
     $('#reunionOn').style.display = on ? 'block' : 'none';
     if (!on) return;
-    const ms = new Date(State.reunion).getTime() - Date.now();
+    /* new Date('2026-08-15') se lee como medianoche UTC, no local: en Lima la
+       cuenta arrancaba cinco horas antes de tiempo y podía mostrar un día de
+       menos. Se arma la fecha a mano, en el huso de quien mira. */
+    const parts = String(State.reunion).split('-').map(Number);
+    const meta = (parts.length === 3 && !parts.some(isNaN))
+      ? new Date(parts[0], parts[1] - 1, parts[2], 0, 0, 0).getTime()
+      : new Date(State.reunion).getTime();
+    const ms = meta - Date.now();
     const d = Math.ceil(ms / 86400000);
     if (ms <= 0){
       $('#reunionDays').textContent = '0';
@@ -7137,7 +7155,15 @@ const Spark = {
     $('#reunionDays').textContent = String(d);
     $('#reunionLbl').textContent = d === 1 ? 'día para verse' : 'días para verse';
     const h = Math.floor(ms % 86400000 / 3600000), m = Math.floor(ms % 3600000 / 60000);
-    $('#reunionSub').textContent = h + ' h ' + m + ' min · ' + new Date(State.reunion).toLocaleDateString('es', { day:'2-digit', month:'long' });
+    const fecha = new Date(meta).toLocaleDateString('es', { day:'2-digit', month:'long' });
+    /* Con husos distintos, la misma fecha no empieza al mismo tiempo: se dice
+       cuántos días faltan del lado de ella, para que no discutan por un día. */
+    let allá = '';
+    if (Meridiano.known() && Meridiano.diffMin() !== 0){
+      const dA = Math.ceil((meta - Date.now() - Meridiano.diffMin() * 60000) / 86400000);
+      if (dA !== d) allá = ' · allá son ' + dA + (dA === 1 ? ' día' : ' días');
+    }
+    $('#reunionSub').textContent = h + ' h ' + m + ' min · ' + fecha + allá;
   }
 };
 $$('#sparkWhen .chip').forEach(b => b.addEventListener('click', () => {
@@ -8989,7 +9015,7 @@ const Relay = {
     st.className = 'relay-state' + (this.has() ? ' ok' : '');
     st.textContent = n
       ? (this.has() ? n + ' servidor(es) tuyos · con relevo propio' : n + ' servidor(es) · sin relevo TURN, solo STUN')
-      : 'Sin relevo propio. Se usan los públicos, que a veces están caídos.';
+      : 'Sin relevo propio. Ya no hay públicos de reserva: sin uno tuyo, la sesión depende de que exista camino directo.';
   },
 
   save(){
@@ -9084,7 +9110,7 @@ const Ruta = {
     st.className = 'ruta-state' + (propio ? '' : ' warn');
     st.innerHTML = propio
       ? 'Tienes relevo propio guardado. Pruébalo para confirmar que está vivo.'
-      : 'Sin relevo propio. Los públicos que quedan por defecto están casi siempre caídos: entre dos países esto <b>no suele abrir</b>. Ponlo en Santuario → Los relevos.';
+      : 'Sin relevo propio, y aquí no hay públicos de reserva. Entre dos países esto <b>no suele abrir</b>. Ponlo en Santuario → Los relevos.';
   },
   async run(){
     const st = $('#rutaState'), btn = $('#rutaRun');
@@ -9205,17 +9231,23 @@ const Revision = {
     const mine = Relay.list();
     const base = ICE.iceServers.concat(mine);
     const p = await iceProbe(base, 9000, false);
+    if (p.srflx) this.set('net', 'ok', 'Este teléfono se ve desde afuera. La negociación puede empezar.');
+    else if (p.host) soso('net', 'Solo se ve la red local. Fuera de esta red la negociación va a costar.');
+    else bad('net', 'No se obtuvo ningún camino de red. Revisa la conexión o un firewall muy cerrado.');
+
+    /* El relevo es una fila propia y no un detalle del camino: entre dos
+       países es LA pregunta. Un veredicto que diga "listo" sin haberla
+       mirado está mintiendo, así que aquí no se mira de reojo. */
+    this.row('rel', 'Relevo (TURN)');
     let relayOk = false;
     if (mine.length && Relay.has()){
       const r2 = await iceProbe(mine, 9000, true);
       relayOk = r2.relay;
+      if (relayOk) this.set('rel', 'ok', 'Tu relevo responde. Van a conectar incluso en datos móviles y entre países.');
+      else bad('rel', 'Pusiste un relevo pero <b>no responde</b>. Revisa usuario, clave y puerto (prueba 443) en <b>Los relevos</b>, abajo.');
     } else {
-      relayOk = p.relay;
+      soso('rel', 'Sin relevo propio. En wifi de casa suele andar; en datos móviles o entre dos países <b>puede no abrir nunca</b>. Configúralo en <b>Los relevos</b>, abajo.');
     }
-    if (relayOk) this.set('net', 'ok', 'Hay relevo vivo: van a conectar incluso en datos móviles.');
-    else if (p.srflx) soso('net', 'Hay camino directo, pero <b>sin relevo</b>. En wifi suele andar; en datos móviles puede no abrir. Configura un relevo abajo.');
-    else if (p.host) soso('net', 'Solo se ve la red local. Sin relevo, fuera de esta red probablemente no conecte.');
-    else bad('net', 'No se obtuvo ningún camino de red. Revisa la conexión o un firewall muy cerrado.');
 
     /* 8 · extras honestos */
     this.row('e2', 'Cifrado Ω del video');
@@ -9226,21 +9258,20 @@ const Revision = {
     if (HAS_VIBRATE) this.set('vib', 'ok', 'El motor responde. Los pulsos se sienten.');
     else this.set('vib', 'warn', 'Este teléfono no vibra desde el navegador (típico en iPhone). Activa el <b>sonido de respaldo</b> arriba.');
 
-    this.row('scr', 'Compartir pantalla');
-    if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) this.set('scr', 'ok', 'Disponible.');
-    else this.set('scr', 'warn', 'No existe en este navegador (Safari en iPhone). Todo lo demás funciona igual.');
-
     /* veredicto */
     const v = $('#revVerdict');
     if (score.fatal){
       v.className = 'rev-verdict on bad';
       v.innerHTML = '<b>Hay algo que va a romper la noche.</b> Arregla primero lo marcado con ✕ — sin eso, la sesión no va a abrir o va a abrir a medias.';
+    } else if (!relayOk){
+      v.className = 'rev-verdict on';
+      v.innerHTML = '<b>Falta el relevo.</b> Todo lo demás responde, pero sin un relevo vivo la sesión depende de la suerte de la red — y entre dos países esa suerte casi nunca sale. Es lo único que te separa de estar listo.';
     } else if (score.warn){
       v.className = 'rev-verdict on';
       v.innerHTML = '<b>Se puede usar, con reservas.</b> Lo marcado con ! no impide la sesión, pero puede hacerla frágil. Vale la pena mirarlo antes de la primera vez.';
     } else {
       v.className = 'rev-verdict on good';
-      v.innerHTML = '<b>Este teléfono está listo.</b> Cifrado, cámara, micrófono, servidor y camino de red: todo responde. Que la otra persona haga esta misma revisión en el suyo.';
+      v.innerHTML = '<b>Este teléfono está listo.</b> Cifrado, cámara, micrófono, servidor, camino de red y relevo: todo responde. Que la otra persona haga esta misma revisión en el suyo.';
     }
     btn.disabled = false; btn.textContent = 'Revisar de nuevo';
     this.running = false;
