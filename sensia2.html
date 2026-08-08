@@ -17,7 +17,7 @@
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%232b2e33'/%3E%3Crect x='128' y='104' width='256' height='304' rx='24' fill='%23e9e5dd'/%3E%3Cg fill='%239aa0a6'%3E%3Crect x='168' y='168' width='176' height='18' rx='9'/%3E%3Crect x='168' y='222' width='176' height='18' rx='9'/%3E%3Crect x='168' y='276' width='120' height='18' rx='9'/%3E%3C/g%3E%3C/svg%3E">
 <meta name="apple-mobile-web-app-title" content="Notas">
 <meta name="mobile-web-app-capable" content="yes">
-<link rel="manifest" id="manifestLink">
+<link rel="manifest" href="/manifest.webmanifest">
 <!-- Al abrirse, Sensia no le habla a nadie más que a su propio servidor.
      Las tipografías salen de /f (mismo origen) y la librería del servidor de
      encuentro la sirve el propio socket.io en /socket.io/socket.io.js. Ni CDN,
@@ -1824,7 +1824,8 @@ body.reduce #tour .tour-ring::after{animation:none}
     <div class="card" id="installCard" style="display:none">
       <p class="eyebrow">Instalar</p>
       <h3 style="margin-bottom:4px">Ponla en tu pantalla de inicio</h3>
-      <p class="lead">Instalada abre sin barra de direcciones, más rápido, y en la pantalla de inicio se ve como <b>una libreta de notas</b> — mismo nombre, mismo ícono. Nadie que mire tu teléfono va a ver otra cosa.</p>
+      <p class="lead">Instalada abre sin barra de direcciones, más rápido, y en la pantalla de inicio se ve como <b>una libreta de notas</b> — mismo nombre, mismo ícono. Nadie que mire tu teléfono va a ver otra cosa. Y una vez instalada abre aunque no haya red.</p>
+      <p class="dim" id="installIOS" style="color:var(--warn);margin-top:12px;display:none"><b>En iPhone, instálala antes de crear tu gesto.</b> iOS le da a la app de pantalla de inicio un cajón aparte del de Safari: lo que escribas en Safari no aparece dentro de la app instalada, y al abrirla te va a pedir un gesto nuevo como si fuera la primera vez. No se perdió nada — está en Safari — pero son dos Sensias distintas en el mismo teléfono. Elige una y quédate ahí.</p>
       <button class="btn primary sm" id="installBtn" style="width:100%;margin-top:12px">Instalar</button>
       <p class="dim" id="installHint" style="margin-top:10px;display:none"></p>
     </div>
@@ -1887,7 +1888,7 @@ body.reduce #tour .tour-ring::after{animation:none}
       <p class="dim" style="margin-top:10px">Elimina el gesto, las fantasías, el vocabulario, las chispas, la bóveda y los ajustes. No se puede deshacer.</p>
     </div>
 
-    <p class="foot-note">Sensia Ω∞ · v5.3 <b>Sin rastro</b><br>Túnel P2P cifrado extremo a extremo · sello verificable · sin cuentas ni registro. Nada de lo que se dicen queda en un servidor; para conectarlos (y a veces para sostener la señal) se usa un relay que ve <i>por dónde</i> pasan, nunca <i>qué</i> pasa.<br><br>Al abrirse, esta app no le habla a nadie: las letras, la librería y el ícono salen de su propio servidor. Solo cuando abres un túnel le pregunta a un servidor público (STUN) cuál es la dirección de este teléfono — no se puede evitar sin poner uno propio, y no le dice qué haces ni con quién. <b>La Revisión</b> lo comprueba midiendo, no prometiendo.</p>
+    <p class="foot-note">Sensia Ω∞ · v5.4 <b>Aunque se caiga</b><br>Túnel P2P cifrado extremo a extremo · sello verificable · sin cuentas ni registro. Nada de lo que se dicen queda en un servidor; para conectarlos (y a veces para sostener la señal) se usa un relay que ve <i>por dónde</i> pasan, nunca <i>qué</i> pasa.<br><br>Al abrirse, esta app no le habla a nadie: las letras, la librería y el ícono salen de su propio servidor. Solo cuando abres un túnel le pregunta a un servidor público (STUN) cuál es la dirección de este teléfono — no se puede evitar sin poner uno propio, y no le dice qué haces ni con quién. Instalada, abre sin red: la app vive en tu teléfono. <b>La Revisión</b> lo comprueba midiendo, no prometiendo.</p>
   </div>
 </section>
 
@@ -8938,6 +8939,14 @@ $('#wipeAll').addEventListener('click', () => {
        hasta ahora sobrevivían cuatro llaves en claro que contaban que aquí
        hubo algo más que una libreta de notas. */
     LS.wipe();
+    /* Y la copia que guardó el worker, y el worker mismo. Una app que sigue
+       abriendo sola después de "Borrar todo" es un rastro con pantalla. */
+    try{
+      const cs = await caches.keys();
+      await Promise.all(cs.map(k => caches.delete(k)));
+      const rs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(rs.map(r => r.unregister()));
+    }catch(_){}
     Pacto.forget();
     META = null; deviceKey = null; unlocked = false;
     Vault.key = null;
@@ -9765,6 +9774,25 @@ const Revision = {
     if (dbOk) this.set('db', 'ok', 'Lo que guardes sobrevive a cerrar la app.');
     else soso('db', 'No se puede escribir en el disco (¿navegación privada?). Todo va a vivir solo mientras la app esté abierta.');
 
+    /* 3b · ¿abre sin red?
+       ──────────────────
+       "Sensia funciona aunque el mundo se caiga" era cierto del túnel y falso
+       del archivo: sin servidor no abría. Esta fila no lee una bandera —
+       pregunta si hay worker al mando y si la copia de la página está
+       realmente guardada. Y de paso dice si el navegador se comprometió a no
+       desalojar lo que hay adentro, que es lo que decide si el diario sigue
+       ahí dentro de tres semanas. */
+    this.row('off', 'Si se cae la red');
+    let sw = false, copia = false, fija = false;
+    try{ sw = !!(navigator.serviceWorker && navigator.serviceWorker.controller); }catch(_){}
+    try{ copia = !!(await caches.match('/')); }catch(_){}
+    try{ fija = !!(navigator.storage && navigator.storage.persisted && await navigator.storage.persisted()); }catch(_){}
+    const guardado = fija ? ' Y este teléfono se comprometió a no borrar lo que hay adentro.'
+                          : ' Aviso: el sistema todavía puede desalojar lo guardado si le falta espacio.';
+    if (sw && copia) this.set('off', 'ok', 'Sensia abre aunque no haya señal ni servidor: la app vive en este teléfono.' + guardado);
+    else if (copia)  soso('off', 'La copia está guardada, pero todavía no está al mando. Cierra Sensia del todo y vuelve a abrirla una vez.');
+    else             soso('off', 'Sin copia local: si el servidor está caído o dormido, la app no va a abrir. Recarga estando con señal para que se guarde.');
+
     /* 4 · cámara */
     this.row('cam', 'Cámara');
     const cam = await mediaProbe('video');
@@ -9877,24 +9905,10 @@ const Install = (() => {
   let deferred = null;
   const ICON = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%232b2e33'/%3E%3Crect x='128' y='104' width='256' height='304' rx='24' fill='%23e9e5dd'/%3E%3Cg fill='%239aa0a6'%3E%3Crect x='168' y='168' width='176' height='18' rx='9'/%3E%3Crect x='168' y='222' width='176' height='18' rx='9'/%3E%3Crect x='168' y='276' width='120' height='18' rx='9'/%3E%3C/g%3E%3C/svg%3E";
 
-  function manifest(){
-    try{
-      const m = {
-        name:'Notas', short_name:'Notas', description:'Notas',
-        start_url: location.pathname, scope: location.pathname,
-        display:'standalone', orientation:'portrait',
-        background_color:'#050405', theme_color:'#050405',
-        icons:[
-          { src:ICON, sizes:'192x192', type:'image/svg+xml', purpose:'any' },
-          { src:ICON, sizes:'512x512', type:'image/svg+xml', purpose:'any' },
-          { src:ICON, sizes:'512x512', type:'image/svg+xml', purpose:'maskable' }
-        ]
-      };
-      const url = URL.createObjectURL(new Blob([JSON.stringify(m)], { type:'application/manifest+json' }));
-      const link = $('#manifestLink');
-      if (link) link.href = url;
-    }catch(_){}
-  }
+  /* El manifiesto ya no se fabrica acá: lo sirve el servidor en
+     /manifest.webmanifest, con su tipo correcto y un ícono real. El blob que
+     se creaba en el navegador Chrome lo miraba con desconfianza e iOS lo
+     ignoraba, así que la instalación dependía de algo que a veces no existía. */
 
   function standalone(){
     return !!(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)
@@ -9902,11 +9916,17 @@ const Install = (() => {
   }
 
   function bind(){
-    manifest();
     const card = $('#installCard'), btn = $('#installBtn'), hint = $('#installHint');
     if (!card) return;
 
     if (standalone()) return;   // ya está instalada: no hay nada que ofrecer
+
+    /* La tarjeta se muestra SIEMPRE. Antes solo aparecía dentro de
+       beforeinstallprompt, y ese aviso exige un Service Worker con manejador
+       de fetch: sin él no llegaba nunca, así que en Android el botón
+       "Instalar" no existía. Ahora el worker está — pero igual conviene no
+       depender de un aviso que el navegador puede decidir no mandar. */
+    card.style.display = 'block';
 
     addEventListener('beforeinstallprompt', e => {
       e.preventDefault(); deferred = e;
@@ -9920,6 +9940,7 @@ const Install = (() => {
     /* iPhone no ofrece instalación automática: se explica el camino a mano. */
     if (IS_IOS){
       card.style.display = 'block';
+      const avi = $('#installIOS'); if (avi) avi.style.display = 'block';
       btn.textContent = 'Cómo instalarla en iPhone';
       btn.addEventListener('click', () => {
         hint.style.display = 'block';
@@ -10149,6 +10170,29 @@ console.log('[SENSIA·parche v3.1] UI OK');
 
   Invite.read();            // lee y limpia el #s= antes de que nadie lo vea
   Install.bind();
+
+  /* ── Que la app esté cuando la busquen ────────────────────────────────
+     Dos cosas distintas que se resuelven acá.
+
+     El worker: hasta ahora, si Render dormía o la red andaba mal, Sensia
+     directamente no abría — y la app promete lo contrario. Ahora la página
+     queda copiada en el teléfono. La lógica de cuándo usar la copia vive en
+     /sw.js; acá solo se lo llama.
+
+     Y persist(): todo lo de adentro es irrecuperable por diseño —esa es la
+     tesis— pero eso no quiere decir que deba ser irrecuperable por accidente.
+     El navegador puede desalojar el almacenamiento cuando le falta espacio, y
+     en iPhone las apps de pantalla de inicio dejaron de estar exentas del
+     tope de siete días sin uso. Pedirlo no cuesta nada; no pedirlo puede
+     costar el diario entero de alguien que estuvo dos semanas sin abrir. */
+  if ('serviceWorker' in navigator){
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  }
+  if (navigator.storage && navigator.storage.persist){
+    navigator.storage.persisted()
+      .then(ya => ya ? true : navigator.storage.persist())
+      .catch(() => {});
+  }
   Gate.refresh();
   Embers.on();
   $('#die1').innerHTML = '<small>acción</small><span>—</span>';

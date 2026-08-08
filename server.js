@@ -74,6 +74,110 @@ app.get('/f/:nombre', (req, res) => {
   res.sendFile(archivo, { maxAge: '1y', immutable: true });
 });
 
+/* ══════════ EL SERVICE WORKER ══════════
+   Sensia dice "funciona aunque el mundo se caiga", y hasta ahora eso no era
+   cierto del propio archivo: si Render dormía o la red andaba mal, la app no
+   abría. Un Service Worker lo resuelve, y de paso hace que Chrome ofrezca
+   instalarla de verdad — el aviso de instalación necesita un manejador de
+   fetch, y sin él la tarjeta "Instalar" nunca aparecía en Android.
+
+   Vive acá dentro, como ruta, para no romper la regla del archivo único: el
+   cliente sigue siendo un solo HTML.
+
+   Estrategia, y el porqué de cada una:
+
+   · La página va a la RED PRIMERO, con 3,5 s de paciencia, y recién entonces
+     cae a la copia. Al revés —copia primero— sería más rápido, pero León
+     despliega desde el teléfono varias veces por noche y quedaría mirando una
+     versión vieja sin saberlo. Fresco cuando hay red; abre igual cuando no.
+
+   · Las letras, la librería y el ícono van a la COPIA PRIMERO: no cambian, y
+     así el arranque no espera a nadie.
+
+   · TODO LO DEMÁS NO SE TOCA. Ni una línea. El sondeo de socket.io, el
+     websocket de señalización y cualquier cosa con parámetros salen directo a
+     la red, sin pasar por acá. Un Service Worker que se meta con la
+     señalización rompe el túnel de maneras imposibles de depurar desde un
+     teléfono. */
+const APP_VER = 'v5.4';
+const SW = `
+const CACHE = 'sensia-${APP_VER}';
+const FIJOS = ['/', '/manifest.webmanifest', '/icon.svg', '/socket.io/socket.io.js',
+  '/f/cormorant-garamond.woff2', '/f/cormorant-garamond-italic.woff2',
+  '/f/hanken-grotesk.woff2', '/f/space-mono-400.woff2', '/f/space-mono-700.woff2'];
+
+self.addEventListener('install', e => {
+  // addAll es todo-o-nada: si una fuente falta, no se guardaría ni la página.
+  e.waitUntil(caches.open(CACHE)
+    .then(c => Promise.all(FIJOS.map(u => c.add(u).catch(() => {}))))
+    .then(() => self.skipWaiting()));
+});
+
+self.addEventListener('activate', e => {
+  e.waitUntil(caches.keys()
+    .then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k))))
+    .then(() => self.clients.claim()));
+});
+
+self.addEventListener('fetch', e => {
+  const req = e.request;
+  if (req.method !== 'GET') return;
+  const url = new URL(req.url);
+  if (url.origin !== location.origin) return;
+  if (url.search) return;                       // sondeos y señalización: intactos
+  if (url.pathname.indexOf('/socket.io/') === 0 &&
+      url.pathname !== '/socket.io/socket.io.js') return;
+
+  // La página: red primero, 3,5 s de paciencia, después la copia.
+  if (req.mode === 'navigate'){
+    e.respondWith(new Promise(resolve => {
+      let listo = false;
+      const caer = () => { if (listo) return; listo = true;
+        caches.match('/').then(r => resolve(r || fetch(req))); };
+      const reloj = setTimeout(caer, 3500);
+      fetch(req).then(r => {
+        clearTimeout(reloj);
+        if (r && r.ok) caches.open(CACHE).then(c => c.put('/', r.clone()));
+        if (!listo){ listo = true; resolve(r); }
+      }).catch(() => { clearTimeout(reloj); caer(); });
+    }));
+    return;
+  }
+
+  // Letras, librería, ícono, manifiesto: copia primero.
+  e.respondWith(caches.match(req).then(hit => hit || fetch(req).then(r => {
+    if (r && r.ok) caches.open(CACHE).then(c => c.put(req, r.clone()));
+    return r;
+  })));
+});
+`;
+app.get('/sw.js', (_req, res) => {
+  res.type('application/javascript')
+     .set('Cache-Control', 'no-cache')   // el navegador debe notar cada cambio
+     .send(SW);
+});
+
+/* El manifiesto se servía como blob: creado en el navegador. Chrome lo trata
+   con desconfianza y iOS directamente lo ignora — o sea que la instalación
+   dependía de algo que a veces no existía. Ahora sale del servidor, con su
+   tipo correcto y un ícono de verdad en /icon.svg. */
+const ICONO = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#2b2e33"/><rect x="128" y="104" width="256" height="304" rx="24" fill="#e9e5dd"/><g fill="#9aa0a6"><rect x="168" y="168" width="176" height="18" rx="9"/><rect x="168" y="222" width="176" height="18" rx="9"/><rect x="168" y="276" width="120" height="18" rx="9"/></g></svg>`;
+app.get('/icon.svg', (_req, res) => {
+  res.type('image/svg+xml').set('Cache-Control', 'public, max-age=31536000, immutable').send(ICONO);
+});
+app.get('/manifest.webmanifest', (_req, res) => {
+  res.type('application/manifest+json').json({
+    name: 'Notas', short_name: 'Notas', description: 'Notas',
+    start_url: '/', scope: '/',
+    display: 'standalone', orientation: 'portrait',
+    background_color: '#050405', theme_color: '#050405',
+    icons: [
+      { src: '/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
+      { src: '/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'maskable' }
+    ]
+  });
+});
+
 /* La librería cliente de socket.io la sirve el propio socket.io en
    /socket.io/socket.io.js (serveClient viene activo por defecto). Por eso el
    HTML ya no carga ningún CDN: misma app, mismo origen, cero terceros. Y como
