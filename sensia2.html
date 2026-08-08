@@ -830,7 +830,16 @@ body.insecure .nav{--nudge:0}
 .rev-ico.run{background:var(--noir-3);color:var(--ash-dim);animation:pulseDot 1s infinite}
 @keyframes pulseDot{0%,100%{opacity:.35}50%{opacity:1}}
 .rev-tx{flex:1;min-width:0}
-.rev-tx b{display:block;font-size:13.5px;font-weight:600;color:var(--mist);margin-bottom:2px}
+/* El '>' no es cosmético. La regla existe para el TÍTULO de la fila, que es
+   hijo directo de .rev-tx; sin él alcanzaba también a los <b> que van dentro
+   del <small> del mensaje, y los convertía en bloques: "…entre dos países /
+   puede no abrir nunca / . Configúralo en / Los relevos / , abajo." La frase
+   se partía en cinco y la puntuación quedaba huérfana — justo en el mensaje
+   que alguien lee cuando algo no anda. */
+.rev-tx > b{display:block;font-size:13.5px;font-weight:600;color:var(--mist);margin-bottom:2px}
+/* Dentro del mensaje, la negrita es énfasis y nada más: hereda el color de la
+   línea (ámbar si es aviso, gris si está bien) y solo pesa distinto. */
+.rev-tx small b{font-weight:700;color:inherit}
 .rev-tx small{display:block;font-size:12px;line-height:1.55;color:var(--ash)}
 .rev-tx small.bad{color:var(--warn)}
 .rev-verdict{margin-top:14px;padding:13px 15px;border-radius:var(--r-md);font-size:13px;line-height:1.6;
