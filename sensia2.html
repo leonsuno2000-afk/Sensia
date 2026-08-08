@@ -1596,7 +1596,8 @@ body.reduce #tour .tour-ring::after{animation:none}
         <button class="btn primary sm" id="toyAceptar" style="flex:1">Entiendo · enlazar</button>
         <button class="btn stop sm" id="toySoltar" style="flex:1;display:none">Soltar</button>
       </div>
-      <p class="foot-note" style="margin-top:12px">Si no encuentra el aparato, prueba <b>El Cateo</b> desde la consola: <code>Cateo.correr()</code>. Enumera por dónde se le puede hablar.</p>
+      <p class="foot-note" style="margin-top:12px">¿No lo encuentra? <b>El Cateo</b> pregunta al aparato por dónde se le puede hablar, y te devuelve los códigos para agregarlo a mano. No enciende nada.</p>
+      <button class="btn ghost sm" id="toyCateo" style="width:100%;margin-top:8px">El Cateo · buscar por dónde hablarle</button>
     </div>
 
     <div style="margin-top:22px">
@@ -1886,7 +1887,7 @@ body.reduce #tour .tour-ring::after{animation:none}
       <p class="dim" style="margin-top:10px">Elimina el gesto, las fantasías, el vocabulario, las chispas, la bóveda y los ajustes. No se puede deshacer.</p>
     </div>
 
-    <p class="foot-note">Sensia Ω∞ · v5.2 <b>Sin terceros</b><br>Túnel P2P cifrado extremo a extremo · sello verificable · sin cuentas ni registro. Nada de lo que se dicen queda en un servidor; para conectarlos (y a veces para sostener la señal) se usa un relay que ve <i>por dónde</i> pasan, nunca <i>qué</i> pasa.<br><br>Al abrirse, esta app no le habla a nadie: las letras, la librería y el ícono salen de su propio servidor. Solo cuando abres un túnel le pregunta a un servidor público (STUN) cuál es la dirección de este teléfono — no se puede evitar sin poner uno propio, y no le dice qué haces ni con quién. <b>La Revisión</b> lo comprueba midiendo, no prometiendo.</p>
+    <p class="foot-note">Sensia Ω∞ · v5.3 <b>Sin rastro</b><br>Túnel P2P cifrado extremo a extremo · sello verificable · sin cuentas ni registro. Nada de lo que se dicen queda en un servidor; para conectarlos (y a veces para sostener la señal) se usa un relay que ve <i>por dónde</i> pasan, nunca <i>qué</i> pasa.<br><br>Al abrirse, esta app no le habla a nadie: las letras, la librería y el ícono salen de su propio servidor. Solo cuando abres un túnel le pregunta a un servidor público (STUN) cuál es la dirección de este teléfono — no se puede evitar sin poner uno propio, y no le dice qué haces ni con quién. <b>La Revisión</b> lo comprueba midiendo, no prometiendo.</p>
   </div>
 </section>
 
@@ -2021,6 +2022,54 @@ const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
 const uid = () => (crypto.randomUUID ? crypto.randomUUID().slice(0,12)
                  : Math.random().toString(36).slice(2,8) + Date.now().toString(36).slice(-4));
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ══════════ LO QUE SE GUARDA ANTES DEL GESTO ══════════
+   Cinco cosas se leen antes de que exista la llave —si ya vio el pacto, si ya
+   hizo el recorrido, dónde lo dejó, si el termómetro manda la marea, si ya vio
+   la pista—. No pueden ir cifradas: viven en localStorage, en claro. Lo que sí
+   pueden es no delatarse.
+
+   Se llamaban sx_pacto_v1, sx_onboard_v1, sx_onboard_at, sx_termometro_marea,
+   sx_hint. Una clave que dice "termómetro" y "marea" en un teléfono cuya app
+   se llama Notas termina el disfraz sola: basta enchufarlo a una computadora y
+   abrir las herramientas del navegador. El disfraz no puede depender de que
+   nadie mire ahí.
+
+   Guardadas son opacas; el código las llama por su nombre real. La migración
+   corre una sola vez y BORRA las viejas: estrenar nombres nuevos no alcanzaba,
+   porque en los teléfonos donde Sensia ya se usó el rastro viejo seguiría
+   estando. Y wipe() barre el prefijo entero — "Borrar todo" decía que no se
+   puede deshacer y dejaba cuatro cosas atrás. */
+const LS = (() => {
+  const P = 'n_';
+  const MAPA   = { pacto:'a', visto:'b', dondeQuedo:'c', mareaCuerpo:'d', pista:'e' };
+  const VIEJAS = { pacto:'sx_pacto_v1', visto:'sx_onboard_v1', dondeQuedo:'sx_onboard_at',
+                   mareaCuerpo:'sx_termometro_marea', pista:'sx_hint' };
+  const k = n => P + (MAPA[n] || n);
+  try{
+    for (const n in VIEJAS){
+      const v = localStorage.getItem(VIEJAS[n]);
+      if (v === null) continue;
+      if (localStorage.getItem(k(n)) === null) localStorage.setItem(k(n), v);
+      localStorage.removeItem(VIEJAS[n]);
+    }
+  }catch(_){}
+  return {
+    get(n){ try{ return localStorage.getItem(k(n)); }catch(_){ return null; } },
+    set(n, v){ try{ localStorage.setItem(k(n), String(v)); }catch(_){} },
+    del(n){ try{ localStorage.removeItem(k(n)); }catch(_){} },
+    wipe(){
+      try{
+        const fuera = [];
+        for (let i = 0; i < localStorage.length; i++){
+          const key = localStorage.key(i);
+          if (key && (key.indexOf(P) === 0 || key.indexOf('sx_') === 0)) fuera.push(key);
+        }
+        fuera.forEach(x => localStorage.removeItem(x));
+      }catch(_){}
+    }
+  };
+})();
 const SECURE = !!(window.isSecureContext && window.crypto && window.crypto.subtle);
 const HAS_VIBRATE = typeof navigator.vibrate === 'function';
 /* No alcanza con preguntar si la voz "existe": hay navegadores que la declaran
@@ -2547,7 +2596,6 @@ const Cateo = {
       }
     }
     try{ gatt.disconnect(); }catch(_){}
-    console.table(out);
     return out;
   }
 };
@@ -2873,7 +2921,7 @@ const Posicion3D=(()=>{let p='desconocida',last=0;SensorBus.on('sensor:giroscopi
 const RITMO_CFG={ventanaMs:8000,calcMs:400,bandaMinCpm:30,bandaMaxCpm:240,corrMin:.35,cpmContracciones:55,cpmRitmico:120,ganTemblor:3};
 const RitmoExcitacion=(()=>{let on=false,buf=[],tem=0,tipo='quieto',mf=0,ma=0,lastCalc=0;SensorBus.on('sensor:acelerometro',(d)=>{if(!on)return;const ahora=performance.now();buf.push({mag:d.mag,t:ahora});while(buf.length&&ahora-buf[0].t>RITMO_CFG.ventanaMs)buf.shift();if(ahora-lastCalc<RITMO_CFG.calcMs)return;lastCalc=ahora;if(buf.length<40)return;const span=buf[buf.length-1].t-buf[0].t;if(span<3000)return;const dt=span/(buf.length-1),n=buf.length;const mags=new Array(n);for(let i=0;i<n;i++)mags[i]=buf[i].mag;let varTotal=0;for(let i=1;i<n;i++)varTotal+=Math.abs(mags[i]-mags[i-1]);tem=Math.min(100,Math.round(varTotal/(span/1000)*RITMO_CFG.ganTemblor));let media=0;for(let i=0;i<n;i++)media+=mags[i];media/=n;let varz=0;for(let i=0;i<n;i++){const e=mags[i]-media;varz+=e*e}varz/=n;ma=Math.min(100,Math.round(Math.sqrt(varz)*400));if(varz<1e-8||media<.015){tipo='quieto';mf=0;ma=0}else{const lagMin=Math.max(2,Math.round((60000/RITMO_CFG.bandaMaxCpm)/dt)),lagMax=Math.min((n>>1)-2,Math.round((60000/(RITMO_CFG.bandaMinCpm*.75))/dt));let cpm=0;if(lagMax>lagMin+2){const r=new Array(lagMax+2);for(let lag=0;lag<=lagMax+1;lag++){let c=0;for(let i=0;i<n-lag;i++)c+=(mags[i]-media)*(mags[i+lag]-media);r[lag]=c/((n-lag)*varz)}let mejor=0,mejorR=0;for(let lag=lagMin+1;lag<=lagMax;lag++)if(r[lag]>r[lag-1]&&r[lag]>=r[lag+1]){mejor=lag;mejorR=r[lag];break}if(mejorR<.4){mejor=0;mejorR=0;for(let lag=lagMin+1;lag<=lagMax;lag++)if(r[lag]>r[lag-1]&&r[lag]>=r[lag+1]&&r[lag]>mejorR){mejorR=r[lag];mejor=lag}}if(mejor&&mejorR>=RITMO_CFG.corrMin){const y0=r[mejor-1],y1=r[mejor],y2=r[mejor+1],den=y0-2*y1+y2,aj=den!==0?Math.max(-1,Math.min(1,.5*(y0-y2)/den)):0,c=60000/((mejor+aj)*dt);if(c>=RITMO_CFG.bandaMinCpm*.95&&c<=RITMO_CFG.bandaMaxCpm*1.05)cpm=Math.round(c*10)/10}}if(cpm){mf=cpm;tipo=cpm<=RITMO_CFG.cpmContracciones?'contracciones':cpm<=RITMO_CFG.cpmRitmico?'ritmico':'rapido'}else{mf=0;tipo='irregular'}}EventBus.emit('cuerpo:temblor',{intensidad:tem});EventBus.emit('cuerpo:movimiento',{tipo,frecuencia:mf,amplitud:ma});EventBus.transmit({type:'movimiento',temblor:tem,movTipo:tipo,movFreq:mf})});return{activar(){on=true;buf=[];lastCalc=0},desactivar(){on=false;tem=0;tipo='quieto';mf=0;ma=0;buf=[]},get temblor(){return tem},get movimiento(){return{tipo,frecuencia:mf,amplitud:ma}}}})();
 
-const TermometroExcitacion=(()=>{let on=false,conMarea=false,nivel=0,ns=0,subs=[];let sens={corazon:0,respiracion:0,temblor:0,sonido:0,movimiento:0};let disp={corazon:false,respiracion:false,temblor:false,sonido:false,movimiento:false};const P={corazon:.35,respiracion:.20,temblor:.20,sonido:.15,movimiento:.10};EventBus.on('cuerpo:corazon',(d)=>{if(!on)return;disp.corazon=true;if(d.bpm&&d.bpm>40)sens.corazon=Math.max(0,Math.min(100,Math.round(((d.bpm-60)/60)*100)))});EventBus.on('cuerpo:respiracion',(d)=>{if(!on)return;disp.respiracion=true;if(d.frecuencia)sens.respiracion=Math.max(0,Math.min(100,Math.round(((d.frecuencia-12)/18)*100)))});EventBus.on('cuerpo:temblor',(d)=>{if(!on)return;disp.temblor=true;sens.temblor=d.intensidad});EventBus.on('cuerpo:movimiento',(d)=>{if(!on)return;disp.movimiento=true;sens.movimiento=d.amplitud});setInterval(()=>{if(!on)return;const av=Object.entries(disp).filter(([,v])=>v).map(([k])=>k);if(!av.length)return;let pt=0;av.forEach(k=>pt+=P[k]);let n=0;av.forEach(k=>n+=sens[k]*(P[k]/pt));nivel=Math.round(Math.min(100,n));ns=ns===0?nivel:ns*.7+nivel*.3;const v=Math.round(ns);EventBus.emit('termometro:actualizacion',{nivel:v,sensores:{...sens}});EventBus.transmit({type:'termometro',nivel:v});if(conMarea&&typeof Live!=='undefined'&&Live.active){const mm=Math.round(v/10)*10;if(mm<(Live.marea?.mine||0))Live.setMarea(mm)}subs.forEach(cb=>{try{cb(v)}catch(e){}})},150);try{conMarea=localStorage.getItem('sx_termometro_marea')==='1'}catch(e){}return{activar(){on=true;RitmoExcitacion.activar()},desactivar(){on=false;nivel=0;ns=0;RitmoExcitacion.desactivar()},get nivel(){return Math.round(ns)},get activo(){return on},conectarMarea(v){conMarea=v;try{localStorage.setItem('sx_termometro_marea',v?'1':'0')}catch(e){}},get conectadoAMarea(){return conMarea},onChange(cb){subs.push(cb);return()=>{subs=subs.filter(f=>f!==cb)}}}})();
+const TermometroExcitacion=(()=>{let on=false,conMarea=false,nivel=0,ns=0,subs=[];let sens={corazon:0,respiracion:0,temblor:0,sonido:0,movimiento:0};let disp={corazon:false,respiracion:false,temblor:false,sonido:false,movimiento:false};const P={corazon:.35,respiracion:.20,temblor:.20,sonido:.15,movimiento:.10};EventBus.on('cuerpo:corazon',(d)=>{if(!on)return;disp.corazon=true;if(d.bpm&&d.bpm>40)sens.corazon=Math.max(0,Math.min(100,Math.round(((d.bpm-60)/60)*100)))});EventBus.on('cuerpo:respiracion',(d)=>{if(!on)return;disp.respiracion=true;if(d.frecuencia)sens.respiracion=Math.max(0,Math.min(100,Math.round(((d.frecuencia-12)/18)*100)))});EventBus.on('cuerpo:temblor',(d)=>{if(!on)return;disp.temblor=true;sens.temblor=d.intensidad});EventBus.on('cuerpo:movimiento',(d)=>{if(!on)return;disp.movimiento=true;sens.movimiento=d.amplitud});setInterval(()=>{if(!on)return;const av=Object.entries(disp).filter(([,v])=>v).map(([k])=>k);if(!av.length)return;let pt=0;av.forEach(k=>pt+=P[k]);let n=0;av.forEach(k=>n+=sens[k]*(P[k]/pt));nivel=Math.round(Math.min(100,n));ns=ns===0?nivel:ns*.7+nivel*.3;const v=Math.round(ns);EventBus.emit('termometro:actualizacion',{nivel:v,sensores:{...sens}});EventBus.transmit({type:'termometro',nivel:v});if(conMarea&&typeof Live!=='undefined'&&Live.active){const mm=Math.round(v/10)*10;if(mm<(Live.marea?.mine||0))Live.setMarea(mm)}subs.forEach(cb=>{try{cb(v)}catch(e){}})},150);conMarea=LS.get('mareaCuerpo')==='1';return{activar(){on=true;RitmoExcitacion.activar()},desactivar(){on=false;nivel=0;ns=0;RitmoExcitacion.desactivar()},get nivel(){return Math.round(ns)},get activo(){return on},conectarMarea(v){conMarea=v;LS.set('mareaCuerpo',v?'1':'0')},get conectadoAMarea(){return conMarea},onChange(cb){subs.push(cb);return()=>{subs=subs.filter(f=>f!==cb)}}}})();
 
 const EcoFisico=(()=>{let on=false,int=70;let can={corazon:true,temblor:true,movimiento:true,sonido:true,tacto:true};return{activar(){on=true},desactivar(){on=false;Haptics.stopAll()},setIntensidad(v){int=clamp(v,10,100)},get activo(){return on},get canales(){return can},toggleCanal(c){can[c]=!can[c]},recibirRemoto(d){if(!on)return;const i=int/100;if(d.type==='movimiento'&&can.movimiento){if(d.movTipo==='contracciones')Haptics.buzz([30,20,30,20,Math.round(60*i)]);else if(d.temblor>30)Haptics.wave(Math.round(d.temblor*i*.7))}if(d.type==='respiracion'&&can.temblor){if(d.fase==='inhalando')Haptics.wave(Math.round(d.profundidad*i*.5));else Haptics.wave(Math.round(d.profundidad*i*.2))}}}})();
 
@@ -3209,7 +3257,7 @@ function quickExit(){
   $('#neutral').classList.add('on');
   document.title = 'Notas';
   let seen = false;
-  try{ seen = !!localStorage.getItem('sx_hint'); localStorage.setItem('sx_hint','1'); }catch(_){}
+  seen = !!LS.get('pista'); LS.set('pista','1');
   if (!seen) setTimeout(() => toast('Para volver: <b>mantén presionado</b> el título "Notas"'), 600);
 }
 function reenter(){
@@ -3237,6 +3285,39 @@ $('#toyAceptar').addEventListener('click', async () => {
   }
 });
 $('#toySoltar').addEventListener('click', () => SalidaFisica.desenchufa());
+
+/* El Cateo salía solo por consola, y en un teléfono no hay consola: era la
+   salida de emergencia justo del caso que falla, y era la única que no se
+   podía tocar. Igual que enchufa(), requestDevice tiene que ser el PRIMER
+   await del gesto real — por eso se llama directo, sin nada asíncrono antes. */
+$('#toyCateo').addEventListener('click', () => {
+  Cateo.correr().then(out => {
+    if (!out) return;
+    const cab = '<h3>El Cateo</h3>';
+    if (!out.length){
+      openSheet(cab +
+        '<p class="dim">El aparato respondió, pero no apareció ningún canal de escritura.</p>' +
+        '<p class="dim" style="margin-top:10px">Esto casi siempre es un límite del navegador, no del aparato: Chrome solo deja ver los servicios que Sensia declaró de antemano, y el tuyo usa otros. Hacen falta los códigos reales, que se sacan con una app tipo <b>nRF Connect</b>.</p>' +
+        '<button class="btn ghost fld-gap" id="cateoOk" style="width:100%;margin-top:14px">Entendido</button>');
+    } else {
+      const txt = out.map(x => x.srv + '\n' + x.chr + (x.sinResp ? '  (sin respuesta)' : '')).join('\n\n');
+      openSheet(cab +
+        '<p class="dim" style="margin:0 0 12px">Encontré <b>' + out.length + '</b> canal(es) para hablarle. Estos son los códigos:</p>' +
+        '<pre style="font-size:11px;line-height:1.6;white-space:pre-wrap;word-break:break-all;color:var(--ash);background:rgba(255,255,255,.03);padding:12px;border-radius:10px;margin:0">' + esc(txt) + '</pre>' +
+        '<p class="dim" style="margin-top:12px">No se guardan en ningún lado: al cerrar esto desaparecen.</p>' +
+        '<div class="row fld-gap" style="margin-top:14px">' +
+        '<button class="btn ghost sm" id="cateoCopy" style="flex:1">Copiar</button>' +
+        '<button class="btn ghost sm" id="cateoOk" style="flex:1">Cerrar</button></div>');
+      $('#cateoCopy').addEventListener('click', () => {
+        navigator.clipboard.writeText(txt).then(() => toast('Copiado'), () => toast('No pude copiar'));
+      });
+    }
+    $('#cateoOk').addEventListener('click', closeSheet);
+  }).catch(e => {
+    const m = String((e && e.message) || e);
+    if (!/cancel/i.test(m)) toast(m);
+  });
+});
 $('#toyRastro').addEventListener('click', () => {
   openSheet(
     '<h3>El rastro</h3>' +
@@ -8853,6 +8934,10 @@ $('#wipeAll').addEventListener('click', () => {
   $('#wYes').addEventListener('click', async () => {
     Live.hardStop(true);
     await DB.wipe();
+    /* Lo de antes del gesto también. La tarjeta dice "no se puede deshacer";
+       hasta ahora sobrevivían cuatro llaves en claro que contaban que aquí
+       hubo algo más que una libreta de notas. */
+    LS.wipe();
     Pacto.forget();
     META = null; deviceKey = null; unlocked = false;
     Vault.key = null;
@@ -8897,8 +8982,8 @@ function renderAll(){
    Salteable siempre. Reproducible desde el Santuario con Onboard.start(true).
    ────────────────────────────────────────────────────────────────────────────────── */
 const Onboard = (() => {
-  const KEY = 'sx_onboard_v1';   // '1' = ya lo vio entero
-  const POS = 'sx_onboard_at';   // dónde lo dejó, si lo interrumpieron
+  /* 'visto' = ya lo vio entero · 'dondeQuedo' = dónde lo dejó si lo cortaron.
+     Los nombres guardados los decide LS; acá se llaman por lo que son. */
   let box = null, i = 0, open = false, placeT = null, lastGeom = 0;
 
   const STEPS = [
@@ -9058,17 +9143,17 @@ const Onboard = (() => {
 
   const N = STEPS.length;
 
-  function seen(){ try{ return !!localStorage.getItem(KEY); }catch(_){ return false; } }
-  function mark(){ try{ localStorage.setItem(KEY,'1'); }catch(_){} }
+  function seen(){ return !!LS.get('visto'); }
+  function mark(){ LS.set('visto','1'); }
   function isOpen(){ return open; }
 
   /* Si una llamada, una salida rápida o un cierre de pestaña cortan el
      recorrido a mitad, se retoma donde estaba en vez de empezar de cero. */
-  function saveAt(){ try{ localStorage.setItem(POS, String(i)); }catch(_){} }
-  function clearAt(){ try{ localStorage.removeItem(POS); }catch(_){} }
+  function saveAt(){ LS.set('dondeQuedo', i); }
+  function clearAt(){ LS.del('dondeQuedo'); }
   function loadAt(){
-    try{ const v = parseInt(localStorage.getItem(POS), 10);
-         return (isFinite(v) && v > 0 && v < N) ? v : 0; }catch(_){ return 0; }
+    const v = parseInt(LS.get('dondeQuedo'), 10);
+    return (isFinite(v) && v > 0 && v < N) ? v : 0;
   }
 
   function ensure(){
@@ -9259,19 +9344,12 @@ window.Onboard = Onboard;
    blanco. Es síncrono a propósito: se pinta antes que nada, sin parpadeo.
    ────────────────────────────────────────────────────────────────── */
 const Pacto = (() => {
-  const KEY = 'sx_pacto_v1';
   const NEED = ['edad','ambos','limite'];
   let marked = Object.create(null), ready = null;
 
-  function accepted(){
-    try{ return localStorage.getItem(KEY) === '1'; }catch(_){ return false; }
-  }
-  function mark(){
-    try{ localStorage.setItem(KEY, '1'); }catch(_){}
-  }
-  function forget(){
-    try{ localStorage.removeItem(KEY); }catch(_){}
-  }
+  function accepted(){ return LS.get('pacto') === '1'; }
+  function mark(){ LS.set('pacto', '1'); }
+  function forget(){ LS.del('pacto'); }
   function sync(){
     const go = $('#pactoGo');
     if (go) go.disabled = !NEED.every(k => marked[k]);
@@ -9681,7 +9759,7 @@ const Revision = {
 
     /* 3 · memoria del teléfono */
     this.row('db', 'Memoria de este teléfono');
-    const probe = 'sx_probe_' + Date.now();
+    const probe = 'n_probe_' + Date.now();
     let dbOk = false;
     try{ await DB.put(probe, { t:1 }); const v = await DB.get(probe); dbOk = !!(v && v.t === 1); await DB.del(probe); }catch(_){}
     if (dbOk) this.set('db', 'ok', 'Lo que guardes sobrevive a cerrar la app.');
