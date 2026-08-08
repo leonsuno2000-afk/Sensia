@@ -830,16 +830,7 @@ body.insecure .nav{--nudge:0}
 .rev-ico.run{background:var(--noir-3);color:var(--ash-dim);animation:pulseDot 1s infinite}
 @keyframes pulseDot{0%,100%{opacity:.35}50%{opacity:1}}
 .rev-tx{flex:1;min-width:0}
-/* El '>' no es cosmético. La regla existe para el TÍTULO de la fila, que es
-   hijo directo de .rev-tx; sin él alcanzaba también a los <b> que van dentro
-   del <small> del mensaje, y los convertía en bloques: "…entre dos países /
-   puede no abrir nunca / . Configúralo en / Los relevos / , abajo." La frase
-   se partía en cinco y la puntuación quedaba huérfana — justo en el mensaje
-   que alguien lee cuando algo no anda. */
-.rev-tx > b{display:block;font-size:13.5px;font-weight:600;color:var(--mist);margin-bottom:2px}
-/* Dentro del mensaje, la negrita es énfasis y nada más: hereda el color de la
-   línea (ámbar si es aviso, gris si está bien) y solo pesa distinto. */
-.rev-tx small b{font-weight:700;color:inherit}
+.rev-tx b{display:block;font-size:13.5px;font-weight:600;color:var(--mist);margin-bottom:2px}
 .rev-tx small{display:block;font-size:12px;line-height:1.55;color:var(--ash)}
 .rev-tx small.bad{color:var(--warn)}
 .rev-verdict{margin-top:14px;padding:13px 15px;border-radius:var(--r-md);font-size:13px;line-height:1.6;
@@ -1180,7 +1171,7 @@ body.reduce #tour .tour-ring::after{animation:none}
     </div>
     <p class="orb-hint">Mantén presionada la brasa. El ritmo que hagas viaja tal cual.<br>Agita el teléfono para un pulso sorpresa.</p>
 
-    <div class="card" style="margin-top:18px">
+    <div class="card" id="cardVocab" style="margin-top:18px">
       <p class="eyebrow">Su vocabulario</p>
       <h3 style="margin-bottom:4px">Pulsos con nombre</h3>
       <p class="lead">Tócale un ritmo a un pulso y ponle nombre: «ven», «te pienso», «no puedo dormir». Se lo mandas, y lo siente en la piel con esas mismas palabras.</p>
@@ -1315,7 +1306,7 @@ body.reduce #tour .tour-ring::after{animation:none}
         <button class="btn ghost sm" id="rutaRun" style="width:100%;margin-top:12px">Probar el camino</button>
         <div class="ruta-state" id="rutaState"></div>
       </div>
-      <div class="card">
+      <div class="card" id="enlaceCard">
         <p class="eyebrow">El enlace</p>
         <h3>Una sesión empieza cuando ambos la eligen</h3>
         <p class="lead">Nada se enciende hasta que los dos estén dentro y el sello coincida. Y cualquiera corta, en cualquier momento, sin explicar por qué.</p>
@@ -1581,6 +1572,27 @@ body.reduce #tour .tour-ring::after{animation:none}
         <button class="btn primary sm" id="mdGiveBtn" style="flex:1">Entregarlo</button>
       </div>
       <p class="dim" id="mdNote" style="margin-top:10px"></p>
+    </div>
+
+    <div class="card" id="toyCard" style="border-color:rgba(232,112,79,.2)">
+      <p class="eyebrow">La puerta · el aparato</p>
+      <h3 style="margin-bottom:4px">Esto sale de Sensia</h3>
+      <p class="lead">Si tienes un juguete Bluetooth, El Mando y La Marea pueden moverlo en vez del motor del teléfono. Va por el mismo túnel cifrado de siempre: el Bluetooth es solo el último medio metro, acá, en tu cuarto. El aparato nunca toca internet, y ningún fabricante se entera de nada.</p>
+
+      <p class="dim" style="color:var(--warn);margin-top:12px"><b>Sépanlo antes:</b> el nombre del aparato puede quedar escrito en los ajustes de Chrome y del sistema. Los fabricantes no eligen nombres discretos. Quien agarre el teléfono y sepa dónde mirar, lo ve — y la salida rápida no lo borra, porque no puede.</p>
+
+      <p class="dim" style="margin-top:10px">Y mientras esté encendido, el aparato dice su nombre al aire. Un teléfono cerca lo ve sin tocar nada. Contra eso no hay app: se apaga o no se apaga.</p>
+
+      <p class="lead" style="margin-top:14px">Lo que nos toca lo hacemos: Sensia no guarda el nombre, no reconecta sola, y al salir corta y desconecta. Lo de afuera queda a la vista para que decidan con los ojos abiertos.</p>
+
+      <p class="dim" id="toyEstado" style="margin-top:14px"></p>
+
+      <div class="row fld-gap">
+        <button class="btn ghost sm" id="toyRastro" style="flex:1">Dónde queda el rastro</button>
+        <button class="btn primary sm" id="toyAceptar" style="flex:1">Entiendo · enlazar</button>
+        <button class="btn stop sm" id="toySoltar" style="flex:1;display:none">Soltar</button>
+      </div>
+      <p class="foot-note" style="margin-top:12px">Si no encuentra el aparato, prueba <b>El Cateo</b> desde la consola: <code>Cateo.correr()</code>. Enumera por dónde se le puede hablar.</p>
     </div>
 
     <div style="margin-top:22px">
@@ -1870,7 +1882,7 @@ body.reduce #tour .tour-ring::after{animation:none}
       <p class="dim" style="margin-top:10px">Elimina el gesto, las fantasías, el vocabulario, las chispas, la bóveda y los ajustes. No se puede deshacer.</p>
     </div>
 
-    <p class="foot-note">Sensia Ω∞ · v5.2.1 <b>Sin terceros</b><br>Túnel P2P cifrado extremo a extremo · sello verificable · sin cuentas ni registro. Nada de lo que se dicen queda en un servidor; para conectarlos (y a veces para sostener la señal) se usa un relay que ve <i>por dónde</i> pasan, nunca <i>qué</i> pasa.<br><br>Al abrirse, esta app no le habla a nadie: las letras, la librería y el ícono salen de su propio servidor. Solo cuando abres un túnel le pregunta a un servidor público (STUN) cuál es la dirección de este teléfono — no se puede evitar sin poner uno propio, y no le dice qué haces ni con quién. <b>La Revisión</b> lo comprueba midiendo, no prometiendo.</p>
+    <p class="foot-note">Sensia Ω∞ · v5.2 <b>Sin terceros</b><br>Túnel P2P cifrado extremo a extremo · sello verificable · sin cuentas ni registro. Nada de lo que se dicen queda en un servidor; para conectarlos (y a veces para sostener la señal) se usa un relay que ve <i>por dónde</i> pasan, nunca <i>qué</i> pasa.<br><br>Al abrirse, esta app no le habla a nadie: las letras, la librería y el ícono salen de su propio servidor. Solo cuando abres un túnel le pregunta a un servidor público (STUN) cuál es la dirección de este teléfono — no se puede evitar sin poner uno propio, y no le dice qué haces ni con quién. <b>La Revisión</b> lo comprueba midiendo, no prometiendo.</p>
   </div>
 </section>
 
@@ -2250,6 +2262,9 @@ const Haptics = {
     }catch(_){}
   },
   wave(v){
+    /* Fuera del if(ok()): apagar la vibración del teléfono en ajustes NO
+       debe apagar el aparato. Son dos decisiones distintas. */
+    try{ SalidaFisica.nivel(v); }catch(_){}
     this.waveV = clamp(v|0, 0, 100);
     if (this.waveV <= 0){
       if (this.waveT){ clearTimeout(this.waveT); this.waveT = null; }
@@ -2267,11 +2282,292 @@ const Haptics = {
     this.waveT = setTimeout(() => this.loop(), on + Math.max(55, gap));
   },
   stopAll(){
+    try{ SalidaFisica.alto(); }catch(_){}
     this.wave(0);
     if (HAS_VIBRATE) try{ navigator.vibrate(0); }catch(_){}
   }
 };
 const buzz = p => Haptics.buzz(p);
+
+/* ══════════ LA SALIDA FÍSICA ══════════
+   Un juguete no es un módulo nuevo: es otro destino de Haptics.wave().
+   Lo que ya sube intensidad (La Marea, El Mando, El Eco Físico) desemboca
+   aquí solo. Lo que ya la corta (quickExit, safeword, Mando.fin) la corta
+   aquí también, gratis.
+
+   Regla única: el nivel no se mantiene, se renueva. Si nadie lo renueva,
+   cae. Un motor trabado no es un bug de interfaz. */
+const SalidaFisica = (() => {
+  const TTL    = 900;   // ms sin renovar → a cero
+  const PASO   = 130;   // ms mínimo entre escrituras al aparato
+  const LATIDO = 250;   // ms del vigía
+
+  let drv=null, v=0, escrito=-1, tRenov=0, tEscr=0, cola=0, vigia=0, wl=null;
+
+  /* El Gobernador: no censura, respira. A intensidad alta sostenida baja
+     sola un momento y vuelve. Cuida el cuerpo y de paso devuelve
+     sensibilidad: subir después de una caída se siente más que no bajar. */
+  const Gob = {
+    acum:0, ult:0, alivio:0,
+    filtra(x){
+      const now = Date.now();
+      const dt = this.ult ? Math.min(now - this.ult, 1000) : 0;
+      this.ult = now;
+      if (this.alivio){
+        if (now < this.alivio) return Math.min(x, 62);
+        this.alivio = 0; this.acum = 0;
+      }
+      if (x >= 80) this.acum += dt;
+      else this.acum = Math.max(0, this.acum - dt * 2);
+      if (this.acum > 240000){ this.alivio = now + 18000; return Math.min(x, 62); }
+      return x;
+    },
+    reset(){ this.acum = this.ult = this.alivio = 0; }
+  };
+
+  async function escribe(x, urgente){
+    if (!drv) return;
+    const now = Date.now();
+    if (!urgente && x === escrito) return;
+    if (!urgente && now - tEscr < PASO){
+      clearTimeout(cola);
+      cola = setTimeout(() => escribe(clamp(Gob.filtra(v), 0, 100), false), PASO);
+      return;
+    }
+    clearTimeout(cola); cola = 0;
+    escrito = x; tEscr = now;
+    try{ await drv.escribir(x / 100); }
+    catch(_){ suelta('Se soltó el aparato'); }
+  }
+
+  function ronda(){
+    if (!drv) return;
+    if (v > 0 && Date.now() - tRenov > TTL){ v = 0; escribe(0, true); }
+    else escribe(clamp(Gob.filtra(v), 0, 100), false);
+  }
+
+  async function luz(on){
+    try{
+      if (on && 'wakeLock' in navigator && !wl) wl = await navigator.wakeLock.request('screen');
+      else if (!on && wl){ await wl.release(); wl = null; }
+    }catch(_){ wl = null; }
+  }
+
+  function suelta(msg){
+    const d = drv; drv = null;
+    clearTimeout(cola); clearInterval(vigia); vigia = 0;
+    v = 0; escrito = -1; Gob.reset(); luz(false);
+    if (d) try{ d.cerrar(); }catch(_){}
+    if (msg) toast(msg);
+    try{ EventBus.emit('salida:fin', {}); }catch(_){}
+    try{ pintaToy(); }catch(_){}
+  }
+
+  return {
+    get activo(){ return !!drv; },
+    get conLuz(){ return !!wl; },
+
+    async enchufa(driver){
+      if (drv) suelta('');
+      await driver.conectar();
+      drv = driver; v = 0; escrito = -1; tRenov = Date.now();
+      Gob.reset(); await luz(true);
+      clearInterval(vigia); vigia = setInterval(ronda, LATIDO);
+      try{ EventBus.emit('salida:inicio', {}); }catch(_){}
+      try{ pintaToy(); }catch(_){}
+      return true;
+    },
+
+    /* Único punto de entrada. Renovar es obligatorio: llamar y callarse
+       durante un segundo equivale a pedir cero. */
+    nivel(x){
+      if (!drv) return;
+      const n = clamp(x|0, 0, 100);
+      const bajando = n < v;
+      v = n; tRenov = Date.now();
+      if (bajando || n === 0) escribe(clamp(Gob.filtra(n), 0, 100), true);
+    },
+
+    /* Corte duro. Escribe cero varias veces por si una se pierde. */
+    alto(){
+      if (!drv) return;
+      v = 0; tRenov = 0;
+      escribe(0, true);
+      setTimeout(() => escribe(0, true), 80);
+      setTimeout(() => escribe(0, true), 240);
+    },
+
+    desenchufa(){
+      if (!drv) return;
+      this.alto();
+      setTimeout(() => suelta('Aparato soltado'), 320);
+    }
+  };
+})();
+
+/* ¿Se puede, acá, ahora? Se responde ANTES de prometer nada. */
+function bleWhy(){
+  if (!('bluetooth' in navigator))
+    return IS_IOS
+      ? 'Safari en iPhone no habla Bluetooth, y ningún navegador de iOS lo hace salvo Bluefy o WebBLE. No es un ajuste: Apple no lo implementa.'
+      : 'Este navegador no habla Bluetooth. Chrome o Edge de Android sí.';
+  if (IN_APP_BROWSER)
+    return 'Estás dentro del navegador de otra app. Abre Sensia en Chrome.';
+  if (!SECURE) return insecureWhy();
+  return '';
+}
+
+/* ══════════ DRIVER BLE ══════════
+   Mecanismo único. El aparato lo define el perfil, no este código.
+   Chrome serializa las operaciones GATT: escribir más rápido de lo que el
+   aparato responde tira 'GATT operation already in progress'. Por eso acá no
+   se encola nada — gana el último valor y los viejos se descartan. En un
+   motor, el valor viejo no sirve para nada. */
+const DriverBLE = (perfil) => {
+  let dev=null, chr=null, sinResp=false, enVuelo=false, pend=null, vivo=false;
+
+  const conTope = (p, ms) => Promise.race([
+    p, new Promise((_, rej) => setTimeout(() => rej(new Error('sin respuesta')), ms))
+  ]);
+
+  return {
+    nombre: perfil.nombre,
+
+    /* Llamar SIEMPRE como primer await de un click real. Si metes otro await
+       antes, algunos navegadores dan el gesto por consumido. */
+    async conectar(){
+      const why = bleWhy(); if (why) throw new Error(why);
+      dev = await navigator.bluetooth.requestDevice(
+        (perfil.servicios && perfil.servicios.length)
+          ? { filters: perfil.servicios.map(x => ({ services:[x] })), optionalServices: perfil.servicios }
+          : { acceptAllDevices:true, optionalServices: perfil.opcionales || [] }
+      );
+      dev.addEventListener('gattserverdisconnected', () => {
+        vivo = false; chr = null;
+        SalidaFisica.desenchufa();
+      });
+      const gatt = await conTope(dev.gatt.connect(), 12000);
+
+      /* Los UUID cambian entre generaciones del mismo aparato: se prueban
+         todos los del perfil y gana el primero que exista. */
+      for (let i = 0; i < perfil.servicios.length && !chr; i++){
+        try{
+          const srv = await gatt.getPrimaryService(perfil.servicios[i]);
+          chr = await srv.getCharacteristic(perfil.escribe[i]);
+        }catch(_){ chr = null; }
+      }
+      if (!chr){
+        try{ gatt.disconnect(); }catch(_){}
+        throw new Error('No encontré por dónde hablarle. Usa El Cateo.');
+      }
+      sinResp = !!(chr.properties && chr.properties.writeWithoutResponse);
+      vivo = true;
+      return true;
+    },
+
+    async escribir(x){
+      if (!chr || !vivo) throw new Error('sin canal');
+      pend = clamp(x, 0, 1);
+      if (enVuelo) return;                 // el último gana, los demás mueren
+      enVuelo = true;
+      try{
+        while (pend !== null && vivo){
+          const val = pend; pend = null;
+          const bytes = perfil.formato(val);
+          await conTope(sinResp ? chr.writeValueWithoutResponse(bytes)
+                                : chr.writeValue(bytes), 2500);
+        }
+      } finally { enVuelo = false; }
+    },
+
+    cerrar(){
+      vivo = false; pend = null;
+      try{ if (chr) chr.writeValue(perfil.formato(0)); }catch(_){}
+      setTimeout(() => { try{ if (dev && dev.gatt.connected) dev.gatt.disconnect(); }catch(_){} }, 200);
+      chr = null; dev = null;
+    }
+  };
+};
+
+/* Los aparatos son datos, no código. Agregar una marca = agregar un objeto. */
+const PERFILES = {
+  lovense: {
+    nombre: 'lovense',
+    /* Estos UUID cambian por generación y modelo. Cubren los casos comunes,
+       pero CONFIRMA con El Cateo antes de dar nada por hecho. */
+    servicios: ['0000fff0-0000-1000-8000-00805f9b34fb',
+                '50300001-0024-4bd4-bbd5-a6920e4c5653'],
+    escribe:   ['0000fff2-0000-1000-8000-00805f9b34fb',
+                '50300002-0024-4bd4-bbd5-a6920e4c5653'],
+    formato(x){ return ENC.encode('Vibrate:' + Math.round(x * 20) + ';'); }
+  },
+  byte255: {
+    nombre: 'generico',
+    servicios: [], opcionales: [],
+    formato(x){ return new Uint8Array([Math.round(x * 255)]); }
+  },
+  /* El que arma el usuario después de catear su aparato. */
+  hechizo(uuidSrv, uuidChr, modo){
+    return {
+      nombre: 'a-medida',
+      servicios: [uuidSrv], escribe: [uuidChr],
+      formato(x){
+        if (modo === 'ascii') return ENC.encode('Vibrate:' + Math.round(x * 20) + ';');
+        if (modo === 'b100')  return new Uint8Array([Math.round(x * 100)]);
+        return new Uint8Array([Math.round(x * 255)]);
+      }
+    };
+  }
+};
+
+/* El Cateo: enumera el árbol GATT y dice por dónde se puede hablar.
+   Se corre una vez por aparato; después se guarda el perfil y se olvida.
+   Límite honesto: optionalServices solo deja ver lo que declaraste antes.
+   Si sale vacío, saca los UUID con nRF Connect y mételos a mano. */
+const Cateo = {
+  async correr(){
+    const why = bleWhy(); if (why){ toast(why); return []; }
+    const opc = [];
+    Object.keys(PERFILES).forEach(k => {
+      const p = PERFILES[k];
+      if (p && p.servicios) p.servicios.forEach(u => opc.push(u));
+    });
+    const dev = await navigator.bluetooth.requestDevice({ acceptAllDevices:true, optionalServices:opc });
+    const gatt = await dev.gatt.connect();
+    const out = [];
+    for (const srv of await gatt.getPrimaryServices()){
+      for (const c of await srv.getCharacteristics()){
+        const p = c.properties;
+        if (p.write || p.writeWithoutResponse)
+          out.push({ srv:srv.uuid, chr:c.uuid, sinResp:!!p.writeWithoutResponse });
+      }
+    }
+    try{ gatt.disconnect(); }catch(_){}
+    console.table(out);
+    return out;
+  }
+};
+
+/* El nombre real del aparato NUNCA entra en State, ni en la Bóveda, ni en un
+   toast. Si la Bóveda se abre, no debe haber nada que diga qué marca es. */
+function pintaToy(){
+  const est = document.getElementById('toyEstado');
+  const bC  = document.getElementById('toyAceptar');
+  const bS  = document.getElementById('toySoltar');
+  if (!est) return;
+  const why = bleWhy();
+  if (SalidaFisica.activo){
+    est.innerHTML = '◉ <b>Enlazado</b>' + (SalidaFisica.conLuz ? '' : ' · sin pantalla despierta: no lo dejes en el fondo');
+    est.style.color = 'var(--rose)';
+    if (bC) bC.style.display = 'none';
+    if (bS) bS.style.display = '';
+  } else {
+    est.innerHTML = why || 'Sin aparato · el teléfono sigue siendo el motor';
+    est.style.color = why ? 'var(--warn)' : '';
+    if (bC) bC.style.display = why ? 'none' : '';
+    if (bS) bS.style.display = 'none';
+  }
+}
 
 /* ══════════ SISTEMAS SENSORIALES Ω∞ ══════════ */
 const SensorBus=(()=>{const l={};return{on(s,cb){if(!l[s])l[s]=[];l[s].push(cb);return()=>{l[s]=l[s].filter(f=>f!==cb)}},emit(s,d){if(!l[s])return;const e={...d,_t:performance.now()};for(const cb of l[s])try{cb(e)}catch(_){}}}})();
@@ -2901,6 +3197,9 @@ function quickExit(){
   /* El mando se corta ANTES que nada y de forma explícita: dependía de que el
      canal avisara al cerrarse, y una salida rápida no puede depender de nada. */
   if (typeof Mando !== 'undefined' && Mando.rol) Mando.fin('');
+  /* El aparato no se corta: se suelta. Un motor que sigue en la mano
+     desmiente cualquier pantalla de notas. */
+  try{ SalidaFisica.desenchufa(); }catch(_){}
   Live.hardStop(true);
   Haptics.stopAll();
   $('#neutral').classList.add('on');
@@ -2919,6 +3218,42 @@ $('#replayTour').addEventListener('click', () => { go('diario'); setTimeout(() =
 
 /* --- Santuario · las tarjetas nuevas --- */
 $('#revRun').addEventListener('click', () => Revision.run());
+
+/* ---- La salida física: enlazar, soltar, y el rastro a la vista ---- */
+$('#toyAceptar').addEventListener('click', async () => {
+  /* requestDevice tiene que ser el PRIMER await del gesto real. */
+  try{
+    await SalidaFisica.enchufa(DriverBLE(PERFILES.lovense));
+    toast('◉ Enlazado · El Mando y La Marea ya lo mueven');
+    buzz([30, 40, 60]);
+  }catch(e){
+    const m = String((e && e.message) || e);
+    if (!/cancel/i.test(m)) toast(m);
+    pintaToy();
+  }
+});
+$('#toySoltar').addEventListener('click', () => SalidaFisica.desenchufa());
+$('#toyRastro').addEventListener('click', () => {
+  openSheet(
+    '<h3>El rastro</h3>' +
+    '<p class="muted" style="margin:0 0 14px;font-size:13.5px;color:var(--ash)">Tres lugares, y cómo se limpian.</p>' +
+    '<p class="dim"><b>1 · Chrome.</b> Pega <code>chrome://settings/content/bluetoothDevices</code> en la barra. Si Sensia aparece ahí con el nombre del aparato, quítala. Recargar Sensia también corta el permiso.</p>' +
+    '<p class="dim" style="margin-top:10px"><b>2 · El sistema.</b> Ajustes → Conexiones → Bluetooth. Si el aparato figura emparejado, desemparejarlo.</p>' +
+    '<p class="dim" style="margin-top:10px"><b>3 · El aparato.</b> Apagado. No hay otra.</p>' +
+    '<p class="dim" style="margin-top:14px;color:var(--warn)">Sensia no puede hacer ninguna de las tres por ustedes. Si pudiera, también podría hacerlas sin avisar — y entonces no serviría de nada lo que promete.</p>' +
+    '<button class="btn ghost fld-gap" id="toyRastroOk" style="width:100%;margin-top:14px">Entendido</button>');
+  $('#toyRastroOk').addEventListener('click', closeSheet);
+});
+
+/* Android estrangula los setInterval con la pantalla apagada. Si perdimos el
+   wakeLock y nos fuimos al fondo, el vigía deja de ser una garantía: mejor
+   una escena interrumpida que un motor solo. */
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && SalidaFisica.activo && !SalidaFisica.conLuz) SalidaFisica.alto();
+});
+
+pintaToy();
+
 $('#relaySave').addEventListener('click', () => Relay.save());
 $('#relayTest').addEventListener('click', async () => { if (Relay.save()) await Relay.test(); });
 
@@ -8558,119 +8893,163 @@ function renderAll(){
    Salteable siempre. Reproducible desde el Santuario con Onboard.start(true).
    ────────────────────────────────────────────────────────────────────────────────── */
 const Onboard = (() => {
-  const KEY = 'sx_onboard_v1';
+  const KEY = 'sx_onboard_v1';   // '1' = ya lo vio entero
+  const POS = 'sx_onboard_at';   // dónde lo dejó, si lo interrumpieron
   let box = null, i = 0, open = false, placeT = null, lastGeom = 0;
 
   const STEPS = [
+    /* ── PUERTA ── */
     { center:true, chapter:'Sensia',
       eyebrow:'El umbral quedó atrás',
-      title:'Bienvenidos a su santuario',
-      body:'Sensia es un espacio privado para dos. Nada de lo que pasa aquí sale de aquí.<br><br>Te muestro cada sala y para qué sirve, una por una. Tres minutos.',
-      cta:'Empezar el recorrido', alt:'Saltar · ya sé moverme' },
+      title:'Están adentro',
+      body:'Sensia es un cuarto cerrado para dos. Lo que pasa aquí no sale de aquí: sin cuentas, sin nombre, sin nadie mirando por encima del hombro.<br><br>Te muestro la casa habitación por habitación. Tres minutos y sabes dónde está cada interruptor.',
+      cta:'Muéstrame la casa', alt:'Ya sé moverme, gracias' },
 
     /* ── EL DIARIO ── */
     { screen:'diario', target:'#diario .deck-actions', pad:14, chapter:'El Diario',
-      eyebrow:'El Diario · de las fantasías',
-      title:'Desliza sin miedo',
-      body:'Cartas con un deseo cada una. Responde con un toque:<br><b>✕ no</b> · <b>? tal vez</b> · <b>✓ sí</b><br><br>Tus <b>noes nunca salen de tu teléfono</b>. Tu pareja no los ve. Solo viajan tus síes y tus tal vez.',
+      eyebrow:'El Diario · las cartas',
+      title:'Confiesa sin ponerte colorado',
+      body:'Cada carta trae un deseo. Contestas de un toque:<br><b>✕ no</b> · <b>? tal vez</b> · <b>✓ sí</b><br><br>Aquí está el truco: tus <b>noes no salen de este teléfono</b>. Nunca sabrá qué descartaste. Solo viajan tus síes y tus tal vez.',
       cta:'Sigue' },
 
     { screen:'diario', target:'#matchesBtn', pad:12, chapter:'El Diario',
       eyebrow:'El Diario · coincidencias',
-      title:'Lo que ambos quieren',
-      body:'Si los dos dicen que sí a la misma carta, aparece aquí una <b>coincidencia ✦</b>. Eso es lo único que se comparte.<br><br>Arriba tienes el <b>filtro</b>, para buscar por tema o intensidad, y la <b>ruleta</b>, por si prefieren que elija el azar.',
+      title:'Donde se cruzan las ganas',
+      body:'Si los dos marcan ✓ en la misma carta salta una <b>coincidencia ✦</b> y queda guardada aquí. Es lo único que se comparte.<br><br>Arriba tienes el <b>filtro</b>, para buscar por tema o intensidad, y la <b>ruleta</b>, para las noches en que nadie quiere decidir.',
       cta:'Sigue' },
 
     { screen:'diario', target:'.dice-stage', pad:10, chapter:'El Diario',
       eyebrow:'El Diario · dados y preguntas',
       title:'Que decida el azar',
-      body:'Tira los <b>dados</b> —acción, modo y tiempo— y los dos ven lo mismo. Es una propuesta, no una orden.<br><br>Justo debajo están <b>Las preguntas</b>, para conocerse sin prisa.',
+      body:'Tres dados: <b>acción</b>, <b>modo</b> y <b>tiempo</b>. Uno los tira y los dos ven lo mismo. Es una propuesta, no una orden: siempre pueden reírse y tirar otra vez.<br><br>Justo debajo están <b>Las preguntas</b>, de esas que se responden despacio.',
       cta:'Sigue' },
 
-    /* ── EL RITMO ── */
+    /* ── EL RITMO · el tacto ── */
     { screen:'ritmo', target:'#pulseStage', pad:12, chapter:'El Ritmo',
       eyebrow:'El Ritmo · el pulso',
-      title:'Manda tu pulso',
-      body:'Mantén el dedo apretado sobre la brasa. Su teléfono vibra con el ritmo exacto que marques, al instante.<br><br>Si agitas el teléfono, le llega un pulso sorpresa.',
+      title:'Tócale la piel desde lejos',
+      body:'Mantén el dedo apretado sobre la brasa. Su teléfono vibra con el ritmo exacto que marques —lento, corto, impaciente— al instante.<br><br>¿Manos ocupadas? Agita el teléfono y le llega un pulso de sorpresa.',
       cta:'Sigue' },
 
+    { screen:'ritmo', target:'#cardVocab', pad:10, chapter:'El Ritmo',
+      eyebrow:'El Ritmo · su vocabulario',
+      title:'Un idioma de dos',
+      body:'Tócale un ritmo a la pantalla, ponle nombre —«ven», «te pienso», «no puedo dormir»— y guárdalo.<br><br>Después se lo mandas de un toque y lo siente en la piel, con esas mismas palabras. Nadie más entiende ese idioma: en eso está toda la gracia.',
+      cta:'Sigue' },
+
+    /* ── EL RITMO · el cuerpo ── */
     { screen:'ritmo', target:'.heart-grid', pad:10, chapter:'El Ritmo',
       eyebrow:'El Ritmo · El Latido',
       title:'Su corazón, en tu mano',
-      body:'Recuéstate un poco, apoya el teléfono plano sobre el centro del pecho —con la pantalla hacia ti— y sostenlo ahí, quieto, con los codos apoyados.<br><br>El sensor siente el empujón de cada latido —sin cámara, sin tocar la pantalla.<br><br>Cuando encuentre tu corazón, su teléfono empieza a latir contigo. Si los dos pulsos se acercan, salta la <b>Resonancia</b>.',
+      body:'Recuéstate un poco y apoya el teléfono <b>plano sobre el centro del pecho</b>, con la pantalla hacia ti. Sostenlo quieto unos segundos, con los codos apoyados.<br><br>El sensor siente el empujón de cada latido: sin cámara y sin tocar nada. Del otro lado, su teléfono empieza a latir contigo.<br><br>Si los dos pulsos se emparejan, salta la <b>Resonancia</b>. Y no, no se puede hacer trampa.',
       cta:'Sigue' },
 
     { screen:'ritmo', target:'#lienzoWrap', pad:10, chapter:'El Ritmo',
       eyebrow:'El Ritmo · El Cuerpo',
       title:'Míralo respirar',
-      body:'Aquí no se dibuja: se mira. La silueta muestra lo que los sensores están midiendo de verdad.<br><br>El pecho sube y baja con su respiración. El corazón destella en cada latido real. La figura entera se enciende con su excitación.<br><br>Si los dos se están leyendo, aparecen <b>los dos cuerpos</b>, uno sobre el otro. Y si sus pulsos convergen de verdad, un <b>hilo de oro</b> los une: no se puede fingir ni apurar.<br><br>Y si ella se acuesta, la figura se acuesta. Nadie tuvo que escribirlo.',
+      body:'Aquí no se dibuja nada: se mira. La silueta muestra lo que los sensores están midiendo de verdad.<br><br>El pecho sube y baja con la respiración. El corazón destella en cada latido. La figura entera se enciende cuando sube la temperatura.<br><br>Si los dos están apoyados aparecen <b>los dos cuerpos</b>, uno sobre el otro. Y si sus pulsos convergen de verdad, un <b>hilo de oro</b> los une: eso no se finge ni se apura.',
       cta:'Sigue' },
 
-    /* ── EL RITMO ── */
     { screen:'ritmo', target:'.breath-stage', pad:10, chapter:'El Ritmo',
       eyebrow:'El Ritmo · El Fuelle',
-      title:'El compás que proponen',
-      body:'Los dos teléfonos marcan el mismo ritmo, al mismo milisegundo. No es una animación: es el mismo reloj.<br><br>Elige el patrón —<b>Caja</b>, <b>Calma</b> o <b>Coherencia</b>— y respiren juntos aunque estén lejos.',
+      title:'Respiren al mismo tiempo',
+      body:'Los dos teléfonos marcan el mismo compás, al mismo milisegundo. No es una animación bonita: es el mismo reloj.<br><br>Elige el patrón —<b>Caja</b>, <b>Calma</b> o <b>Coherencia</b>— y bajen juntos a la misma velocidad. Sirve para empezar despacio… o para recuperar el aire después.',
       cta:'Sigue' },
 
     { screen:'ritmo', target:'#sillaToggle', pad:14, chapter:'El Ritmo',
-      eyebrow:'El Ritmo · El Fuelle',
-      title:'Y tu cuerpo, de verdad',
-      body:'Recuéstate un poco y apoya el teléfono <b>plano sobre el centro del pecho</b>, con la pantalla hacia ti, y toca el botón. Lo ves todo mientras te lee.<br><br>De esa única lectura salen <b>tu respiración y tu latido a la vez</b>.<br><br>Y si el guía está andando, aparece <b>el compás</b>: cuánto estás siguiendo de verdad el ritmo que propone.',
+      eyebrow:'El Ritmo · tu cuerpo',
+      title:'Y tú, sin disimular',
+      body:'Mismo gesto: teléfono plano sobre el centro del pecho, pantalla hacia ti, y tocas el botón. Lo ves todo mientras te lee.<br><br>De esa sola lectura salen <b>tu respiración y tu latido a la vez</b>.<br><br>Y si el compás está andando, aparece cuánto lo estás siguiendo de verdad. Aviso: al principio, poquísimo.',
       cta:'Sigue' },
 
     { screen:'ritmo', target:'#cardTermometro', pad:10, chapter:'El Ritmo',
       eyebrow:'El Ritmo · Termómetro y Eco',
       title:'Tu cuerpo, en un número',
-      body:'Junta cuatro señales —corazón, respiración, temblor y movimiento— en un número del 0 al 100. Es una <b>estimación</b> a partir de los sensores: sirve para acompañar, no para calificar a nadie.<br><br><b>Conectar a La Marea</b>: tus deslizadores de deseo no suben más que tu cuerpo.<br><br><b>Eco Físico</b>: sientes en tu mano lo que su cuerpo está haciendo. El deslizador ajusta la fuerza.',
+      body:'Corazón, respiración, temblor y movimiento se juntan en un número del 0 al 100. Es una <b>estimación</b> de los sensores, no una nota de examen.<br><br><b>Conectar a La Marea</b>: tus deslizadores de deseo no suben más que tu cuerpo. Se acabó el disimulo.<br><br><b>Eco Físico</b>: sientes en la mano lo que su cuerpo está haciendo. El deslizador manda la fuerza.',
       cta:'Sigue' },
 
     /* ── EN VIVO ── */
-    { screen:'vivo', target:'#vivoGate', pad:8, chapter:'En Vivo',
+    { screen:'vivo', target:'#rutaCard', pad:10, chapter:'En Vivo',
+      eyebrow:'En Vivo · la ruta',
+      title:'Prueba el camino con luz',
+      body:'Entre dos países y en datos móviles casi nunca hay camino directo entre los teléfonos: hace falta un <b>relevo</b> que empuje el tráfico cifrado de un lado al otro.<br><br>Toca <b>Probar el camino</b> ahora, con calma. Mucho mejor descubrirlo hoy que a las once de la noche.',
+      cta:'Sigue' },
+
+    { screen:'vivo', target:'#enlaceCard', pad:8, chapter:'En Vivo',
       eyebrow:'En Vivo · el enlace',
       title:'Nada se enciende solo',
-      body:'Aquí abren el canal entre ustedes dos.<br><br><b>Con servidor</b>: comparten un código. <b>Sin servidor</b>: se pasan una invitación por donde quieran.<br><br>Todo viaja cifrado de teléfono a teléfono. Si alguien se mete en medio, la puerta no abre.',
+      body:'Aquí abren el canal entre ustedes dos.<br><br><b>Con servidor</b>: uno genera un código, comparte el enlace, y del otro lado entra solo.<br><b>Sin servidor</b>: se pasan una invitación por donde quieran. Funciona aunque se caiga el mundo, pero si se corta hay que rehacerla.<br><br>Todo viaja cifrado de teléfono a teléfono. Si alguien se mete en medio, la puerta no abre.',
       cta:'Sigue' },
 
     { center:true, screen:'vivo', chapter:'En Vivo',
-      eyebrow:'En Vivo · cuando estén dentro',
-      title:'La sesión que eligen los dos',
-      body:'Al conectarse comparan un <b>sello</b> en voz alta. Recién ahí se encienden video y voz.<br><br><b>La Marea</b>: cada uno mueve su deslizador de deseo, y lo que llega es siempre <b>el menor de los dos</b>. Nadie empuja más allá de donde el otro dejó el dedo.<br><br>Ahí viven también las <b>Escenas</b> y la <b>palabra segura</b>, que apaga todo en los dos teléfonos al instante.',
+      eyebrow:'En Vivo · el sello',
+      title:'Díganlo en voz alta',
+      body:'Al conectarse aparecen <b>cinco símbolos</b>. Léanlos en voz alta.<br><br>¿Coinciden? Están solos, garantizado. ¿No coinciden? Hay alguien en medio: corten y vuelvan a empezar.<br><br>Recién entonces se encienden <b>cámara</b> y <b>voz</b>, y solo si tú las enciendes. Adentro tienes <b>venda</b>, <b>filtro</b>, <b>encuadre</b>, <b>luz</b> y chat, por si prefieres que te adivine.',
+      cta:'Sigue' },
+
+    { center:true, screen:'vivo', chapter:'En Vivo',
+      eyebrow:'En Vivo · el juego',
+      title:'Escenas, guion y Director',
+      body:'Las <b>Escenas</b> traen climas listos para usar.<br><br>El <b>guion</b> es una hoja en blanco que se escribe sola en los dos teléfonos: pongan ahí lo que va a pasar, y después háganlo pasar.<br><br>El <b>Director</b> lleva una noche guiada de principio a fin: susurra, marca el ritmo, y ustedes le contestan «más lento», «quédate» o «seguir».<br><br>Y la <b>palabra encendida</b>: cuando tú la dices en voz alta, se le enciende el teléfono a la otra persona.',
+      cta:'Sigue' },
+
+    { center:true, screen:'vivo', chapter:'En Vivo',
+      eyebrow:'En Vivo · quién manda',
+      title:'Siempre gana el que va más despacio',
+      body:'<b>La Marea</b>: cada uno mueve su deslizador de deseo y lo que llega es siempre <b>el menor de los dos</b>. Nadie puede empujar más allá de donde el otro dejó el dedo. No es buena educación: es cómo está construida.<br><br>La <b>palabra segura</b> apaga todo en los dos teléfonos al instante. Sin preguntas, sin explicaciones, sin que nadie se ofenda.',
       cta:'Sigue' },
 
     /* ── LA CHISPA ── */
+    { screen:'chispa', target:'#guanteCard', pad:10, chapter:'La Chispa',
+      eyebrow:'La Chispa · El Guante',
+      title:'El reto del día',
+      body:'Uno tira el guante, el otro decide si lo recoge.<br><br>Primero dices cómo andas hoy —<b>libre</b>, con gente cerca, trabajando o <b>hoy no</b>— y eso ya filtra lo que puede llegarte. Después eliges temperatura (<b>tibio</b>, <b>caliente</b>, <b>al rojo</b>), tema y hasta qué hora tiene.<br><br>Lo que se acepta y no se cumple no se castiga: <b>se cobra</b>. Queda anotado.',
+      cta:'Sigue' },
+
+    { screen:'chispa', target:'#mandoCard', pad:10, chapter:'La Chispa',
+      eyebrow:'La Chispa · El Mando',
+      title:'Entrégale el control',
+      body:'Apoyas el teléfono donde quieras y le pasas el mando. Desde allá decide cuánto y cómo —fijo, olas, latido, escalera o al azar— y tú lo sientes aquí.<br><br>Antes de soltarlo pones <b>tu techo</b>: nunca vas a sentir más que eso. Tienes un <b>Basta</b> del tamaño de la pantalla, y se apaga solo cuando se acaba el tiempo.',
+      cta:'Sigue' },
+
     { screen:'chispa', target:'#reunionCard', pad:10, chapter:'La Chispa',
       eyebrow:'La Chispa · la espera',
-      title:'La distancia, en cuenta regresiva',
-      body:'Pon la fecha del próximo encuentro. La espera deja de ser un vacío: se vuelve una cuenta que los dos ven correr.',
+      title:'La distancia, en números',
+      body:'Pon la fecha del próximo encuentro y la espera deja de ser un agujero: se vuelve una cuenta que los dos ven bajar.<br><br>Sirve para lo obvio: saber cuántas noches faltan para no necesitar esta app.',
       cta:'Sigue' },
 
     { screen:'chispa', target:'#sparkWhen', pad:12, chapter:'La Chispa',
       eyebrow:'La Chispa · encender algo',
-      title:'Deja una chispa prendida',
-      body:'Escribe algo y elige <b>cuándo se abre</b>: ya, en una hora, esta noche, mañana.<br><br>Si la <b>sellas</b>, no puede leerla hasta esa hora. Y aunque ahora no estén conectados, le llega sola en cuanto se conecte.',
+      title:'Déjale algo prendido',
+      body:'Escribe algo y elige <b>cuándo se abre</b>: ya, en una hora, esta noche, mañana.<br><br>Si la <b>sellas</b>, no puede leerla antes de esa hora por más que insista. Y si ahora no están enlazados, se guarda y sale sola en cuanto se conecten.<br><br>Detalle honesto: una cápsula sellada se abre <b>cuando abra la app</b>. El reloj vive aquí dentro, no en un servidor.',
       cta:'Sigue' },
 
-    /* ── LA BÓVEDA ── */
     { screen:'chispa', target:'#vaultLocked', pad:10, chapter:'La Chispa',
       eyebrow:'La Chispa · La Bóveda',
       title:'Un segundo sello',
-      body:'Aquí adentro hay <b>otra llave</b>: una frase que solo ustedes saben. Ni tu gesto de entrada la abre.<br><br>Guarden recuerdos, fotos o promesas, cifrados de verdad.<br><br>Existe también una <b>frase señuelo</b>: abre una bóveda distinta, por si alguien te obliga a abrir.<br><br>Si olvidan la frase, nadie la recupera. Ni nosotros. Esa es la idea.',
+      body:'Aquí adentro hay <b>otra llave</b>: una frase que solo ustedes saben. Ni tu gesto de entrada la abre.<br><br>Guarden fotos, voces, promesas: todo lo que no debería vivir en el rollo de la cámara.<br><br>Hay también una <b>frase señuelo</b>, que abre una bóveda distinta con lo que tú pongas ahí. Si alguien te obliga a abrir, le das esa: nadie puede demostrar que existe otra.<br><br>Si olvidan la frase, no la recupera nadie. Ni nosotros. Esa es la idea.',
       cta:'Casi listo' },
 
     /* ── TU SALIDA ── */
-    { screen:'diario', target:'#diario [data-exit]', pad:8, chapter:'Tu salida',
+    { screen:'chispa', target:'#chispa [data-exit]', pad:8, chapter:'Tu salida',
       eyebrow:'Siempre hay una puerta',
-      title:'Un toque y todo desaparece',
-      body:'Esta <b>✕</b> convierte Sensia en una lista del súper al instante. Voltear el teléfono hace lo mismo.<br><br>Para volver: mantén presionado el título «Notas».<br><br>En el <b>engranaje ⚙</b> ajustas tu gesto, la privacidad y todo lo demás. Aquí el freno es tuyo, siempre. <b>Por eso puedes soltarte.</b>',
+      title:'Un toque y esto es una lista del súper',
+      body:'Esta <b>✕</b> convierte Sensia en una app de notas al instante. Voltear el teléfono boca abajo hace lo mismo.<br><br>Para volver: <b>mantén presionado el título «Notas»</b> un segundo. No hay ningún botón que te delate.<br><br>El freno es tuyo, siempre. <b>Por eso puedes soltarte.</b>',
       cta:'Entendido' },
 
+    /* ── EL SANTUARIO ── */
+    { screen:'santuario', target:'#revRun', pad:12, chapter:'El Santuario',
+      eyebrow:'El Santuario · el engranaje ⚙',
+      title:'El cuarto de máquinas',
+      body:'Detrás del engranaje está todo lo demás: cambiar tu gesto, la <b>apariencia discreta</b> (la app se llama «Notas»), velar la pantalla al cambiar de app, el <b>meridiano</b> —para que «esta noche» signifique <i>su</i> noche y no la tuya—, los relevos y el botón de borrar todo.<br><br>Y <b>La Revisión</b>: prueba cifrado, cámara, micrófono y red en unos segundos.<br><br>Aquí mismo puedes volver a ver este recorrido, por si quieres mostrárselo a quien entra contigo.',
+      cta:'Sigue' },
+
     /* ── CIERRE ── */
-    { center:true, chapter:'Sensia',
+    { center:true, screen:'vivo', chapter:'Sensia',
       eyebrow:'El primer paso',
       title:'Ahora sí: enlácense',
-      body:'Ya conoces cada rincón de la casa. Falta lo esencial: los dos, adentro.<br><br>Manda el código, esperen el sello, y que empiece.',
-      cta:'Enlazarnos ahora', ctaGo:'vivo', alt:'Explorar por mi cuenta' }
+      body:'Ya conoces la casa entera. Falta lo único que Sensia no puede hacer sola: <b>los dos, adentro</b>.<br><br>Manda el código, digan el sello en voz alta, y el resto ya es asunto de ustedes.',
+      cta:'Enlazarnos ahora', ctaGo:'vivo', alt:'Doy una vuelta yo primero' }
   ];
 
   const N = STEPS.length;
@@ -8678,6 +9057,15 @@ const Onboard = (() => {
   function seen(){ try{ return !!localStorage.getItem(KEY); }catch(_){ return false; } }
   function mark(){ try{ localStorage.setItem(KEY,'1'); }catch(_){} }
   function isOpen(){ return open; }
+
+  /* Si una llamada, una salida rápida o un cierre de pestaña cortan el
+     recorrido a mitad, se retoma donde estaba en vez de empezar de cero. */
+  function saveAt(){ try{ localStorage.setItem(POS, String(i)); }catch(_){} }
+  function clearAt(){ try{ localStorage.removeItem(POS); }catch(_){} }
+  function loadAt(){
+    try{ const v = parseInt(localStorage.getItem(POS), 10);
+         return (isFinite(v) && v > 0 && v < N) ? v : 0; }catch(_){ return 0; }
+  }
 
   function ensure(){
     if (box) return;
@@ -8712,13 +9100,17 @@ const Onboard = (() => {
     let foot;
     if (s.alt){
       const primAct = s.ctaGo ? 'go' : 'next';
+      // En las fichas apiladas el 'Atrás' va debajo: no compite con la acción.
+      const backLink = (i > 0)
+        ? '<div style="text-align:center"><button class="tour-back" data-act="back" style="padding:10px 8px">‹ Atrás</button></div>'
+        : '';
       foot =
         '<div class="tour-meta"><span class="ch">'+ch+'</span><span class="rt"><b>'+(i+1)+'/'+N+'</b></span></div>' +
         '<div class="tour-prog"><i style="width:'+pct+'%"></i></div>' +
         '<div class="tour-actions stack">' +
           '<button class="tour-next" data-act="'+primAct+'">'+s.cta+'</button>' +
           '<button class="tour-ghost" data-act="skip">'+s.alt+'</button>' +
-        '</div>';
+        '</div>' + backLink;
     } else {
       const back = (i > 0) ? '<button class="tour-back" data-act="back">‹ Atrás</button>' : '<span></span>';
       foot =
@@ -8819,23 +9211,25 @@ const Onboard = (() => {
   function reflow(){ if (open) requestAnimationFrame(() => layout(STEPS[i])); }
 
   function next(){
-    if (i < N - 1){ i++; try{ buzz(8); }catch(_){} show(); }
-    else finish('vivo' === STEPS[i].ctaGo ? 'vivo' : null);
+    if (i < N - 1){ i++; saveAt(); try{ buzz(8); }catch(_){} show(); }
+    else finish(STEPS[i].ctaGo === 'vivo' ? 'vivo' : null);
   }
   function back(){
-    if (i > 0){ i--; try{ buzz(6); }catch(_){} show(); }
+    if (i > 0){ i--; saveAt(); try{ buzz(6); }catch(_){} show(); }
   }
 
   function start(replay){
     if (!replay && seen()) return;
-    ensure(); i = 0; open = true;
+    ensure();
+    i = replay ? 0 : loadAt();   // repetir: desde el principio; retomar: donde iba
+    open = true;
     box.classList.add('on');
     show();
     try{ buzz(14); }catch(_){}
   }
 
   function finish(dest){
-    mark(); open = false;
+    mark(); clearAt(); open = false;
     clearTimeout(placeT);
     if (box) box.classList.remove('on', 'spot');
     try{
