@@ -40,6 +40,31 @@ const io = new Server(server, {
 const CLIENT = path.join(__dirname, 'sensia2.html');
 app.get(['/', '/sensia2.html', '/index.html'], (_req, res) => res.sendFile(CLIENT));
 
+/* ── Las letras, desde acá ────────────────────────────────────────
+   Antes venían de Google Fonts. Eso significaba que abrir Sensia —antes de
+   trazar el gesto, antes de decidir nada— le avisaba a dos servidores ajenos
+   que este teléfono la había abierto. Ahora salen de /f, del mismo origen que
+   todo lo demás, y la app no le habla a nadie al arrancar.
+
+   Cinco archivos en la carpeta ./f del repositorio:
+     cormorant-garamond.woff2 · cormorant-garamond-italic.woff2
+     hanken-grotesk.woff2 · space-mono-400.woff2 · space-mono-700.woff2
+
+   immutable + un año de caché: se bajan una vez y no se vuelven a pedir nunca.
+   Si la carpeta todavía no existe esto no rompe nada — devuelve 404 y el CSS
+   dibuja con las tipografías de respaldo. */
+app.use('/f', express.static(path.join(__dirname, 'f'), {
+  maxAge: '1y',
+  immutable: true,
+  fallthrough: true
+}));
+
+/* La librería cliente de socket.io la sirve el propio socket.io en
+   /socket.io/socket.io.js (serveClient viene activo por defecto). Por eso el
+   HTML ya no carga ningún CDN: misma app, mismo origen, cero terceros. Y como
+   efecto lateral bueno, si el script no carga es porque el servidor no está
+   —que es información útil— y no un misterio de red. */
+
 const MAX_PER_ROOM = 2; // un santuario es para dos
 
 io.on('connection', (socket) => {

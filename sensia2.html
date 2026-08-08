@@ -18,23 +18,67 @@
 <meta name="apple-mobile-web-app-title" content="Notas">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" id="manifestLink">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Hanken+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<!-- Hay redes y operadores que bloquean cdn.socket.io. Antes eso mataba el modo
-     "con servidor" en silencio y sin explicación. Ahora se intenta un segundo
-     origen antes de rendirse, y recién entonces se marca __noSocket. -->
-<script src="https://cdn.socket.io/4.7.2/socket.io.min.js" onerror="window.__socketCdnFail=1"></script>
-<script>
-if (window.__socketCdnFail && typeof io === 'undefined'){
-  document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js" onerror="window.__noSocket=true"><\/script>');
-}
-</script>
+<!-- Al abrirse, Sensia no le habla a nadie más que a su propio servidor.
+     Las tipografías salen de /f (mismo origen) y la librería del servidor de
+     encuentro la sirve el propio socket.io en /socket.io/socket.io.js. Ni CDN,
+     ni Google Fonts: abrir la app no le avisa a ningún tercero que este
+     teléfono la abrió ahora. La Revisión comprueba esto de verdad, midiendo
+     qué orígenes tocó el navegador — no es una promesa, es una prueba. -->
+<script src="/socket.io/socket.io.js" onerror="window.__noSocket=true"></script>
 <style>
 /* ═══════════════════════════════════════════════════════════════
    SENSIA Ω∞  ·  v5 "La Puerta"
    Un santuario para dos. Consentimiento como física, no como aviso.
    ═══════════════════════════════════════════════════════════════ */
+
+/* ══════════════════════ LAS LETRAS ══════════════════════
+   Propias, servidas desde /f por el mismo servidor que sirve la app.
+   Antes venían de Google Fonts, y eso significaba que cada vez que alguien
+   abría Sensia —antes de trazar el gesto, antes de decidir nada— dos
+   servidores ajenos se enteraban de que este teléfono la había abierto.
+   En una app cuyo argumento entero es "no confíes en mi política, mirá mi
+   arquitectura", eso no era un detalle: era la única afirmación del
+   proyecto que no se sostenía.
+
+   Los archivos van en la carpeta /f del repositorio. Son cinco:
+     cormorant-garamond.woff2          (variable · wght 300-700 · normal)
+     cormorant-garamond-italic.woff2   (variable · wght 300-700 · itálica)
+     hanken-grotesk.woff2              (variable · wght 100-900)
+     space-mono-400.woff2
+     space-mono-700.woff2
+   Subconjunto latin: cubre español, italiano, napolitano y romanesco
+   —todas las vocales acentuadas y la ñ viven ahí—. Los símbolos (Ω ∞ ✦)
+   los pone el sistema, como ya pasaba antes.
+
+   Si los archivos no están, no se rompe nada: font-display:swap y las
+   pilas de respaldo de :root dibujan con Georgia y la del sistema. La
+   Revisión avisa, sin drama, que se está usando el respaldo.
+   ═══════════════════════════════════════════════════════════════ */
+@font-face{
+  font-family:"Cormorant Garamond"; font-style:normal;
+  font-weight:300 700; font-display:swap;
+  src:url("/f/cormorant-garamond.woff2") format("woff2");
+}
+@font-face{
+  font-family:"Cormorant Garamond"; font-style:italic;
+  font-weight:300 700; font-display:swap;
+  src:url("/f/cormorant-garamond-italic.woff2") format("woff2");
+}
+@font-face{
+  font-family:"Hanken Grotesk"; font-style:normal;
+  font-weight:100 900; font-display:swap;
+  src:url("/f/hanken-grotesk.woff2") format("woff2");
+}
+@font-face{
+  font-family:"Space Mono"; font-style:normal;
+  font-weight:400; font-display:swap;
+  src:url("/f/space-mono-400.woff2") format("woff2");
+}
+@font-face{
+  font-family:"Space Mono"; font-style:normal;
+  font-weight:700; font-display:swap;
+  src:url("/f/space-mono-700.woff2") format("woff2");
+}
 
 :root{
   --noir:#050405; --noir-1:#0b080a; --noir-2:#120d10; --noir-3:#1a1217;
@@ -1817,7 +1861,7 @@ body.reduce #tour .tour-ring::after{animation:none}
       <p class="dim" style="margin-top:10px">Elimina el gesto, las fantasías, el vocabulario, las chispas, la bóveda y los ajustes. No se puede deshacer.</p>
     </div>
 
-    <p class="foot-note">Sensia Ω∞ · v5.1 <b>El Meridiano</b><br>Túnel P2P cifrado extremo a extremo · sello verificable · sin cuentas ni registro. Nada de lo que se dicen queda en un servidor; para conectarlos (y a veces para sostener la señal) se usa un relay que ve <i>por dónde</i> pasan, nunca <i>qué</i> pasa.</p>
+    <p class="foot-note">Sensia Ω∞ · v5.2 <b>Sin terceros</b><br>Túnel P2P cifrado extremo a extremo · sello verificable · sin cuentas ni registro. Nada de lo que se dicen queda en un servidor; para conectarlos (y a veces para sostener la señal) se usa un relay que ve <i>por dónde</i> pasan, nunca <i>qué</i> pasa.<br><br>Al abrirse, esta app no le habla a nadie: las letras, la librería y el ícono salen de su propio servidor. Solo cuando abres un túnel le pregunta a un servidor público (STUN) cuál es la dirección de este teléfono — no se puede evitar sin poner uno propio, y no le dice qué haces ni con quién. <b>La Revisión</b> lo comprueba midiendo, no prometiendo.</p>
   </div>
 </section>
 
@@ -9178,6 +9222,38 @@ const Revision = {
     const bad  = (id, m) => { this.set(id, 'no', m); score.fatal++; };
     const soso = (id, m) => { this.set(id, 'warn', m); score.warn++; };
 
+    /* 0 · a quién le habló este teléfono al abrir la app
+       ─────────────────────────────────────────────────
+       No pregunta una bandera ni lee una promesa: le pregunta al navegador
+       qué orígenes tocó de verdad desde que se cargó la página, y los cuenta.
+       Si algún día vuelve a entrar una dependencia externa sin querer —una
+       fuente, una librería, un icono— esta fila lo dice antes que nadie.
+       El STUN no aparece acá y no es trampa: no es un recurso de la página,
+       y por eso se nombra aparte, con todas las letras. */
+    this.row('ter', 'A quién le habla esta app');
+    try{ await document.fonts.ready; }catch(_){}
+    await sleep(80);
+    let ajenos = [];
+    try{
+      ajenos = [...new Set(
+        performance.getEntriesByType('resource')
+          .map(r => { try{ return new URL(r.name, location.href).origin; }catch(_){ return ''; } })
+          .filter(o => o && o !== 'null' && o !== location.origin)
+      )];
+    }catch(_){}
+    let letras = true;
+    try{ letras = document.fonts.check('16px "Cormorant Garamond"')
+              && document.fonts.check('16px "Hanken Grotesk"'); }catch(_){}
+    if (ajenos.length){
+      soso('ter', 'Al abrir, este teléfono le habló a <b>' + ajenos.length + '</b> servicio(s) ajeno(s): ' +
+        esc(ajenos.join(' · ')) + '. No rompe la sesión, pero cada uno de ellos se entera de que abriste Sensia. ' +
+        'No debería haber ninguno.');
+    } else {
+      this.set('ter', 'ok', 'Al abrirse, Sensia no le habla a nadie más que a su propio servidor. ' +
+        (letras ? 'Letras, librería y ícono salen de aquí mismo. ' : 'Las letras propias no cargaron: se está dibujando con la del sistema. ') +
+        'Solo al abrir un túnel le pregunta a un servidor público cuál es la dirección de este teléfono — nunca qué haces, nunca con quién.');
+    }
+
     /* 1 · origen seguro */
     this.row('sec', 'Conexión segura');
     await sleep(120);
@@ -9222,7 +9298,7 @@ const Revision = {
     else {
       const s = await serverProbe(15000);
       if (s.ok) this.set('srv', 'ok', 'Responde. Pueden encontrarse con un código.');
-      else if (s.why === 'no-lib') soso('srv', 'No cargó la librería del servidor (¿red que bloquea CDN?). Usen el <b>modo sin servidor</b>.');
+      else if (s.why === 'no-lib') soso('srv', 'No cargó la librería del servidor. Como ahora sale del mismo sitio que la app, esto significa que el servidor estaba caído o dormido cuando abriste — no una red que bloquea. Recarga, o usen el <b>modo sin servidor</b>.');
       else soso('srv', 'No respondió a tiempo. Si está dormido puede tardar un minuto la primera vez; si no, usen el <b>modo sin servidor</b>.');
     }
 
@@ -9268,7 +9344,7 @@ const Revision = {
       v.innerHTML = '<b>Falta el relevo.</b> Todo lo demás responde, pero sin un relevo vivo la sesión depende de la suerte de la red — y entre dos países esa suerte casi nunca sale. Es lo único que te separa de estar listo.';
     } else if (score.warn){
       v.className = 'rev-verdict on';
-      v.innerHTML = '<b>Se puede usar, con reservas.</b> Lo marcado con ! no impide la sesión, pero puede hacerla frágil. Vale la pena mirarlo antes de la primera vez.';
+      v.innerHTML = '<b>Se puede usar, con reservas.</b> Lo marcado con ! no impide la sesión: o la hace frágil, o dice algo sobre este teléfono que conviene saber. Vale la pena mirarlo antes de la primera vez.';
     } else {
       v.className = 'rev-verdict on good';
       v.innerHTML = '<b>Este teléfono está listo.</b> Cifrado, cámara, micrófono, servidor, camino de red y relevo: todo responde. Que la otra persona haga esta misma revisión en el suyo.';
